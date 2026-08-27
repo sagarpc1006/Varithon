@@ -61,7 +61,7 @@ class LoginView(APIView):
                 UserProfile.objects.create(
                     user=user,
                     role=portal_role,
-                    mobile_number=identifier if not '@' in identifier else '9876543210',
+                    mobile_number=identifier if not '@' in identifier else None,
                     organization='Pandharpur Wari Seva Mandal' if portal_role == 'admin' else 'Alandi Dindi No. 1'
                 )
             else:

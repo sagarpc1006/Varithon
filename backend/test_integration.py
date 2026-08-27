@@ -96,9 +96,37 @@ def run_tests():
     # 11. Test Dashboard Overview
     r = c.get('/api/dashboard/overview/')
     assert r.status_code == 200, f"Overview failed: {r.status_code}"
-    print(f" [PASS] Dashboard Overview OK: System Status = {r.json()['system_status']}")
-
-    print("\n=== ALL 11 INTEGRATION TESTS PASSED SUCCESSFULLY! ===")
+    # 12. Test SOS App Integration
+    c.post('/api/auth/login/', json.dumps({'identifier': '9876543210', 'password': 'password', 'role': 'pilgrim'}), content_type='application/json')
+    
+    # User creates SOS report
+    r = c.post('/api/sos/report/', json.dumps({
+        'type': 'medical',
+        'lat': 18.5204,
+        'lng': 73.8567
+    }), content_type='application/json')
+    assert r.status_code == 201, f"SOS report create failed: {r.status_code}"
+    report_id = r.json()['id']
+    print(f" [PASS] SOS Report Created: ID = {report_id}")
+    
+    # Admin logs in
+    c.post('/api/auth/login/', json.dumps({'identifier': 'seva.admin@varimitra.org', 'password': 'password', 'role': 'admin'}), content_type='application/json')
+    
+    # Admin checks nearby SOS
+    r = c.get('/api/sos/nearby/?lat=18.5205&lng=73.8568')
+    assert r.status_code == 200, f"SOS nearby failed: {r.status_code}"
+    assert any(rep['id'] == report_id for rep in r.json()), "SOS report not found nearby"
+    print(f" [PASS] SOS Nearby Checked: Admin found report")
+    
+    # Admin replies to SOS
+    r = c.post(f'/api/sos/{report_id}/reply/', json.dumps({
+        'reply': 'Help is on the way!'
+    }), content_type='application/json')
+    assert r.status_code == 200, f"SOS reply failed: {r.status_code}"
+    print(f" [PASS] SOS Admin Reply OK")
+    
+    print("\n=== ALL 12 INTEGRATION TESTS PASSED SUCCESSFULLY! ===")
 
 if __name__ == '__main__':
     run_tests()
+

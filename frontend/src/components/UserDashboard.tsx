@@ -1,4 +1,4 @@
-﻿import React, { useState } from "react";
+import React, { useState } from "react";
 import {
   LogOut,
   MapPin,
@@ -103,6 +103,8 @@ const QuickActionCard: React.FC<{
   </button>
 );
 
+import { SOSPage } from '../pages/user/SOSPage';
+
 export const UserDashboard: React.FC<UserDashboardProps> = ({
   session,
   language,
@@ -111,6 +113,7 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({
 }) => {
   const t = LABELS[language];
   const [mapRefreshing, setMapRefreshing] = useState(false);
+  const [currentView, setCurrentView] = useState<'dashboard' | 'sos'>('dashboard');
 
   const handleSignOut = async () => {
     await authService.logout();
@@ -121,6 +124,10 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({
     setMapRefreshing(true);
     setTimeout(() => setMapRefreshing(false), 1200);
   };
+
+  if (currentView === 'sos') {
+    return <SOSPage onBackToDashboard={() => setCurrentView('dashboard')} />;
+  }
 
   return (
     <div className="min-h-screen bg-[#faf7f2] flex flex-col font-sans">
@@ -171,127 +178,127 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({
 
       {/* ════════════════ MAIN BODY ════════════════ */}
       <main className="flex-1 max-w-5xl mx-auto w-full px-4 sm:px-6 py-5 flex flex-col gap-5">
-
         {/* ── MAP SECTION ── */}
-        <section className="relative w-full rounded-2xl overflow-hidden border border-orange-100 shadow-lg" style={{ minHeight: "280px", height: "38vh", maxHeight: "420px" }}>
-          {/* Map background – decorative SVG wari route map placeholder */}
-          <div className="absolute inset-0 bg-gradient-to-br from-[#e8f4e8] via-[#f0f7ee] to-[#e4f0fb]">
-            {/* Subtle grid lines like a map */}
-            <svg width="100%" height="100%" className="opacity-30">
-              <defs>
-                <pattern id="map-grid" width="40" height="40" patternUnits="userSpaceOnUse">
-                  <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#94a3b8" strokeWidth="0.5" />
-                </pattern>
-              </defs>
-              <rect width="100%" height="100%" fill="url(#map-grid)" />
-              {/* Palkhi Route line */}
-              <path
-                d="M 80 220 Q 180 160 280 180 Q 380 200 460 150 Q 540 100 640 130 Q 720 155 820 120"
-                stroke="#f97316"
-                strokeWidth="3"
-                fill="none"
-                strokeDasharray="10 5"
-                className="opacity-70"
-              />
-              {/* Checkpoints */}
-              {[
-                { cx: 80, cy: 220 }, { cx: 280, cy: 180 }, { cx: 460, cy: 150 },
-                { cx: 640, cy: 130 }, { cx: 820, cy: 120 },
-              ].map((pt, i) => (
-                <circle key={i} cx={pt.cx} cy={pt.cy} r="6" fill="#f97316" opacity="0.8" />
-              ))}
-              {/* Current position pulse ring */}
-              <circle cx="460" cy="150" r="14" fill="none" stroke="#f97316" strokeWidth="2" opacity="0.5">
-                <animate attributeName="r" from="10" to="22" dur="1.5s" repeatCount="indefinite" />
-                <animate attributeName="opacity" from="0.6" to="0" dur="1.5s" repeatCount="indefinite" />
-              </circle>
-            </svg>
+            <section className="relative w-full rounded-2xl overflow-hidden border border-orange-100 shadow-lg" style={{ minHeight: "280px", height: "38vh", maxHeight: "420px" }}>
+              {/* Map background – decorative SVG wari route map placeholder */}
+              <div className="absolute inset-0 bg-gradient-to-br from-[#e8f4e8] via-[#f0f7ee] to-[#e4f0fb]">
+                {/* Subtle grid lines like a map */}
+                <svg width="100%" height="100%" className="opacity-30">
+                  <defs>
+                    <pattern id="map-grid" width="40" height="40" patternUnits="userSpaceOnUse">
+                      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#94a3b8" strokeWidth="0.5" />
+                    </pattern>
+                  </defs>
+                  <rect width="100%" height="100%" fill="url(#map-grid)" />
+                  {/* Palkhi Route line */}
+                  <path
+                    d="M 80 220 Q 180 160 280 180 Q 380 200 460 150 Q 540 100 640 130 Q 720 155 820 120"
+                    stroke="#f97316"
+                    strokeWidth="3"
+                    fill="none"
+                    strokeDasharray="10 5"
+                    className="opacity-70"
+                  />
+                  {/* Checkpoints */}
+                  {[
+                    { cx: 80, cy: 220 }, { cx: 280, cy: 180 }, { cx: 460, cy: 150 },
+                    { cx: 640, cy: 130 }, { cx: 820, cy: 120 },
+                  ].map((pt, i) => (
+                    <circle key={i} cx={pt.cx} cy={pt.cy} r="6" fill="#f97316" opacity="0.8" />
+                  ))}
+                  {/* Current position pulse ring */}
+                  <circle cx="460" cy="150" r="14" fill="none" stroke="#f97316" strokeWidth="2" opacity="0.5">
+                    <animate attributeName="r" from="10" to="22" dur="1.5s" repeatCount="indefinite" />
+                    <animate attributeName="opacity" from="0.6" to="0" dur="1.5s" repeatCount="indefinite" />
+                  </circle>
+                </svg>
 
-            {/* Place labels overlay */}
-            <div className="absolute left-[5%] bottom-8 text-[10px] font-bold text-slate-500">Pune</div>
-            <div className="absolute left-[29%] bottom-12 text-[10px] font-bold text-slate-500">Saswad</div>
-            <div className="absolute left-[48%] top-10 text-[10px] font-bold text-orange-600">● Jejuri</div>
-            <div className="absolute left-[66%] top-8 text-[10px] font-bold text-slate-500">Lonand</div>
-            <div className="absolute right-[6%] top-6 text-[10px] font-bold text-slate-500">Pandharpur</div>
-          </div>
-
-          {/* Map Top Bar */}
-          <div className="absolute top-0 left-0 right-0 flex items-center justify-between px-4 py-2.5 bg-gradient-to-b from-white/80 to-transparent backdrop-blur-xs z-10">
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-orange-500 animate-pulse" />
-              <span className="text-xs font-bold text-slate-700">{t.map}</span>
-              <span className="hidden sm:inline text-[10px] text-slate-400">— {t.mapSub}</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="flex items-center gap-1 bg-emerald-100 text-emerald-700 text-[10px] font-bold px-2 py-1 rounded-full">
-                <Wifi size={9} />
-                {t.liveRoute}
+                {/* Place labels overlay */}
+                <div className="absolute left-[5%] bottom-8 text-[10px] font-bold text-slate-500">Pune</div>
+                <div className="absolute left-[29%] bottom-12 text-[10px] font-bold text-slate-500">Saswad</div>
+                <div className="absolute left-[48%] top-10 text-[10px] font-bold text-orange-600">● Jejuri</div>
+                <div className="absolute left-[66%] top-8 text-[10px] font-bold text-slate-500">Lonand</div>
+                <div className="absolute right-[6%] top-6 text-[10px] font-bold text-slate-500">Pandharpur</div>
               </div>
-              <button
-                id="map-refresh-btn"
-                onClick={handleMapRefresh}
-                className="w-7 h-7 flex items-center justify-center rounded-full bg-white/70 border border-slate-200 hover:bg-orange-50 hover:border-orange-300 transition-colors"
-              >
-                <RefreshCw size={12} className={`text-slate-500 ${mapRefreshing ? "animate-spin" : ""}`} />
-              </button>
-            </div>
-          </div>
 
-          {/* Map Bottom Pill – current location */}
-          <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-1.5 bg-white/90 backdrop-blur-sm border border-orange-200 text-slate-700 text-xs font-semibold px-3 py-1.5 rounded-full shadow-md z-10">
-            <MapPin size={11} className="text-orange-500" />
-            Jejuri Checkpoint · 2h 15m to Pandharpur
-          </div>
-        </section>
+              {/* Map Top Bar */}
+              <div className="absolute top-0 left-0 right-0 flex items-center justify-between px-4 py-2.5 bg-gradient-to-b from-white/80 to-transparent backdrop-blur-xs z-10">
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-orange-500 animate-pulse" />
+                  <span className="text-xs font-bold text-slate-700">{t.map}</span>
+                  <span className="hidden sm:inline text-[10px] text-slate-400">— {t.mapSub}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1 bg-emerald-100 text-emerald-700 text-[10px] font-bold px-2 py-1 rounded-full">
+                    <Wifi size={9} />
+                    {t.liveRoute}
+                  </div>
+                  <button
+                    id="map-refresh-btn"
+                    onClick={handleMapRefresh}
+                    className="w-7 h-7 flex items-center justify-center rounded-full bg-white/70 border border-slate-200 hover:bg-orange-50 hover:border-orange-300 transition-colors"
+                  >
+                    <RefreshCw size={12} className={`text-slate-500 ${mapRefreshing ? "animate-spin" : ""}`} />
+                  </button>
+                </div>
+              </div>
 
-        {/* ── QUICK ACTION BUTTONS 2×2 GRID ── */}
-        <section className="grid grid-cols-2 gap-3 sm:gap-4">
+              {/* Map Bottom Pill – current location */}
+              <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-1.5 bg-white/90 backdrop-blur-sm border border-orange-200 text-slate-700 text-xs font-semibold px-3 py-1.5 rounded-full shadow-md z-10">
+                <MapPin size={11} className="text-orange-500" />
+                Jejuri Checkpoint · 2h 15m to Pandharpur
+              </div>
+            </section>
 
-          {/* Nearby Services */}
-          <QuickActionCard
-            id="btn-nearby-services"
-            icon={<Stethoscope size={20} className="text-white" />}
-            label={t.nearbyServices}
-            desc={t.nearbyDesc}
-            colorClass="bg-gradient-to-br from-emerald-500 to-teal-600"
-            glowClass="bg-emerald-400"
-            borderClass="border-emerald-100 hover:border-emerald-300"
-          />
+            {/* ── QUICK ACTION BUTTONS 2×2 GRID ── */}
+            <section className="grid grid-cols-2 gap-3 sm:gap-4">
 
-          {/* Alerts */}
-          <QuickActionCard
-            id="btn-alerts"
-            icon={<BellRing size={20} className="text-white" />}
-            label={t.alerts}
-            desc={t.alertsDesc}
-            colorClass="bg-gradient-to-br from-amber-500 to-orange-500"
-            glowClass="bg-amber-400"
-            borderClass="border-amber-100 hover:border-amber-300"
-          />
+              {/* Nearby Services */}
+              <QuickActionCard
+                id="btn-nearby-services"
+                icon={<Stethoscope size={20} className="text-white" />}
+                label={t.nearbyServices}
+                desc={t.nearbyDesc}
+                colorClass="bg-gradient-to-br from-emerald-500 to-teal-600"
+                glowClass="bg-emerald-400"
+                borderClass="border-emerald-100 hover:border-emerald-300"
+              />
 
-          {/* Groups */}
-          <QuickActionCard
-            id="btn-groups"
-            icon={<Users size={20} className="text-white" />}
-            label={t.groups}
-            desc={t.groupsDesc}
-            colorClass="bg-gradient-to-br from-violet-500 to-purple-600"
-            glowClass="bg-violet-400"
-            borderClass="border-violet-100 hover:border-violet-300"
-          />
+              {/* Alerts */}
+              <QuickActionCard
+                id="btn-alerts"
+                icon={<BellRing size={20} className="text-white" />}
+                label={t.alerts}
+                desc={t.alertsDesc}
+                colorClass="bg-gradient-to-br from-amber-500 to-orange-500"
+                glowClass="bg-amber-400"
+                borderClass="border-amber-100 hover:border-amber-300"
+              />
 
-          {/* SOS */}
-          <QuickActionCard
-            id="btn-sos"
-            icon={<PhoneCall size={20} className="text-white" />}
-            label={t.sos}
-            desc={t.sosDesc}
-            colorClass="bg-gradient-to-br from-red-500 to-rose-600"
-            glowClass="bg-red-400"
-            borderClass="border-red-100 hover:border-red-300"
-          />
+              {/* Groups */}
+              <QuickActionCard
+                id="btn-groups"
+                icon={<Users size={20} className="text-white" />}
+                label={t.groups}
+                desc={t.groupsDesc}
+                colorClass="bg-gradient-to-br from-violet-500 to-purple-600"
+                glowClass="bg-violet-400"
+                borderClass="border-violet-100 hover:border-violet-300"
+              />
 
-        </section>
+              {/* SOS */}
+              <QuickActionCard
+                id="btn-sos"
+                icon={<PhoneCall size={20} className="text-white" />}
+                label={t.sos}
+                desc={t.sosDesc}
+                colorClass="bg-gradient-to-br from-red-500 to-rose-600"
+                glowClass="bg-red-400"
+                borderClass="border-red-100 hover:border-red-300"
+                onClick={() => setCurrentView('sos')}
+              />
+
+            </section>
       </main>
 
       {/* ════════════════ FOOTER ════════════════ */}
