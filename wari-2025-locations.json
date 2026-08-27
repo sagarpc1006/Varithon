@@ -1,0 +1,151 @@
+{
+  "meta": {
+    "title": "Pandharpur Wari 2025 - All Major Palkhi Routes",
+    "year": 2025,
+    "event": "Ashadhi Wari (Pandharpur Wari)",
+    "final_destination": "Pandharpur, Maharashtra, India",
+    "culminating_festival": {
+      "name": "Ashadhi Ekadashi",
+      "date": "2025-07-06",
+      "location": "Pandharpur"
+    },
+    "source_note": "Compiled from publicly reported Ashadhi Wari schedules (Dehu, Alandi, Paithan, Trimbakeshwar, Muktainagar, and Baramati Sansthan trusts and palkhi_2025_locations dataset).",
+    "coordinate_note": "Latitude/longitude are best-effort centroids for each town/village. 'coordinate_confidence': 'high' = well-known town; 'medium' = smaller town; 'approximate' = small village/reference checkpoint.",
+    "recommended_geocode_refinement": "Refine coordinates via OpenStreetMap Nominatim: https://nominatim.openstreetmap.org/search?format=json&q=<place>,Maharashtra,India"
+  },
+  "field_descriptions": {
+    "day": "Sequential day number of the journey for this palkhi, starting at 1 on departure day.",
+    "date": "ISO 8601 date (YYYY-MM-DD) the palkhi arrives at / departs from this place.",
+    "nights": "Number of nights the palkhi halts here before moving on (1 unless noted).",
+    "place": "Town/village name.",
+    "district": "Administrative district.",
+    "state": "Maharashtra for all stops.",
+    "type": "One of: departure, halt, arrival, festival, ringan.",
+    "note": "Short description of what happens at this stop.",
+    "lat / lon": "Decimal-degree coordinates.",
+    "coordinate_confidence": "high | medium | approximate"
+  },
+  "routes": [
+    {
+      "id": "dnyaneshwar",
+      "saint": "Sant Dnyaneshwar Maharaj",
+      "start_location": "Alandi",
+      "color": "#f97316",
+      "distance_km_approx": 250,
+      "stops": [
+        { "day": 1,  "date": "2025-06-19", "nights": 1, "place": "Alandi",          "district": "Pune",    "state": "Maharashtra", "type": "departure", "note": "Departure from Sant Dnyaneshwar Samadhi Mandir",              "lat": 18.6809, "lon": 73.8970, "coordinate_confidence": "high" },
+        { "day": 2,  "date": "2025-06-20", "nights": 2, "place": "Pune",            "district": "Pune",    "state": "Maharashtra", "type": "halt",       "note": "Halt at Bhavanipeth",                                          "lat": 18.5204, "lon": 73.8567, "coordinate_confidence": "high" },
+        { "day": 4,  "date": "2025-06-22", "nights": 2, "place": "Saswad",          "district": "Pune",    "state": "Maharashtra", "type": "halt",       "note": "Halt at Saswad",                                               "lat": 18.3401, "lon": 74.0335, "coordinate_confidence": "high" },
+        { "day": 6,  "date": "2025-06-24", "nights": 1, "place": "Jejuri",          "district": "Pune",    "state": "Maharashtra", "type": "halt",       "note": "Halt near the Khandoba temple",                                "lat": 18.2734, "lon": 74.1601, "coordinate_confidence": "high" },
+        { "day": 7,  "date": "2025-06-25", "nights": 1, "place": "Walhe",           "district": "Pune",    "state": "Maharashtra", "type": "halt",       "note": "Halt at Walhe",                                                "lat": 18.0500, "lon": 74.0500, "coordinate_confidence": "approximate" },
+        { "day": 8,  "date": "2025-06-26", "nights": 1, "place": "Lonand",          "district": "Satara",  "state": "Maharashtra", "type": "halt",       "note": "Ceremonial bath in the Nira river",                            "lat": 17.9330, "lon": 74.1830, "coordinate_confidence": "medium" },
+        { "day": 9,  "date": "2025-06-27", "nights": 1, "place": "Taradgaon",       "district": "Satara",  "state": "Maharashtra", "type": "halt",       "note": "Halt at Taradgaon",                                            "lat": 17.9500, "lon": 74.2800, "coordinate_confidence": "approximate" },
+        { "day": 10, "date": "2025-06-28", "nights": 1, "place": "Phaltan",         "district": "Satara",  "state": "Maharashtra", "type": "halt",       "note": "Halt at Phaltan",                                              "lat": 17.9833, "lon": 74.4333, "coordinate_confidence": "high" },
+        { "day": 11, "date": "2025-06-29", "nights": 1, "place": "Barad",           "district": "Satara",  "state": "Maharashtra", "type": "halt",       "note": "Halt at Barad",                                                "lat": 17.9300, "lon": 74.6500, "coordinate_confidence": "approximate" },
+        { "day": 12, "date": "2025-06-30", "nights": 1, "place": "Natepute",        "district": "Solapur", "state": "Maharashtra", "type": "halt",       "note": "Ringan ceremony; enters Solapur district",                     "lat": 17.8667, "lon": 74.9167, "coordinate_confidence": "medium" },
+        { "day": 13, "date": "2025-07-01", "nights": 1, "place": "Malshiras",       "district": "Solapur", "state": "Maharashtra", "type": "halt",       "note": "Halt at Malshiras",                                            "lat": 17.9000, "lon": 74.9333, "coordinate_confidence": "medium" },
+        { "day": 14, "date": "2025-07-02", "nights": 1, "place": "Velapur",         "district": "Solapur", "state": "Maharashtra", "type": "halt",       "note": "Halt at Velapur",                                              "lat": 17.7333, "lon": 75.0500, "coordinate_confidence": "medium" },
+        { "day": 15, "date": "2025-07-03", "nights": 1, "place": "Bhandishegaon",   "district": "Solapur", "state": "Maharashtra", "type": "halt",       "note": "Halt at Bhandishegaon",                                        "lat": 17.7000, "lon": 75.2000, "coordinate_confidence": "approximate" },
+        { "day": 16, "date": "2025-07-04", "nights": 1, "place": "Wakhari",         "district": "Solapur", "state": "Maharashtra", "type": "halt",       "note": "Last night halt before Pandharpur",                            "lat": 17.6500, "lon": 75.2900, "coordinate_confidence": "medium" },
+        { "day": 17, "date": "2025-07-05", "nights": 1, "place": "Pandharpur",      "district": "Solapur", "state": "Maharashtra", "type": "arrival",   "note": "Arrival in Pandharpur",                                        "lat": 17.6792, "lon": 75.3317, "coordinate_confidence": "high" },
+        { "day": 18, "date": "2025-07-06", "nights": 0, "place": "Pandharpur",      "district": "Solapur", "state": "Maharashtra", "type": "festival",  "note": "Ashadhi Ekadashi darshan at Vitthal-Rukmini temple",           "lat": 17.6792, "lon": 75.3317, "coordinate_confidence": "high" }
+      ]
+    },
+    {
+      "id": "tukaram",
+      "saint": "Sant Tukaram Maharaj",
+      "start_location": "Dehu",
+      "color": "#0ea5e9",
+      "distance_km_approx": 250,
+      "stops": [
+        { "day": 1,  "date": "2025-06-18", "nights": 1, "place": "Dehu",            "district": "Pune",    "state": "Maharashtra", "type": "departure", "note": "Departure from Inamdar Wada",                                  "lat": 18.6667, "lon": 73.7500, "coordinate_confidence": "high" },
+        { "day": 2,  "date": "2025-06-19", "nights": 1, "place": "Akurdi",          "district": "Pune",    "state": "Maharashtra", "type": "halt",       "note": "First night halt",                                             "lat": 18.6489, "lon": 73.7669, "coordinate_confidence": "high" },
+        { "day": 3,  "date": "2025-06-20", "nights": 2, "place": "Pune",            "district": "Pune",    "state": "Maharashtra", "type": "halt",       "note": "Halt at Nana Peth / Nivdunga Vitthal Mandir",                  "lat": 18.5204, "lon": 73.8567, "coordinate_confidence": "high" },
+        { "day": 5,  "date": "2025-06-22", "nights": 1, "place": "Loni Kalbhor",    "district": "Pune",    "state": "Maharashtra", "type": "halt",       "note": "Halt at Loni Kalbhor",                                         "lat": 18.4333, "lon": 73.9833, "coordinate_confidence": "medium" },
+        { "day": 6,  "date": "2025-06-23", "nights": 1, "place": "Yavat",           "district": "Pune",    "state": "Maharashtra", "type": "halt",       "note": "Halt at Yavat",                                                "lat": 18.4167, "lon": 74.1667, "coordinate_confidence": "medium" },
+        { "day": 7,  "date": "2025-06-24", "nights": 1, "place": "Varvand",         "district": "Pune",    "state": "Maharashtra", "type": "halt",       "note": "Halt at Varvand",                                              "lat": 18.3500, "lon": 74.3000, "coordinate_confidence": "approximate" },
+        { "day": 9,  "date": "2025-06-26", "nights": 1, "place": "Baramati",        "district": "Pune",    "state": "Maharashtra", "type": "halt",       "note": "Halt at Baramati Sanskrutik Bhavan",                           "lat": 18.1514, "lon": 74.5815, "coordinate_confidence": "high" },
+        { "day": 12, "date": "2025-06-29", "nights": 1, "place": "Indapur",         "district": "Pune",    "state": "Maharashtra", "type": "halt",       "note": "Halt at Indapur",                                              "lat": 18.1167, "lon": 75.0167, "coordinate_confidence": "high" },
+        { "day": 14, "date": "2025-07-01", "nights": 1, "place": "Akluj",           "district": "Solapur", "state": "Maharashtra", "type": "halt",       "note": "Halt at Akluj",                                                "lat": 17.8833, "lon": 75.0167, "coordinate_confidence": "high" },
+        { "day": 17, "date": "2025-07-04", "nights": 1, "place": "Wakhari",         "district": "Solapur", "state": "Maharashtra", "type": "halt",       "note": "Ubhe Ringan (standing ring ceremony) at Bajirao Vihir",        "lat": 17.6500, "lon": 75.2900, "coordinate_confidence": "medium" },
+        { "day": 18, "date": "2025-07-05", "nights": 1, "place": "Pandharpur",      "district": "Solapur", "state": "Maharashtra", "type": "arrival",   "note": "Arrival in Pandharpur",                                        "lat": 17.6792, "lon": 75.3317, "coordinate_confidence": "high" },
+        { "day": 19, "date": "2025-07-06", "nights": 0, "place": "Pandharpur",      "district": "Solapur", "state": "Maharashtra", "type": "festival",  "note": "Ashadhi Ekadashi darshan at Vitthal-Rukmini temple",           "lat": 17.6792, "lon": 75.3317, "coordinate_confidence": "high" }
+      ]
+    },
+    {
+      "id": "eknath",
+      "saint": "Sant Eknath Maharaj",
+      "start_location": "Paithan",
+      "color": "#ec4899",
+      "distance_km_approx": 285,
+      "stops": [
+        { "day": 1,  "date": "2025-06-18", "nights": 1, "place": "Paithan (Nath Mandir)", "district": "Chhatrapati Sambhajinagar", "state": "Maharashtra", "type": "departure", "note": "Standard departure from Nath Mandir Paithan", "lat": 19.4795, "lon": 75.3789, "coordinate_confidence": "high" },
+        { "day": 4,  "date": "2025-06-21", "nights": 1, "place": "Shevgaon",              "district": "Ahilyanagar",               "state": "Maharashtra", "type": "halt",      "note": "Halt at Shevgaon hub",                       "lat": 19.3444, "lon": 75.2215, "coordinate_confidence": "medium" },
+        { "day": 7,  "date": "2025-06-24", "nights": 1, "place": "Georai",                "district": "Beed",                      "state": "Maharashtra", "type": "halt",      "note": "Enters Beed district at Georai",             "lat": 19.2612, "lon": 75.7533, "coordinate_confidence": "medium" },
+        { "day": 9,  "date": "2025-06-26", "nights": 1, "place": "Beed",                  "district": "Beed",                      "state": "Maharashtra", "type": "halt",      "note": "Main city halt and Ringan ceremony",         "lat": 18.9902, "lon": 75.7607, "coordinate_confidence": "high" },
+        { "day": 12, "date": "2025-06-29", "nights": 1, "place": "Dharashiv (Osmanabad)", "district": "Dharashiv",                 "state": "Maharashtra", "type": "halt",      "note": "Halt at Dharashiv sector",                   "lat": 18.1856, "lon": 76.0419, "coordinate_confidence": "high" },
+        { "day": 14, "date": "2025-07-01", "nights": 1, "place": "Barshi",                "district": "Solapur",                   "state": "Maharashtra", "type": "halt",      "note": "Enters Solapur district halt at Barshi",     "lat": 18.2333, "lon": 75.6833, "coordinate_confidence": "high" },
+        { "day": 16, "date": "2025-07-03", "nights": 1, "place": "Kurduvadi",             "district": "Solapur",                   "state": "Maharashtra", "type": "halt",      "note": "Kurduvadi town halt",                        "lat": 18.0833, "lon": 75.4333, "coordinate_confidence": "medium" },
+        { "day": 17, "date": "2025-07-04", "nights": 1, "place": "Wakhari",               "district": "Solapur",                   "state": "Maharashtra", "type": "halt",      "note": "Confluence with major Palkhis at Wakhari",   "lat": 17.6500, "lon": 75.2900, "coordinate_confidence": "medium" },
+        { "day": 18, "date": "2025-07-05", "nights": 1, "place": "Pandharpur",            "district": "Solapur",                   "state": "Maharashtra", "type": "arrival",   "note": "Grand arrival in Pandharpur for Ekadashi",   "lat": 17.6792, "lon": 75.3317, "coordinate_confidence": "high" }
+      ]
+    },
+    {
+      "id": "nivruttinath",
+      "saint": "Sant Nivruttinath Maharaj",
+      "start_location": "Trimbakeshwar",
+      "color": "#10b981",
+      "distance_km_approx": 350,
+      "stops": [
+        { "day": 1,  "date": "2025-06-10", "nights": 1, "place": "Trimbakeshwar (Kushavarta)", "district": "Nashik",       "state": "Maharashtra", "type": "departure", "note": "Abhishek at Kushavarta & departure",            "lat": 19.9324, "lon": 73.5307, "coordinate_confidence": "high" },
+        { "day": 1,  "date": "2025-06-10", "nights": 1, "place": "Mahanirvani Akhada",        "district": "Nashik",       "state": "Maharashtra", "type": "halt",      "note": "First night halt (~2km from Trimbakeshwar)",   "lat": 19.9400, "lon": 73.5500, "coordinate_confidence": "high" },
+        { "day": 2,  "date": "2025-06-11", "nights": 1, "place": "Namdev Vitthal Mandir Kajipura", "district": "Nashik",  "state": "Maharashtra", "type": "halt",      "note": "Daytime halt in Nashik",                       "lat": 19.9975, "lon": 73.7898, "coordinate_confidence": "high" },
+        { "day": 2,  "date": "2025-06-11", "nights": 1, "place": "Ganeshwadi Ayurved Hospital", "district": "Nashik",     "state": "Maharashtra", "type": "halt",      "note": "Nashik night halt location",                   "lat": 20.0050, "lon": 73.8000, "coordinate_confidence": "high" },
+        { "day": 4,  "date": "2025-06-13", "nights": 1, "place": "Muktidham Nashik Road",      "district": "Nashik",       "state": "Maharashtra", "type": "halt",      "note": "En route halt at Muktidham temple",            "lat": 19.9536, "lon": 73.8344, "coordinate_confidence": "high" },
+        { "day": 5,  "date": "2025-06-14", "nights": 1, "place": "Sinnar",                     "district": "Nashik",       "state": "Maharashtra", "type": "halt",      "note": "Toward Sinnar/Ahilyanagar belt",               "lat": 19.8456, "lon": 73.9989, "coordinate_confidence": "high" },
+        { "day": 8,  "date": "2025-06-17", "nights": 1, "place": "Sangamner",                  "district": "Ahilyanagar",  "state": "Maharashtra", "type": "halt",      "note": "Halt at Sangamner",                            "lat": 19.5700, "lon": 74.2100, "coordinate_confidence": "medium" },
+        { "day": 12, "date": "2025-06-21", "nights": 1, "place": "Ahilyanagar (Ahmednagar)",   "district": "Ahilyanagar",  "state": "Maharashtra", "type": "halt",      "note": "Central Ahmednagar halt",                      "lat": 19.0952, "lon": 74.7480, "coordinate_confidence": "high" },
+        { "day": 16, "date": "2025-06-25", "nights": 1, "place": "Karjat",                     "district": "Ahilyanagar",  "state": "Maharashtra", "type": "halt",      "note": "Halt at Karjat (Ahilyanagar)",                 "lat": 18.5500, "lon": 75.0000, "coordinate_confidence": "medium" },
+        { "day": 21, "date": "2025-06-30", "nights": 1, "place": "Karmala",                    "district": "Solapur",      "state": "Maharashtra", "type": "halt",      "note": "Enters Solapur district at Karmala",           "lat": 18.4100, "lon": 75.2000, "coordinate_confidence": "medium" },
+        { "day": 24, "date": "2025-07-03", "nights": 1, "place": "Tembhurni",                   "district": "Solapur",      "state": "Maharashtra", "type": "halt",      "note": "Halt at Tembhurni junction",                   "lat": 18.0500, "lon": 75.1833, "coordinate_confidence": "medium" },
+        { "day": 26, "date": "2025-07-05", "nights": 1, "place": "Pandharpur",                  "district": "Solapur",      "state": "Maharashtra", "type": "arrival",   "note": "Arrival at holy city Pandharpur",              "lat": 17.6792, "lon": 75.3317, "coordinate_confidence": "high" }
+      ]
+    },
+    {
+      "id": "muktabai",
+      "saint": "Sant Muktabai",
+      "start_location": "Muktainagar (Kothali)",
+      "color": "#8b5cf6",
+      "distance_km_approx": 420,
+      "stops": [
+        { "day": 1,  "date": "2025-06-01", "nights": 1, "place": "Kothali Muktabai Mandir", "district": "Jalgaon",  "state": "Maharashtra", "type": "departure", "note": "Longest-distance palkhi in Maharashtra (Tapi to Chandrabhaga)", "lat": 21.0483, "lon": 76.0528, "coordinate_confidence": "high" },
+        { "day": 3,  "date": "2025-06-03", "nights": 1, "place": "Varangaon",              "district": "Jalgaon",  "state": "Maharashtra", "type": "halt",      "note": "Varangaon halt",                                              "lat": 21.0167, "lon": 75.9000, "coordinate_confidence": "medium" },
+        { "day": 6,  "date": "2025-06-06", "nights": 1, "place": "Jamner",                 "district": "Jalgaon",  "state": "Maharashtra", "type": "halt",      "note": "Jamner town halt",                                            "lat": 20.8167, "lon": 75.7833, "coordinate_confidence": "high" },
+        { "day": 9,  "date": "2025-06-09", "nights": 1, "place": "Pahur",                  "district": "Jalgaon",  "state": "Maharashtra", "type": "halt",      "note": "Pahur / Ajanta foothills halt",                              "lat": 20.7000, "lon": 75.7333, "coordinate_confidence": "approximate" },
+        { "day": 14, "date": "2025-06-14", "nights": 1, "place": "Jalna",                  "district": "Jalna",    "state": "Maharashtra", "type": "halt",      "note": "Major city halt at Jalna",                                    "lat": 19.8410, "lon": 75.8864, "coordinate_confidence": "high" },
+        { "day": 19, "date": "2025-06-19", "nights": 1, "place": "Beed Belt",              "district": "Beed",     "state": "Maharashtra", "type": "halt",      "note": "Marathwada progression towards Beed",                         "lat": 19.1000, "lon": 75.7500, "coordinate_confidence": "medium" },
+        { "day": 25, "date": "2025-06-25", "nights": 1, "place": "Dharashiv Region",       "district": "Dharashiv", "state": "Maharashtra", "type": "halt",      "note": "Dharashiv / Yedshi region halt",                              "lat": 18.2333, "lon": 75.6833, "coordinate_confidence": "medium" },
+        { "day": 32, "date": "2025-07-02", "nights": 1, "place": "Mohol",                  "district": "Solapur",  "state": "Maharashtra", "type": "halt",      "note": "Mohol checkpoint halt",                                       "lat": 17.8167, "lon": 75.6500, "coordinate_confidence": "medium" },
+        { "day": 35, "date": "2025-07-04", "nights": 1, "place": "Wakhari",                "district": "Solapur",  "state": "Maharashtra", "type": "halt",      "note": "Wakhari halt before final stretch",                           "lat": 17.6500, "lon": 75.2900, "coordinate_confidence": "medium" },
+        { "day": 36, "date": "2025-07-05", "nights": 1, "place": "Pandharpur",             "district": "Solapur",  "state": "Maharashtra", "type": "arrival",   "note": "Arrival at Pandharpur after ~36 days journey",                 "lat": 17.6792, "lon": 75.3317, "coordinate_confidence": "high" }
+      ]
+    },
+    {
+      "id": "sopandev",
+      "saint": "Sant Sopandev Maharaj",
+      "start_location": "Baramati / Saswad",
+      "color": "#eab308",
+      "distance_km_approx": 170,
+      "stops": [
+        { "day": 1,  "date": "2025-06-20", "nights": 1, "place": "Baramati",        "district": "Pune",    "state": "Maharashtra", "type": "departure", "note": "Departure of Sant Sopandev Maharaj Palkhi from Baramati",  "lat": 18.1519, "lon": 74.5770, "coordinate_confidence": "high" },
+        { "day": 3,  "date": "2025-06-22", "nights": 1, "place": "Walchandnagar",   "district": "Pune",    "state": "Maharashtra", "type": "halt",      "note": "Halt at Walchandnagar / Bhavaninagar",                     "lat": 18.0667, "lon": 74.7500, "coordinate_confidence": "medium" },
+        { "day": 6,  "date": "2025-06-25", "nights": 1, "place": "Natepute",        "district": "Solapur", "state": "Maharashtra", "type": "halt",      "note": "Enters Solapur district halt at Natepute",                  "lat": 17.8667, "lon": 74.9167, "coordinate_confidence": "medium" },
+        { "day": 9,  "date": "2025-06-28", "nights": 1, "place": "Malshiras",       "district": "Solapur", "state": "Maharashtra", "type": "halt",      "note": "Halt at Malshiras",                                        "lat": 17.9000, "lon": 74.9333, "coordinate_confidence": "medium" },
+        { "day": 12, "date": "2025-07-01", "nights": 1, "place": "Velapur",         "district": "Solapur", "state": "Maharashtra", "type": "halt",      "note": "Velapur halt & Ringan",                                    "lat": 17.7333, "lon": 75.0500, "coordinate_confidence": "medium" },
+        { "day": 15, "date": "2025-07-03", "nights": 1, "place": "Bhandishegaon",   "district": "Solapur", "state": "Maharashtra", "type": "halt",      "note": "Halt at Bhandishegaon",                                    "lat": 17.7000, "lon": 75.2000, "coordinate_confidence": "approximate" },
+        { "day": 16, "date": "2025-07-04", "nights": 1, "place": "Wakhari",         "district": "Solapur", "state": "Maharashtra", "type": "halt",      "note": "Grand gathering at Wakhari",                               "lat": 17.6500, "lon": 75.2900, "coordinate_confidence": "medium" },
+        { "day": 17, "date": "2025-07-05", "nights": 1, "place": "Pandharpur",      "district": "Solapur", "state": "Maharashtra", "type": "arrival",   "note": "Arrival at Pandharpur Vitthal Mandir",                      "lat": 17.6792, "lon": 75.3317, "coordinate_confidence": "high" }
+      ]
+    }
+  ]
+}

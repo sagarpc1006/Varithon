@@ -1,4 +1,7 @@
 import re
+import os
+import json
+from django.conf import settings
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -245,3 +248,15 @@ class DashboardOverviewView(APIView):
             'crowd_status': CrowdDensitySerializer(crowd).data if crowd else None,
             'system_status': 'OPERATIONAL',
         }, status=status.HTTP_200_OK)
+
+class WariLocationsView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        file_path = os.path.join(settings.BASE_DIR, 'wari_core', 'data', 'wari-2025-locations.json')
+        try:
+            with open(file_path, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+            return Response(data, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
