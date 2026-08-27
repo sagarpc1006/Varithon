@@ -1,4 +1,4 @@
-﻿import React, { useState } from "react";
+import React, { useState } from "react";
 import {
   LogOut,
   Users,
@@ -18,6 +18,7 @@ import { UserSession, Language } from "../types";
 import { VariMitraLogo } from "./VariMitraLogo";
 import { LanguageDropdown } from "./LanguageDropdown";
 import { authService } from "../services/auth";
+import { WariMap } from "./WariMap";
 
 interface AdminDashboardProps {
   session: UserSession;
@@ -207,104 +208,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
           className="relative w-full rounded-2xl overflow-hidden border border-blue-100 shadow-lg"
           style={{ minHeight: "260px", height: "35vh", maxHeight: "400px" }}
         >
-          {/* Map background */}
-          <div className="absolute inset-0 bg-gradient-to-br from-[#e8f0fb] via-[#eef4fb] to-[#e4effa]">
-            {/* Grid */}
-            <svg width="100%" height="100%" className="opacity-30">
-              <defs>
-                <pattern id="admin-grid" width="40" height="40" patternUnits="userSpaceOnUse">
-                  <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#64748b" strokeWidth="0.5" />
-                </pattern>
-              </defs>
-              <rect width="100%" height="100%" fill="url(#admin-grid)" />
-
-              {/* Palkhi route */}
-              <path
-                d="M 80 220 Q 180 160 280 180 Q 380 200 460 150 Q 540 100 640 130 Q 720 155 820 120"
-                stroke="#3b82f6"
-                strokeWidth="3"
-                fill="none"
-                strokeDasharray="10 5"
-                opacity="0.7"
-              />
-
-              {/* Checkpoints */}
-              {[
-                { cx: 80, cy: 220 }, { cx: 280, cy: 180 }, { cx: 460, cy: 150 },
-                { cx: 640, cy: 130 }, { cx: 820, cy: 120 },
-              ].map((pt, i) => (
-                <circle key={i} cx={pt.cx} cy={pt.cy} r="5" fill="#2563eb" opacity="0.8" />
-              ))}
-
-              {/* Volunteer unit markers */}
-              {[
-                { cx: 200, cy: 195 }, { cx: 360, cy: 190 }, { cx: 550, cy: 130 }, { cx: 720, cy: 140 },
-              ].map((pt, i) => (
-                <g key={`v${i}`}>
-                  <rect x={pt.cx - 8} y={pt.cy - 8} width="16" height="16" rx="3" fill="#f97316" opacity="0.85" />
-                  <text x={pt.cx} y={pt.cy + 4} textAnchor="middle" fontSize="9" fill="white" fontWeight="bold">V</text>
-                </g>
-              ))}
-
-              {/* SOS alert marker */}
-              <circle cx="460" cy="150" r="14" fill="none" stroke="#ef4444" strokeWidth="2" opacity="0.6">
-                <animate attributeName="r" from="10" to="22" dur="1.5s" repeatCount="indefinite" />
-                <animate attributeName="opacity" from="0.7" to="0" dur="1.5s" repeatCount="indefinite" />
-              </circle>
-              <circle cx="460" cy="150" r="5" fill="#ef4444" opacity="0.9" />
-            </svg>
-
-            {/* Place labels */}
-            <div className="absolute left-[5%] bottom-8 text-[10px] font-bold text-slate-500">Pune</div>
-            <div className="absolute left-[29%] bottom-12 text-[10px] font-bold text-slate-500">Saswad</div>
-            <div className="absolute left-[48%] top-10 text-[10px] font-bold text-red-600">🚨 Jejuri</div>
-            <div className="absolute left-[66%] top-8 text-[10px] font-bold text-slate-500">Lonand</div>
-            <div className="absolute right-[6%] top-6 text-[10px] font-bold text-slate-500">Pandharpur</div>
-
-            {/* Legend */}
-            <div className="absolute bottom-3 right-4 flex items-center gap-3 bg-white/80 backdrop-blur-sm rounded-xl px-3 py-1.5 border border-slate-200 shadow-sm">
-              <div className="flex items-center gap-1">
-                <div className="w-2.5 h-2.5 rounded-sm bg-orange-500" />
-                <span className="text-[9px] font-semibold text-slate-500">Volunteers</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <div className="w-2.5 h-2.5 rounded-full bg-red-500" />
-                <span className="text-[9px] font-semibold text-slate-500">SOS Alert</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <div className="w-6 h-0.5 bg-blue-500" style={{ borderTop: "2px dashed #3b82f6" }} />
-                <span className="text-[9px] font-semibold text-slate-500">Route</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Map Top Bar */}
-          <div className="absolute top-0 left-0 right-0 flex items-center justify-between px-4 py-2.5 bg-gradient-to-b from-white/80 to-transparent backdrop-blur-xs z-10">
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
-              <span className="text-xs font-bold text-slate-700">{t.map}</span>
-              <span className="hidden sm:inline text-[10px] text-slate-400">— {t.mapSub}</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="flex items-center gap-1 bg-blue-100 text-blue-700 text-[10px] font-bold px-2 py-1 rounded-full">
-                <Wifi size={9} />
-                {t.liveRoute}
-              </div>
-              <button
-                id="admin-map-refresh-btn"
-                onClick={handleMapRefresh}
-                className="w-7 h-7 flex items-center justify-center rounded-full bg-white/70 border border-slate-200 hover:bg-blue-50 hover:border-blue-300 transition-colors"
-              >
-                <RefreshCw size={12} className={`text-slate-500 ${mapRefreshing ? "animate-spin" : ""}`} />
-              </button>
-            </div>
-          </div>
-
-          {/* Bottom pill */}
-          <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-1.5 bg-white/90 backdrop-blur-sm border border-blue-200 text-slate-700 text-xs font-semibold px-3 py-1.5 rounded-full shadow-md z-10">
-            <MapPin size={11} className="text-blue-500" />
-            4 Volunteer Units · 1 Active SOS · Route: ON SCHEDULE
-          </div>
+          <WariMap className="absolute inset-0" />
         </section>
 
         {/* ── 2x3 ADMIN ACTION GRID ── */}

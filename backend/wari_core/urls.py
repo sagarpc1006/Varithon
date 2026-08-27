@@ -6,6 +6,7 @@ from .views import (
     CrowdDensityView,
     AIChatView,
     DashboardOverviewView,
+    WariLocationsView,
 )
 
 urlpatterns = [
@@ -15,4 +16,5 @@ urlpatterns = [
     path('crowdflow/', CrowdDensityView.as_view(), name='crowd-density'),
     path('ai/chat/', AIChatView.as_view(), name='ai-chat'),
     path('dashboard/overview/', DashboardOverviewView.as_view(), name='dashboard-overview'),
+    path('wari-2025/', WariLocationsView.as_view(), name='wari-locations'),
 ]
