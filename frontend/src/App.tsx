@@ -2,7 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { Language, ScreenType, PortalType, UserSession } from './types';
 import { HomeScreen } from './components/HomeScreen';
 import { SignInScreen } from './components/SignInScreen';
-import { DemoDashboard } from './components/DemoDashboard';
+import { PostLoginScreen } from './components/PostLoginScreen';
+import { UserDashboard } from './components/UserDashboard';
+import { AdminDashboard } from './components/AdminDashboard';
 import { authService } from './services/auth';
 
 export default function App() {
@@ -60,10 +62,22 @@ export default function App() {
   }
 
   if (session) {
+    if (session.role === 'pilgrim') {
+      return (
+        <UserDashboard
+          session={session}
+          language={language}
+          onLanguageChange={setLanguage}
+          onSignOut={handleSignOut}
+        />
+      );
+    }
+    // Admin dashboard
     return (
-      <DemoDashboard
+      <AdminDashboard
         session={session}
         language={language}
+        onLanguageChange={setLanguage}
         onSignOut={handleSignOut}
       />
     );
