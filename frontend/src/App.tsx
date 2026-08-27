@@ -1,14 +1,33 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Language, ScreenType, PortalType, UserSession } from './types';
 import { HomeScreen } from './components/HomeScreen';
 import { SignInScreen } from './components/SignInScreen';
 import { DemoDashboard } from './components/DemoDashboard';
+import { authService } from './services/auth';
 
 export default function App() {
   const [currentScreen, setCurrentScreen] = useState<ScreenType>('home');
   const [activePortal, setActivePortal] = useState<PortalType>('pilgrim');
   const [language, setLanguage] = useState<Language>('en');
   const [session, setSession] = useState<UserSession | null>(null);
+  const [isInitializing, setIsInitializing] = useState<boolean>(true);
+
+  // Load existing session on initial mount
+  useEffect(() => {
+    async function initSession() {
+      try {
+        const existingSession = await authService.getProfile();
+        if (existingSession) {
+          setSession(existingSession);
+        }
+      } catch (err) {
+        console.warn('Session init:', err);
+      } finally {
+        setIsInitializing(false);
+      }
+    }
+    initSession();
+  }, []);
 
   // Quick navigation handlers
   const handleSelectPortalFromHome = (portal: PortalType) => {
@@ -26,8 +45,19 @@ export default function App() {
 
   const handleSignOut = () => {
     setSession(null);
-    setCurrentScreen('signin');
+    setCurrentScreen('home');
   };
+
+  if (isInitializing) {
+    return (
+      <div className="min-h-screen bg-[#faf7f2] flex items-center justify-center font-sans">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-10 h-10 border-4 border-orange-500/20 border-t-orange-600 rounded-full animate-spin" />
+          <p className="text-xs font-bold text-slate-600">Connecting to VariMitra Services...</p>
+        </div>
+      </div>
+    );
+  }
 
   if (session) {
     return (

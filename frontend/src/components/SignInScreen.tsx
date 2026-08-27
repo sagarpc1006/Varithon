@@ -14,14 +14,18 @@ import {
   Shield,
   Footprints,
   CheckCircle2,
+  AlertCircle,
   X,
   Phone,
+  Building2,
+  KeyRound,
 } from 'lucide-react';
 import { Language, PortalType, UserSession } from '../types';
 import { translations } from '../translations';
 import { VariMitraLogo } from './VariMitraLogo';
 import { LanguageDropdown } from './LanguageDropdown';
 import { PilgrimBadgeIcon, AdminBadgeIcon, GoogleIcon } from './PortalIcons';
+import { authService } from '../services/auth';
 
 interface SignInScreenProps {
   language: Language;
@@ -42,62 +46,167 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
 }) => {
   const t = translations[language];
 
-  // Form states
+  // Sign in form states
   const [mobileNumber, setMobileNumber] = useState('');
   const [emailId, setEmailId] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Modals state
-  const [showForgotModal, setShowForgotModal] = useState(false);
+  // Register modal states
   const [showRegisterModal, setShowRegisterModal] = useState(false);
-  const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [regName, setRegName] = useState('');
+  const [regIdentifier, setRegIdentifier] = useState('');
+  const [regOrg, setRegOrg] = useState('');
+  const [regPassword, setRegPassword] = useState('');
+  const [isRegistering, setIsRegistering] = useState(false);
 
-  const showToast = (msg: string) => {
-    setToastMessage(msg);
-    setTimeout(() => setToastMessage(null), 4000);
+  // Forgot password modal states
+  const [showForgotModal, setShowForgotModal] = useState(false);
+  const [forgotIdentifier, setForgotIdentifier] = useState('');
+  const [forgotOtp, setForgotOtp] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [forgotStep, setForgotStep] = useState<'request' | 'verify'>('request');
+  const [isForgotSubmitting, setIsForgotSubmitting] = useState(false);
+
+  // Toast Notification state
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+
+  const showToast = (message: string, type: 'success' | 'error' = 'success') => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 5000);
   };
 
-  const handleSignIn = (e: React.FormEvent) => {
+  // 1. Handle Sign In
+  const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
+    const identifier = activePortal === 'pilgrim' ? mobileNumber.trim() : emailId.trim();
+
+    if (!identifier) {
+      showToast(activePortal === 'pilgrim' ? 'Please enter your mobile number' : 'Please enter your email ID', 'error');
+      return;
+    }
+    if (!password) {
+      showToast('Please enter your password', 'error');
+      return;
+    }
+
     setIsSubmitting(true);
-
-    setTimeout(() => {
+    try {
+      const session = await authService.login(identifier, password, activePortal);
+      showToast(`Welcome back, ${session.name}!`);
+      onLoginSuccess(session);
+    } catch (err: any) {
+      showToast(err.message || 'Login failed. Please verify credentials.', 'error');
+    } finally {
       setIsSubmitting(false);
-      const identifier = activePortal === 'pilgrim' ? (mobileNumber || '9876543210') : (emailId || 'seva.admin@varimitra.org');
-      const name = activePortal === 'pilgrim' ? 'Warkari Dnyandev' : 'Seva Admin Officer';
-
-      onLoginSuccess({
-        role: activePortal,
-        identifier,
-        name,
-      });
-      showToast(`Successfully signed in as ${activePortal === 'pilgrim' ? 'Pilgrim / Warkari' : 'Admin / Seva Team'}`);
-    }, 600);
+    }
   };
 
-  const handleGoogleSignIn = () => {
+  // 2. Handle Google Sign In
+  const handleGoogleSignIn = async () => {
     setIsSubmitting(true);
-    setTimeout(() => {
+    try {
+      const session = await authService.googleLogin(activePortal);
+      showToast(`Google authenticated for ${session.name}`);
+      onLoginSuccess(session);
+    } catch (err: any) {
+      showToast(err.message || 'Google authentication failed', 'error');
+    } finally {
       setIsSubmitting(false);
-      onLoginSuccess({
-        role: activePortal,
-        identifier: 'google.user@varimitra.org',
-        name: activePortal === 'pilgrim' ? 'Warkari Bhakt' : 'Seva Team Coordinator',
-      });
-      showToast(`Google Sign-in authenticated for ${activePortal === 'pilgrim' ? 'Warkari' : 'Seva Team'}`);
-    }, 600);
+    }
+  };
+
+  // 3. Handle Registration
+  const handleRegisterSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!regName.trim() || !regIdentifier.trim() || !regPassword.trim()) {
+      showToast('Please fill all required fields.', 'error');
+      return;
+    }
+
+    setIsRegistering(true);
+    try {
+      const session = await authService.register(
+        regName.trim(),
+        regIdentifier.trim(),
+        regPassword,
+        activePortal,
+        regOrg.trim()
+      );
+      setShowRegisterModal(false);
+      showToast(`Account created! Welcome to VariMitra, ${session.name}!`);
+      onLoginSuccess(session);
+    } catch (err: any) {
+      showToast(err.message || 'Registration failed. Try again.', 'error');
+    } finally {
+      setIsRegistering(false);
+    }
+  };
+
+  // 4. Handle Forgot Password - Request OTP
+  const handleForgotRequest = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!forgotIdentifier.trim()) {
+      showToast('Please enter your mobile or email', 'error');
+      return;
+    }
+
+    setIsForgotSubmitting(true);
+    try {
+      const res = await authService.forgotPassword(forgotIdentifier.trim(), activePortal);
+      showToast(res.message);
+      if (res.demo_otp) {
+        setForgotOtp(res.demo_otp);
+      }
+      setForgotStep('verify');
+    } catch (err: any) {
+      showToast(err.message || 'Failed to send reset code', 'error');
+    } finally {
+      setIsForgotSubmitting(false);
+    }
+  };
+
+  // 5. Handle Forgot Password - Reset with OTP
+  const handleResetSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!forgotOtp.trim() || !newPassword.trim()) {
+      showToast('Please enter the OTP code and new password', 'error');
+      return;
+    }
+
+    setIsForgotSubmitting(true);
+    try {
+      const res = await authService.resetPassword(forgotIdentifier.trim(), forgotOtp.trim(), newPassword);
+      showToast(res.message);
+      setShowForgotModal(false);
+      setForgotStep('request');
+      setPassword(newPassword);
+      if (activePortal === 'pilgrim') setMobileNumber(forgotIdentifier);
+      else setEmailId(forgotIdentifier);
+    } catch (err: any) {
+      showToast(err.message || 'Password reset failed. Check OTP.', 'error');
+    } finally {
+      setIsForgotSubmitting(false);
+    }
   };
 
   return (
-    <div className="relative min-h-screen bg-wari-wave-pattern flex flex-col justify-between overflow-x-hidden font-sans text-slate-800">
+    <div className="relative min-h-screen bg-[#faf7f2] flex flex-col justify-between overflow-x-hidden font-sans text-slate-800">
       {/* Toast Notification */}
-      {toastMessage && (
-        <div className="fixed top-5 left-1/2 transform -translate-x-1/2 z-50 bg-slate-900 text-white px-5 py-3 rounded-2xl shadow-2xl flex items-center gap-3 text-sm font-medium border border-slate-700 animate-in fade-in slide-in-from-top-3">
-          <CheckCircle2 className="w-5 h-5 text-emerald-400" />
-          <span>{toastMessage}</span>
-          <button onClick={() => setToastMessage(null)} className="ml-2 text-slate-400 hover:text-white">
+      {toast && (
+        <div className={`fixed top-5 left-1/2 transform -translate-x-1/2 z-50 px-5 py-3 rounded-2xl shadow-2xl flex items-center gap-3 text-sm font-medium border animate-in fade-in slide-in-from-top-3 ${
+          toast.type === 'error'
+            ? 'bg-rose-900 text-white border-rose-700'
+            : 'bg-slate-900 text-white border-slate-700'
+        }`}>
+          {toast.type === 'error' ? (
+            <AlertCircle className="w-5 h-5 text-rose-400 shrink-0" />
+          ) : (
+            <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
+          )}
+          <span>{toast.message}</span>
+          <button onClick={() => setToast(null)} className="ml-2 text-slate-400 hover:text-white cursor-pointer">
             <X className="w-4 h-4" />
           </button>
         </div>
@@ -141,7 +250,7 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
             {t.signInHeading}
           </h1>
           
-          {/* Subtle Decorative Star/Sparkle */}
+          {/* Decorative Sparkle */}
           <div className="flex items-center justify-center gap-2 text-amber-500">
             <div className="h-[1px] w-6 bg-amber-400/60" />
             <Sparkles className="w-3.5 h-3.5 fill-amber-500 text-amber-500" />
@@ -217,7 +326,7 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
                   {activePortal === 'pilgrim' ? (
-                    <User className="w-4 h-4 text-slate-500" />
+                    <Phone className="w-4 h-4 text-slate-500" />
                   ) : (
                     <Mail className="w-4 h-4 text-slate-500" />
                   )}
@@ -277,7 +386,11 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
                 <button
                   type="button"
                   id="btn-forgot-password"
-                  onClick={() => setShowForgotModal(true)}
+                  onClick={() => {
+                    setForgotIdentifier(activePortal === 'pilgrim' ? mobileNumber : emailId);
+                    setForgotStep('request');
+                    setShowForgotModal(true);
+                  }}
                   className={`text-xs font-semibold hover:underline cursor-pointer transition-colors ${
                     activePortal === 'pilgrim'
                       ? 'text-[#ea580c] hover:text-[#c2410c]'
@@ -294,13 +407,22 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
               id={activePortal === 'pilgrim' ? 'btn-submit-pilgrim' : 'btn-submit-admin'}
               type="submit"
               disabled={isSubmitting}
-              className={`w-full py-3 px-4 rounded-xl text-sm font-bold text-white shadow-sm hover:shadow transition-all duration-200 cursor-pointer active:scale-[0.99] disabled:opacity-75 ${
+              className={`w-full py-3 px-4 rounded-xl text-sm font-bold text-white shadow-sm hover:shadow transition-all duration-200 cursor-pointer active:scale-[0.99] disabled:opacity-75 flex items-center justify-center gap-2 ${
                 activePortal === 'pilgrim'
                   ? 'bg-[#ea580c] hover:bg-[#d94806]'
                   : 'bg-[#1e293b] hover:bg-[#0f172a]'
               }`}
             >
-              {isSubmitting ? 'Signing in...' : activePortal === 'pilgrim' ? t.signInPilgrimBtn : t.signInAdminBtn}
+              {isSubmitting ? (
+                <>
+                  <span className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
+                  <span>Connecting to Backend...</span>
+                </>
+              ) : activePortal === 'pilgrim' ? (
+                t.signInPilgrimBtn
+              ) : (
+                t.signInAdminBtn
+              )}
             </button>
           </form>
 
@@ -332,7 +454,10 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
                 <button
                   type="button"
                   id="btn-create-pilgrim-account"
-                  onClick={() => setShowRegisterModal(true)}
+                  onClick={() => {
+                    setRegIdentifier(mobileNumber);
+                    setShowRegisterModal(true);
+                  }}
                   className="font-bold text-[#ea580c] hover:underline cursor-pointer"
                 >
                   {t.createPilgrimAccount}
@@ -344,7 +469,10 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
                 <button
                   type="button"
                   id="btn-request-admin-access"
-                  onClick={() => setShowRegisterModal(true)}
+                  onClick={() => {
+                    setRegIdentifier(emailId);
+                    setShowRegisterModal(true);
+                  }}
                   className="font-bold text-[#1e293b] hover:underline cursor-pointer"
                 >
                   {t.requestAccess}
@@ -355,13 +483,13 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
         </div>
       </main>
 
-      {/* Bottom Feature Highlights Bar (Matching exact screenshot footer) */}
+      {/* Bottom Feature Highlights Bar */}
       <footer className="relative z-10 w-full bg-[#edeae1]/80 backdrop-blur-sm border-t border-[#ded9cb] py-5 px-4 sm:px-6 mt-4">
         <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           {/* Feature 1: AI Assistant */}
           <div id="feature-ai-assistant" className="flex items-start gap-3.5">
             <div className="w-10 h-10 rounded-full bg-slate-200/90 text-slate-700 flex items-center justify-center flex-shrink-0 shadow-xs">
-              <Bot className="w-5 h-5" />
+              <Bot className="w-5 h-5 text-slate-700" />
             </div>
             <div className="space-y-0.5">
               <h4 className="text-xs sm:text-sm font-bold text-slate-800">
@@ -420,49 +548,91 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
         </div>
       </footer>
 
-      {/* Forgot Password Modal */}
+      {/* Forgot Password / OTP Modal */}
       {showForgotModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs p-4 animate-in fade-in">
-          <div className="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl border border-slate-200 relative">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs p-4 animate-in fade-in">
+          <div className="bg-white rounded-3xl p-6 sm:p-7 max-w-sm w-full shadow-2xl border border-slate-200 relative">
             <button
               onClick={() => setShowForgotModal(false)}
-              className="absolute top-4 right-4 text-slate-400 hover:text-slate-700"
+              className="absolute top-4 right-4 text-slate-400 hover:text-slate-700 cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
-            <h3 className="text-lg font-bold text-slate-800 mb-1">
-              {t.forgotPassword}
-            </h3>
-            <p className="text-xs text-slate-500 mb-4">
-              Enter your {activePortal === 'pilgrim' ? 'registered mobile number' : 'official email ID'} to receive an OTP reset link.
-            </p>
-            <input
-              type={activePortal === 'pilgrim' ? 'tel' : 'email'}
-              placeholder={activePortal === 'pilgrim' ? '9876543210' : 'admin@varimitra.org'}
-              className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm mb-4 focus:bg-white focus:outline-none focus:ring-2 focus:ring-orange-500/20"
-            />
-            <button
-              onClick={() => {
-                setShowForgotModal(false);
-                showToast('OTP sent successfully to your number/email!');
-              }}
-              className={`w-full py-2.5 rounded-xl text-sm font-bold text-white shadow-sm ${
-                activePortal === 'pilgrim' ? 'bg-[#ea580c]' : 'bg-[#1e293b]'
-              }`}
-            >
-              Send Reset Code
-            </button>
+
+            <div className="flex items-center gap-2 mb-2">
+              <KeyRound className="w-5 h-5 text-orange-600" />
+              <h3 className="text-lg font-bold text-slate-800">
+                {forgotStep === 'request' ? t.forgotPassword : 'Enter OTP & New Password'}
+              </h3>
+            </div>
+
+            {forgotStep === 'request' ? (
+              <form onSubmit={handleForgotRequest} className="space-y-3">
+                <p className="text-xs text-slate-500">
+                  Enter your registered {activePortal === 'pilgrim' ? 'mobile number' : 'official email ID'} to receive an OTP reset code.
+                </p>
+                <input
+                  type={activePortal === 'pilgrim' ? 'tel' : 'email'}
+                  value={forgotIdentifier}
+                  onChange={(e) => setForgotIdentifier(e.target.value)}
+                  placeholder={activePortal === 'pilgrim' ? '9876543210' : 'admin@varimitra.org'}
+                  required
+                  className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-orange-500/20"
+                />
+                <button
+                  type="submit"
+                  disabled={isForgotSubmitting}
+                  className={`w-full py-2.5 rounded-xl text-sm font-bold text-white shadow-sm cursor-pointer ${
+                    activePortal === 'pilgrim' ? 'bg-[#ea580c] hover:bg-[#d94806]' : 'bg-[#1e293b] hover:bg-[#0f172a]'
+                  }`}
+                >
+                  {isForgotSubmitting ? 'Sending OTP...' : 'Send Reset Code'}
+                </button>
+              </form>
+            ) : (
+              <form onSubmit={handleResetSubmit} className="space-y-3">
+                <p className="text-xs text-slate-500">
+                  Verification OTP code sent for <strong className="text-slate-700">{forgotIdentifier}</strong>.
+                </p>
+                <input
+                  type="text"
+                  value={forgotOtp}
+                  onChange={(e) => setForgotOtp(e.target.value)}
+                  placeholder="6-Digit OTP (e.g. 123456)"
+                  maxLength={6}
+                  required
+                  className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-mono text-center tracking-widest text-lg font-bold text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-orange-500/20"
+                />
+                <input
+                  type="password"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  placeholder="Set New Password"
+                  required
+                  className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-orange-500/20"
+                />
+                <button
+                  type="submit"
+                  disabled={isForgotSubmitting}
+                  className={`w-full py-2.5 rounded-xl text-sm font-bold text-white shadow-sm cursor-pointer ${
+                    activePortal === 'pilgrim' ? 'bg-[#ea580c] hover:bg-[#d94806]' : 'bg-[#1e293b] hover:bg-[#0f172a]'
+                  }`}
+                >
+                  {isForgotSubmitting ? 'Updating Password...' : 'Save New Password & Sign In'}
+                </button>
+              </form>
+            )}
           </div>
         </div>
       )}
 
       {/* Register / Request Access Modal */}
       {showRegisterModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs p-4 animate-in fade-in">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs p-4 animate-in fade-in">
           <div className="bg-white rounded-3xl p-6 sm:p-7 max-w-md w-full shadow-2xl border border-slate-200 relative">
             <button
               onClick={() => setShowRegisterModal(false)}
-              className="absolute top-4 right-4 text-slate-400 hover:text-slate-700"
+              className="absolute top-4 right-4 text-slate-400 hover:text-slate-700 cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
@@ -474,45 +644,77 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
                 ? 'Join thousands of Warkaris for real-time tracking, medical support, and food & shelter spots.'
                 : 'Submit your temple trust or volunteer organization credentials for admin clearance.'}
             </p>
-            <div className="space-y-3 mb-4">
-              <input
-                type="text"
-                placeholder="Full Name (पूर्ण नाव)"
-                className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:outline-none"
-              />
-              <input
-                type={activePortal === 'pilgrim' ? 'tel' : 'email'}
-                placeholder={activePortal === 'pilgrim' ? 'Mobile Number' : 'Work Email Address'}
-                className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:outline-none"
-              />
-              {activePortal === 'admin' && (
+            <form onSubmit={handleRegisterSubmit} className="space-y-3 mb-4">
+              <div>
+                <label className="text-[11px] font-bold text-slate-600 uppercase mb-1 block">Full Name</label>
                 <input
                   type="text"
-                  placeholder="Dindi / Organization / Police / Medical Unit"
-                  className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:outline-none"
+                  value={regName}
+                  onChange={(e) => setRegName(e.target.value)}
+                  placeholder="Full Name (पूर्ण नाव)"
+                  required
+                  className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-orange-500/20"
                 />
-              )}
-              <input
-                type="password"
-                placeholder="Set New Password"
-                className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:outline-none"
-              />
-            </div>
-            <button
-              onClick={() => {
-                setShowRegisterModal(false);
-                showToast(
-                  activePortal === 'pilgrim'
-                    ? 'Account created! Welcome to VariMitra.'
-                    : 'Access request submitted for verification!'
-                );
-              }}
-              className={`w-full py-2.5 rounded-xl text-sm font-bold text-white shadow-sm ${
-                activePortal === 'pilgrim' ? 'bg-[#ea580c]' : 'bg-[#1e293b]'
-              }`}
-            >
-              {activePortal === 'pilgrim' ? 'Register Pilgrim' : 'Submit Access Request'}
-            </button>
+              </div>
+
+              <div>
+                <label className="text-[11px] font-bold text-slate-600 uppercase mb-1 block">
+                  {activePortal === 'pilgrim' ? 'Mobile Number (मोबाईल क्र.)' : 'Work Email'}
+                </label>
+                <input
+                  type={activePortal === 'pilgrim' ? 'tel' : 'email'}
+                  value={regIdentifier}
+                  onChange={(e) => setRegIdentifier(e.target.value)}
+                  placeholder={activePortal === 'pilgrim' ? '10-digit Mobile Number' : 'officer@varimitra.org'}
+                  required
+                  className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-orange-500/20"
+                />
+              </div>
+
+              <div>
+                <label className="text-[11px] font-bold text-slate-600 uppercase mb-1 block">
+                  {activePortal === 'pilgrim' ? 'Dindi / Mandal Name (Optional)' : 'Organization / Unit'}
+                </label>
+                <input
+                  type="text"
+                  value={regOrg}
+                  onChange={(e) => setRegOrg(e.target.value)}
+                  placeholder={activePortal === 'pilgrim' ? 'Alandi Dindi No. 4 / Pune' : 'Pandharpur Seva / Police / Medical'}
+                  className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-orange-500/20"
+                />
+              </div>
+
+              <div>
+                <label className="text-[11px] font-bold text-slate-600 uppercase mb-1 block">Password</label>
+                <input
+                  type="password"
+                  value={regPassword}
+                  onChange={(e) => setRegPassword(e.target.value)}
+                  placeholder="Set New Password (min. 4 characters)"
+                  required
+                  className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-orange-500/20"
+                />
+              </div>
+
+              <button
+                type="submit"
+                disabled={isRegistering}
+                className={`w-full mt-2 py-3 rounded-xl text-sm font-bold text-white shadow-sm cursor-pointer flex items-center justify-center gap-2 ${
+                  activePortal === 'pilgrim' ? 'bg-[#ea580c] hover:bg-[#d94806]' : 'bg-[#1e293b] hover:bg-[#0f172a]'
+                }`}
+              >
+                {isRegistering ? (
+                  <>
+                    <span className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
+                    <span>Registering Account in Database...</span>
+                  </>
+                ) : activePortal === 'pilgrim' ? (
+                  'Create Warkari Account'
+                ) : (
+                  'Submit Access Request'
+                )}
+              </button>
+            </form>
           </div>
         </div>
       )}
