@@ -25,14 +25,17 @@ class Command(BaseCommand):
         )
         admin_user.set_password('admin123')
         admin_user.save()
-        UserProfile.objects.get_or_create(
-            user=admin_user,
-            defaults={
-                'role': 'admin',
-                'mobile_number': '9876500001',
-                'organization': 'Seva Team Administrator'
-            }
-        )
+        prof = UserProfile.objects.filter(user=admin_user).first()
+        if not prof:
+            mob = '9876500001'
+            if UserProfile.objects.filter(mobile_number=mob).exists():
+                mob = f"98765{random.randint(10000, 99999)}"
+            UserProfile.objects.create(
+                user=admin_user,
+                role='admin',
+                mobile_number=mob,
+                organization='Seva Team Administrator'
+            )
 
         pilgrim_user, _ = User.objects.get_or_create(
             username='pilgrim_yashraj',
@@ -44,14 +47,17 @@ class Command(BaseCommand):
         )
         pilgrim_user.set_password('password')
         pilgrim_user.save()
-        UserProfile.objects.get_or_create(
-            user=pilgrim_user,
-            defaults={
-                'role': 'pilgrim',
-                'mobile_number': '9876543210',
-                'organization': 'Alandi Dindi No. 1'
-            }
-        )
+        prof = UserProfile.objects.filter(user=pilgrim_user).first()
+        if not prof:
+            mob = '9876543210'
+            if UserProfile.objects.filter(mobile_number=mob).exists():
+                mob = f"98765{random.randint(10000, 99999)}"
+            UserProfile.objects.create(
+                user=pilgrim_user,
+                role='pilgrim',
+                mobile_number=mob,
+                organization='Alandi Dindi No. 1'
+            )
 
         # Create demo devotees
         devotees_data = [
@@ -70,7 +76,10 @@ class Command(BaseCommand):
             )
             u.set_password('password')
             u.save()
-            UserProfile.objects.get_or_create(user=u, defaults={'role': role, 'mobile_number': mob})
+            if not UserProfile.objects.filter(user=u).exists():
+                if UserProfile.objects.filter(mobile_number=mob).exists():
+                    mob = f"98765{random.randint(10000, 99999)}"
+                UserProfile.objects.create(user=u, role=role, mobile_number=mob)
             devotee_users.append(u)
 
         # 5 Exact Groups from visual reference
