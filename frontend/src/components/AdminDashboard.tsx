@@ -99,13 +99,15 @@ interface ActionCardProps {
   glowClass: string;
   borderClass: string;
   badgeCount?: number;
+  onClick?: () => void;
 }
 
 const ActionCard: React.FC<ActionCardProps> = ({
-  id, icon, label, desc, colorClass, glowClass, borderClass, badgeCount,
+  id, icon, label, desc, colorClass, glowClass, borderClass, badgeCount, onClick
 }) => (
   <button
     id={id}
+    onClick={onClick}
     className={`group relative flex flex-col items-start gap-2 w-full rounded-2xl p-4 sm:p-5 bg-white/85 backdrop-blur-sm border ${borderClass} shadow-md hover:shadow-xl transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.98] cursor-pointer overflow-hidden text-left`}
   >
     {/* Color glow */}
@@ -131,6 +133,8 @@ const ActionCard: React.FC<ActionCardProps> = ({
   </button>
 );
 
+import { SOSInbox } from '../pages/admin/SOSInbox';
+
 export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   session,
   language,
@@ -139,6 +143,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
 }) => {
   const t = LABELS[language];
   const [mapRefreshing, setMapRefreshing] = useState(false);
+  const [currentView, setCurrentView] = useState<'dashboard' | 'sos-inbox'>('dashboard');
 
   const handleSignOut = async () => {
     await authService.logout();
@@ -202,80 +207,86 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
       {/* ═══ MAIN BODY ═══ */}
       <main className="flex-1 max-w-5xl mx-auto w-full px-4 sm:px-6 py-5 flex flex-col gap-5">
+        {currentView === 'sos-inbox' ? (
+          <SOSInbox onBackToCommandMap={() => setCurrentView('dashboard')} />
+        ) : (
+          <>
+            {/* ── COMMAND MAP ── */}
+            <section
+              className="relative w-full rounded-2xl overflow-hidden border border-blue-100 shadow-lg"
+              style={{ minHeight: "260px", height: "35vh", maxHeight: "400px" }}
+            >
+              <WariMap className="absolute inset-0" />
+            </section>
 
-        {/* ── COMMAND MAP ── */}
-        <section
-          className="relative w-full rounded-2xl overflow-hidden border border-blue-100 shadow-lg"
-          style={{ minHeight: "260px", height: "35vh", maxHeight: "400px" }}
-        >
-          <WariMap className="absolute inset-0" />
-        </section>
+            {/* ── 2x3 ADMIN ACTION GRID ── */}
+            <section className="grid grid-cols-2 gap-3 sm:gap-4">
 
-        {/* ── 2x3 ADMIN ACTION GRID ── */}
-        <section className="grid grid-cols-2 gap-3 sm:gap-4">
+              {/* Row 1 */}
+              <ActionCard
+                id="btn-volunteers-group"
+                icon={<Users size={20} className="text-white" />}
+                label={t.volunteers}
+                desc={t.volunteersDesc}
+                colorClass="bg-gradient-to-br from-violet-500 to-purple-700"
+                glowClass="bg-violet-400"
+                borderClass="border-violet-100 hover:border-violet-300"
+              />
+              <ActionCard
+                id="btn-resources-logistics"
+                icon={<Package size={20} className="text-white" />}
+                label={t.resources}
+                desc={t.resourcesDesc}
+                colorClass="bg-gradient-to-br from-teal-500 to-emerald-600"
+                glowClass="bg-teal-400"
+                borderClass="border-teal-100 hover:border-teal-300"
+              />
 
-          {/* Row 1 */}
-          <ActionCard
-            id="btn-volunteers-group"
-            icon={<Users size={20} className="text-white" />}
-            label={t.volunteers}
-            desc={t.volunteersDesc}
-            colorClass="bg-gradient-to-br from-violet-500 to-purple-700"
-            glowClass="bg-violet-400"
-            borderClass="border-violet-100 hover:border-violet-300"
-          />
-          <ActionCard
-            id="btn-resources-logistics"
-            icon={<Package size={20} className="text-white" />}
-            label={t.resources}
-            desc={t.resourcesDesc}
-            colorClass="bg-gradient-to-br from-teal-500 to-emerald-600"
-            glowClass="bg-teal-400"
-            borderClass="border-teal-100 hover:border-teal-300"
-          />
+              {/* Row 2 */}
+              <ActionCard
+                id="btn-admin-nearby-services"
+                icon={<Stethoscope size={20} className="text-white" />}
+                label={t.nearbyServices}
+                desc={t.nearbyDesc}
+                colorClass="bg-gradient-to-br from-emerald-500 to-green-600"
+                glowClass="bg-emerald-400"
+                borderClass="border-emerald-100 hover:border-emerald-300"
+              />
+              <ActionCard
+                id="btn-alerts-received"
+                icon={<BellRing size={20} className="text-white" />}
+                label={t.alertsReceived}
+                desc={t.alertsDesc}
+                badgeCount={3}
+                colorClass="bg-gradient-to-br from-amber-500 to-orange-500"
+                glowClass="bg-amber-400"
+                borderClass="border-amber-100 hover:border-amber-300"
+                onClick={() => setCurrentView('sos-inbox')}
+              />
 
-          {/* Row 2 */}
-          <ActionCard
-            id="btn-admin-nearby-services"
-            icon={<Stethoscope size={20} className="text-white" />}
-            label={t.nearbyServices}
-            desc={t.nearbyDesc}
-            colorClass="bg-gradient-to-br from-emerald-500 to-green-600"
-            glowClass="bg-emerald-400"
-            borderClass="border-emerald-100 hover:border-emerald-300"
-          />
-          <ActionCard
-            id="btn-alerts-received"
-            icon={<BellRing size={20} className="text-white" />}
-            label={t.alertsReceived}
-            desc={t.alertsDesc}
-            badgeCount={3}
-            colorClass="bg-gradient-to-br from-amber-500 to-orange-500"
-            glowClass="bg-amber-400"
-            borderClass="border-amber-100 hover:border-amber-300"
-          />
+              {/* Row 3 */}
+              <ActionCard
+                id="btn-update-emergency-alerts"
+                icon={<Siren size={20} className="text-white" />}
+                label={t.updateAlerts}
+                desc={t.updateDesc}
+                colorClass="bg-gradient-to-br from-red-500 to-rose-700"
+                glowClass="bg-red-400"
+                borderClass="border-red-100 hover:border-red-300"
+              />
+              <ActionCard
+                id="btn-crowd-analytics"
+                icon={<BarChart3 size={20} className="text-white" />}
+                label={t.crowdAnalytics}
+                desc={t.crowdDesc}
+                colorClass="bg-gradient-to-br from-blue-500 to-indigo-600"
+                glowClass="bg-blue-400"
+                borderClass="border-blue-100 hover:border-blue-300"
+              />
 
-          {/* Row 3 */}
-          <ActionCard
-            id="btn-update-emergency-alerts"
-            icon={<Siren size={20} className="text-white" />}
-            label={t.updateAlerts}
-            desc={t.updateDesc}
-            colorClass="bg-gradient-to-br from-red-500 to-rose-700"
-            glowClass="bg-red-400"
-            borderClass="border-red-100 hover:border-red-300"
-          />
-          <ActionCard
-            id="btn-crowd-analytics"
-            icon={<BarChart3 size={20} className="text-white" />}
-            label={t.crowdAnalytics}
-            desc={t.crowdDesc}
-            colorClass="bg-gradient-to-br from-blue-500 to-indigo-600"
-            glowClass="bg-blue-400"
-            borderClass="border-blue-100 hover:border-blue-300"
-          />
-
-        </section>
+            </section>
+          </>
+        )}
       </main>
 
       {/* ═══ FOOTER ═══ */}

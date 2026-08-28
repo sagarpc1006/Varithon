@@ -104,6 +104,8 @@ const QuickActionCard: React.FC<{
   </button>
 );
 
+import { SOSPage } from '../pages/user/SOSPage';
+
 export const UserDashboard: React.FC<UserDashboardProps> = ({
   session,
   language,
@@ -112,6 +114,7 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({
 }) => {
   const t = LABELS[language];
   const [mapRefreshing, setMapRefreshing] = useState(false);
+  const [currentView, setCurrentView] = useState<'dashboard' | 'sos'>('dashboard');
 
   const handleSignOut = async () => {
     await authService.logout();
@@ -122,6 +125,10 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({
     setMapRefreshing(true);
     setTimeout(() => setMapRefreshing(false), 1200);
   };
+
+  if (currentView === 'sos') {
+    return <SOSPage onBackToDashboard={() => setCurrentView('dashboard')} />;
+  }
 
   return (
     <div className="min-h-screen bg-[#faf7f2] flex flex-col font-sans">
@@ -172,60 +179,60 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({
 
       {/* ════════════════ MAIN BODY ════════════════ */}
       <main className="flex-1 max-w-5xl mx-auto w-full px-4 sm:px-6 py-5 flex flex-col gap-5">
-
         {/* ── MAP SECTION ── */}
         <section className="relative w-full rounded-2xl overflow-hidden border border-orange-100 shadow-lg" style={{ minHeight: "280px", height: "38vh", maxHeight: "420px" }}>
           <WariMap className="absolute inset-0" />
         </section>
 
-        {/* ── QUICK ACTION BUTTONS 2×2 GRID ── */}
-        <section className="grid grid-cols-2 gap-3 sm:gap-4">
+            {/* ── QUICK ACTION BUTTONS 2×2 GRID ── */}
+            <section className="grid grid-cols-2 gap-3 sm:gap-4">
 
-          {/* Nearby Services */}
-          <QuickActionCard
-            id="btn-nearby-services"
-            icon={<Stethoscope size={20} className="text-white" />}
-            label={t.nearbyServices}
-            desc={t.nearbyDesc}
-            colorClass="bg-gradient-to-br from-emerald-500 to-teal-600"
-            glowClass="bg-emerald-400"
-            borderClass="border-emerald-100 hover:border-emerald-300"
-          />
+              {/* Nearby Services */}
+              <QuickActionCard
+                id="btn-nearby-services"
+                icon={<Stethoscope size={20} className="text-white" />}
+                label={t.nearbyServices}
+                desc={t.nearbyDesc}
+                colorClass="bg-gradient-to-br from-emerald-500 to-teal-600"
+                glowClass="bg-emerald-400"
+                borderClass="border-emerald-100 hover:border-emerald-300"
+              />
 
-          {/* Alerts */}
-          <QuickActionCard
-            id="btn-alerts"
-            icon={<BellRing size={20} className="text-white" />}
-            label={t.alerts}
-            desc={t.alertsDesc}
-            colorClass="bg-gradient-to-br from-amber-500 to-orange-500"
-            glowClass="bg-amber-400"
-            borderClass="border-amber-100 hover:border-amber-300"
-          />
+              {/* Alerts */}
+              <QuickActionCard
+                id="btn-alerts"
+                icon={<BellRing size={20} className="text-white" />}
+                label={t.alerts}
+                desc={t.alertsDesc}
+                colorClass="bg-gradient-to-br from-amber-500 to-orange-500"
+                glowClass="bg-amber-400"
+                borderClass="border-amber-100 hover:border-amber-300"
+              />
 
-          {/* Groups */}
-          <QuickActionCard
-            id="btn-groups"
-            icon={<Users size={20} className="text-white" />}
-            label={t.groups}
-            desc={t.groupsDesc}
-            colorClass="bg-gradient-to-br from-violet-500 to-purple-600"
-            glowClass="bg-violet-400"
-            borderClass="border-violet-100 hover:border-violet-300"
-          />
+              {/* Groups */}
+              <QuickActionCard
+                id="btn-groups"
+                icon={<Users size={20} className="text-white" />}
+                label={t.groups}
+                desc={t.groupsDesc}
+                colorClass="bg-gradient-to-br from-violet-500 to-purple-600"
+                glowClass="bg-violet-400"
+                borderClass="border-violet-100 hover:border-violet-300"
+              />
 
-          {/* SOS */}
-          <QuickActionCard
-            id="btn-sos"
-            icon={<PhoneCall size={20} className="text-white" />}
-            label={t.sos}
-            desc={t.sosDesc}
-            colorClass="bg-gradient-to-br from-red-500 to-rose-600"
-            glowClass="bg-red-400"
-            borderClass="border-red-100 hover:border-red-300"
-          />
+              {/* SOS */}
+              <QuickActionCard
+                id="btn-sos"
+                icon={<PhoneCall size={20} className="text-white" />}
+                label={t.sos}
+                desc={t.sosDesc}
+                colorClass="bg-gradient-to-br from-red-500 to-rose-600"
+                glowClass="bg-red-400"
+                borderClass="border-red-100 hover:border-red-300"
+                onClick={() => setCurrentView('sos')}
+              />
 
-        </section>
+            </section>
       </main>
 
       {/* ════════════════ FOOTER ════════════════ */}

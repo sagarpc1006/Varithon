@@ -16,16 +16,33 @@ class ApiClient {
   private async request<T>(endpoint: string, options: RequestOptions = {}): Promise<T> {
     const url = endpoint.startsWith('http') ? endpoint : `${this.baseUrl}${endpoint.startsWith('/') ? '' : '/'}${endpoint}`;
     
+    // Retrieve stored session if available to support robust session persistence across tabs & restarts
+    let sessionHeaders: Record<string, string> = {};
+    try {
+      const stored = localStorage.getItem('varimitra_user_session');
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (parsed.id) sessionHeaders['X-User-Id'] = String(parsed.id);
+        if (parsed.identifier || parsed.name || parsed.mobile_number) {
+          sessionHeaders['X-User-Identifier'] = parsed.identifier || parsed.mobile_number || parsed.name;
+        }
+        if (parsed.role) sessionHeaders['X-User-Role'] = parsed.role;
+      }
+    } catch {
+      // Ignore localStorage errors
+    }
+
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
+      ...sessionHeaders,
       ...(options.headers as Record<string, string> || {}),
     };
 
     const config: RequestInit = {
       ...options,
       headers,
-      credentials: 'omit', // or 'include' for session cookies
+      credentials: 'include',
     };
 
     if (options.data) {
@@ -55,9 +72,11 @@ class ApiClient {
           const fallbackUrl = `http://127.0.0.1:8000/api${endpoint.startsWith('/') ? '' : '/'}${endpoint}`;
           const fallbackRes = await fetch(fallbackUrl, {
             ...options,
+            credentials: 'include',
             headers: {
               'Content-Type': 'application/json',
               'Accept': 'application/json',
+              ...sessionHeaders,
               ...(options.headers as Record<string, string> || {}),
             },
             body: options.data ? JSON.stringify(options.data) : undefined,
