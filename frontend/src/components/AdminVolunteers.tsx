@@ -27,6 +27,7 @@ interface AdminVolunteersProps {
   session: UserSession;
   language: Language;
   onOpenEmergencySOS?: () => void;
+  onBack?: () => void;
 }
 
 export interface VolunteerSquad {
@@ -145,6 +146,7 @@ export const AdminVolunteers: React.FC<AdminVolunteersProps> = ({
   session,
   language,
   onOpenEmergencySOS,
+  onBack,
 }) => {
   const [squads, setSquads] = useState<VolunteerSquad[]>(INITIAL_SQUADS);
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
@@ -272,9 +274,14 @@ export const AdminVolunteers: React.FC<AdminVolunteersProps> = ({
       )}
 
       {/* Main Header & Live Auto-Dispatch Status */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
         <div>
           <div className="flex flex-wrap items-center gap-3">
+            {onBack && (
+              <button onClick={onBack} className="p-1.5 -ml-2 text-slate-500 hover:text-slate-800 rounded-full hover:bg-slate-200/50 transition-colors">
+                <ChevronRight className="rotate-180" size={24} />
+              </button>
+            )}
             <h1 className="text-xl sm:text-2xl lg:text-3xl font-black tracking-tight text-slate-900">
               Volunteer Department Squads
             </h1>

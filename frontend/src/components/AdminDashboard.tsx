@@ -134,6 +134,7 @@ const ActionCard: React.FC<ActionCardProps> = ({
 );
 
 import { SOSInbox } from '../pages/admin/SOSInbox';
+import { AdminVolunteers } from './AdminVolunteers';
 
 export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   session,
@@ -143,7 +144,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
 }) => {
   const t = LABELS[language];
   const [mapRefreshing, setMapRefreshing] = useState(false);
-  const [currentView, setCurrentView] = useState<'dashboard' | 'sos-inbox'>('dashboard');
+  const [currentView, setCurrentView] = useState<'dashboard' | 'sos-inbox' | 'volunteers'>('dashboard');
 
   const handleSignOut = async () => {
     await authService.logout();
@@ -209,6 +210,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
       <main className="flex-1 max-w-5xl mx-auto w-full px-4 sm:px-6 py-5 flex flex-col gap-5">
         {currentView === 'sos-inbox' ? (
           <SOSInbox onBackToCommandMap={() => setCurrentView('dashboard')} />
+        ) : currentView === 'volunteers' ? (
+          <AdminVolunteers session={session} language={language} onBack={() => setCurrentView('dashboard')} />
         ) : (
           <>
             {/* ── COMMAND MAP ── */}
@@ -231,6 +234,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                 colorClass="bg-gradient-to-br from-violet-500 to-purple-700"
                 glowClass="bg-violet-400"
                 borderClass="border-violet-100 hover:border-violet-300"
+                onClick={() => setCurrentView('volunteers')}
               />
               <ActionCard
                 id="btn-resources-logistics"

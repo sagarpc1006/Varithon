@@ -29,6 +29,7 @@ urlpatterns = [
     path('ai/chat/', AIChatView.as_view(), name='ai-chat'),
     path('dashboard/overview/', DashboardOverviewView.as_view(), name='dashboard-overview'),
     path('wari-2025/', WariLocationsView.as_view(), name='wari-locations'),
+
     # Groups & Communication
     path('groups/', GroupListView.as_view(), name='group-list-create'),
     path('groups/<int:pk>/', GroupDetailView.as_view(), name='group-detail'),

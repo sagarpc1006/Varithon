@@ -8,6 +8,7 @@ import {
   Globe,
   AlertTriangle,
   ChevronDown,
+  ChevronRight,
   MessageSquare,
   Sparkles,
   CheckCircle2,
@@ -23,12 +24,14 @@ interface UserGroupsOverviewProps {
   session: UserSession;
   language: Language;
   onOpenChat: (groupId: number) => void;
+  onBack?: () => void;
 }
 
 export const UserGroupsOverview: React.FC<UserGroupsOverviewProps> = ({
   session,
   language,
   onOpenChat,
+  onBack,
 }) => {
   const [groups, setGroups] = useState<GroupData[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -193,9 +196,16 @@ export const UserGroupsOverview: React.FC<UserGroupsOverviewProps> = ({
       {/* Top Section: Header, Subtitle, Search, Filter, Create/Join Button */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div>
-          <h1 className="text-xl sm:text-2xl font-black tracking-tight text-slate-900">
-            Wari Community Groups
-          </h1>
+          <div className="flex items-center gap-2">
+            {onBack && (
+              <button onClick={onBack} className="p-1.5 -ml-2 text-slate-500 hover:text-slate-800 rounded-full hover:bg-slate-200/50 transition-colors">
+                <ChevronRight className="rotate-180" size={24} />
+              </button>
+            )}
+            <h1 className="text-xl sm:text-2xl font-black tracking-tight text-slate-900">
+              Wari Community Groups
+            </h1>
+          </div>
           <p className="text-xs sm:text-sm text-slate-500 font-medium mt-0.5">
             Connect, share updates and help fellow Warkaris on the route.
           </p>

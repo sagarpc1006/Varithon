@@ -105,6 +105,8 @@ const QuickActionCard: React.FC<{
 );
 
 import { SOSPage } from '../pages/user/SOSPage';
+import { UserGroupsOverview } from './groups/UserGroupsOverview';
+import { UserGroupChat } from './groups/UserGroupChat';
 
 export const UserDashboard: React.FC<UserDashboardProps> = ({
   session,
@@ -114,7 +116,8 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({
 }) => {
   const t = LABELS[language];
   const [mapRefreshing, setMapRefreshing] = useState(false);
-  const [currentView, setCurrentView] = useState<'dashboard' | 'sos'>('dashboard');
+  const [currentView, setCurrentView] = useState<'dashboard' | 'sos' | 'groups' | 'group-chat'>('dashboard');
+  const [activeChatGroupId, setActiveChatGroupId] = useState<number | null>(null);
 
   const handleSignOut = async () => {
     await authService.logout();
@@ -179,10 +182,29 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({
 
       {/* ════════════════ MAIN BODY ════════════════ */}
       <main className="flex-1 max-w-5xl mx-auto w-full px-4 sm:px-6 py-5 flex flex-col gap-5">
-        {/* ── MAP SECTION ── */}
-        <section className="relative w-full rounded-2xl overflow-hidden border border-orange-100 shadow-lg" style={{ minHeight: "280px", height: "38vh", maxHeight: "420px" }}>
-          <WariMap className="absolute inset-0" />
-        </section>
+        {currentView === 'group-chat' && activeChatGroupId ? (
+          <UserGroupChat
+            initialGroupId={activeChatGroupId}
+            session={session}
+            language={language}
+            onBack={() => setCurrentView('groups')}
+          />
+        ) : currentView === 'groups' ? (
+          <UserGroupsOverview
+            onBack={() => setCurrentView('dashboard')}
+            session={session}
+            language={language}
+            onOpenChat={(groupId) => {
+              setActiveChatGroupId(groupId);
+              setCurrentView('group-chat');
+            }}
+          />
+        ) : (
+          <>
+            {/* ── MAP SECTION ── */}
+            <section className="relative w-full rounded-2xl overflow-hidden border border-orange-100 shadow-lg" style={{ minHeight: "280px", height: "38vh", maxHeight: "420px" }}>
+              <WariMap className="absolute inset-0" />
+            </section>
 
             {/* ── QUICK ACTION BUTTONS 2×2 GRID ── */}
             <section className="grid grid-cols-2 gap-3 sm:gap-4">
@@ -218,6 +240,7 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({
                 colorClass="bg-gradient-to-br from-violet-500 to-purple-600"
                 glowClass="bg-violet-400"
                 borderClass="border-violet-100 hover:border-violet-300"
+                onClick={() => setCurrentView('groups')}
               />
 
               {/* SOS */}
@@ -233,6 +256,8 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({
               />
 
             </section>
+          </>
+        )}
       </main>
 
       {/* ════════════════ FOOTER ════════════════ */}
