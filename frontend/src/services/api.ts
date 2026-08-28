@@ -95,9 +95,15 @@ class ApiClient {
     return this.request<T>(endpoint, { ...options, method: 'PUT', data });
   }
 
+  patch<T>(endpoint: string, data?: any, options?: RequestOptions): Promise<T> {
+    return this.request<T>(endpoint, { ...options, method: 'PATCH', data });
+  }
+
   delete<T>(endpoint: string, options?: RequestOptions): Promise<T> {
     return this.request<T>(endpoint, { ...options, method: 'DELETE' });
   }
 }
 
 export const api = new ApiClient(BASE_URL);
+export const apiService = api;
+

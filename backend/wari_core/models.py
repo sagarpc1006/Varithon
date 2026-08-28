@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 class PalkhiLocation(models.Model):
     STATUS_CHOICES = (
@@ -110,3 +111,107 @@ class CrowdDensity(models.Model):
 
     def __str__(self):
         return f"{self.location_name}: {self.density_level}"
+
+
+class Group(models.Model):
+    TYPE_CHOICES = (
+        ('PUBLIC', 'Public'),
+        ('PRIVATE', 'Private'),
+    )
+    
+    ICON_COLOR_CHOICES = (
+        ('orange', 'Orange'),
+        ('purple', 'Purple'),
+        ('green', 'Green'),
+        ('rose', 'Rose'),
+        ('blue', 'Blue'),
+        ('amber', 'Amber'),
+    )
+
+    name = models.CharField(max_length=150)
+    description = models.TextField(blank=True)
+    group_type = models.CharField(max_length=20, choices=TYPE_CHOICES, default='PUBLIC')
+    route_info = models.CharField(max_length=200, blank=True, default='Saswad Checkpoint -> Jejuri')
+    icon_color = models.CharField(max_length=30, choices=ICON_COLOR_CHOICES, default='orange')
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='created_groups')
+    is_active = models.BooleanField(default=True)
+    allow_member_posts = models.BooleanField(default=True)
+    invite_code = models.CharField(max_length=20, blank=True, null=True, unique=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.name} ({self.group_type})"
+
+
+class GroupMember(models.Model):
+    ROLE_CHOICES = (
+        ('ADMIN', 'Group Admin'),
+        ('MODERATOR', 'Moderator'),
+        ('MEMBER', 'Member'),
+    )
+
+    group = models.ForeignKey(Group, on_delete=models.CASCADE, related_name='members')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='group_memberships')
+    role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='MEMBER')
+    joined_at = models.DateTimeField(auto_now_add=True)
+    last_read_at = models.DateTimeField(null=True, blank=True)
+    is_muted = models.BooleanField(default=False)
+
+    class Meta:
+        unique_together = ('group', 'user')
+        ordering = ['joined_at']
+
+    def __str__(self):
+        return f"{self.user.username} in {self.group.name} as {self.role}"
+
+
+class GroupMessage(models.Model):
+    MESSAGE_TYPES = (
+        ('TEXT', 'Regular Text'),
+        ('ANNOUNCEMENT', 'Official Admin Announcement'),
+        ('SYSTEM', 'System Notification'),
+        ('IMAGE', 'Photo / Media'),
+    )
+
+    group = models.ForeignKey(Group, on_delete=models.CASCADE, related_name='messages')
+    sender = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='sent_group_messages')
+    sender_name = models.CharField(max_length=150, blank=True)
+    sender_role = models.CharField(max_length=50, blank=True, default='pilgrim')
+    message_type = models.CharField(max_length=20, choices=MESSAGE_TYPES, default='TEXT')
+    content = models.TextField()
+    is_pinned = models.BooleanField(default=False)
+    is_deleted = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['created_at']
+
+    def __str__(self):
+        return f"[{self.message_type}] {self.sender_name or 'System'}: {self.content[:30]}"
+
+
+class MessageReport(models.Model):
+    STATUS_CHOICES = (
+        ('PENDING', 'Pending Review'),
+        ('RESOLVED', 'Resolved'),
+        ('DISMISSED', 'Dismissed'),
+    )
+
+    message = models.ForeignKey(GroupMessage, on_delete=models.CASCADE, related_name='reports')
+    reported_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='filed_reports')
+    reason = models.CharField(max_length=255)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='PENDING')
+    action_taken = models.CharField(max_length=255, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    resolved_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"Report on msg {self.message_id} by {self.reported_by.username} ({self.status})"
+

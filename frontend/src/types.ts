@@ -76,3 +76,114 @@ export interface AIChatMessage {
   timestamp: string;
   category?: string;
 }
+
+export type NavTabType =
+  | 'dashboard'
+  | 'tracking'
+  | 'seva'
+  | 'groups'
+  | 'ai'
+  | 'notifications'
+  | 'profile'
+  | 'settings'
+  | 'admin_overview'
+  | 'admin_monitoring'
+  | 'admin_volunteers'
+  | 'admin_groups'
+  | 'admin_announcements'
+  | 'admin_reports'
+  | 'admin_users'
+  | 'admin_logs'
+  | 'admin_settings';
+
+export interface GroupMessageData {
+  id: number;
+  group: number;
+  sender?: number | null;
+  sender_name: string;
+  sender_role: string;
+  message_type: 'TEXT' | 'ANNOUNCEMENT' | 'SYSTEM' | 'IMAGE';
+  content: string;
+  is_pinned: boolean;
+  is_deleted: boolean;
+  created_at: string;
+  reports_count?: number;
+}
+
+export interface GroupMemberData {
+  id: number;
+  user: number;
+  username: string;
+  name: string;
+  email?: string;
+  mobile_number?: string;
+  role: 'ADMIN' | 'MODERATOR' | 'MEMBER';
+  joined_at: string;
+  last_read_at?: string;
+  is_muted?: boolean;
+}
+
+export interface MessageReportData {
+  id: number;
+  message: number;
+  message_content: string;
+  message_sender_name: string;
+  group_id: number;
+  group_name: string;
+  reported_by: number;
+  reported_by_name: string;
+  reason: string;
+  status: 'PENDING' | 'RESOLVED' | 'DISMISSED';
+  action_taken?: string;
+  created_at: string;
+  resolved_at?: string;
+}
+
+export interface GroupData {
+  id: number;
+  name: string;
+  description: string;
+  group_type: 'PUBLIC' | 'PRIVATE';
+  route_info: string;
+  icon_color: 'orange' | 'purple' | 'green' | 'rose' | 'blue' | 'amber';
+  created_by?: number;
+  is_active: boolean;
+  allow_member_posts: boolean;
+  invite_code?: string;
+  created_at: string;
+  updated_at: string;
+  members_count: number;
+  active_members_count: number;
+  messages_count: number;
+  today_messages_count: number;
+  reports_count: number;
+  unread_count: number;
+  is_member: boolean;
+  my_role?: 'ADMIN' | 'MODERATOR' | 'MEMBER' | null;
+  last_message?: {
+    id: number;
+    content: string;
+    sender_name: string;
+    sender_role: string;
+    message_type: string;
+    created_at: string;
+  } | null;
+  recent_messages?: Array<{
+    id: number;
+    content: string;
+    sender_name: string;
+    sender_role: string;
+    message_type: string;
+    created_at: string;
+  }>;
+}
+
+export interface GroupStatsData {
+  total_groups: number;
+  total_members: number;
+  active_members: number;
+  pending_reports: number;
+  total_messages: number;
+  today_messages: number;
+}
+

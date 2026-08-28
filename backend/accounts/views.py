@@ -58,10 +58,13 @@ class LoginView(APIView):
                     first_name='Warkari' if portal_role == 'pilgrim' else 'Seva Officer',
                     last_name='Dnyandev' if portal_role == 'pilgrim' else 'Admin'
                 )
+                demo_mob = identifier if not '@' in identifier else f"98765{random.randint(10000, 99999)}"
+                if UserProfile.objects.filter(mobile_number=demo_mob).exists():
+                    demo_mob = None
                 UserProfile.objects.create(
                     user=user,
                     role=portal_role,
-                    mobile_number=identifier if not '@' in identifier else '9876543210',
+                    mobile_number=demo_mob,
                     organization='Pandharpur Wari Seva Mandal' if portal_role == 'admin' else 'Alandi Dindi No. 1'
                 )
             else:
