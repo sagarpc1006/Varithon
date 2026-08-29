@@ -7,6 +7,8 @@ from .views import (
     AIChatView,
     DashboardOverviewView,
     WariLocationsView,
+    NearbyResourceListCreateView,
+    NearbyResourceDeleteView,
     GroupListView,
     GroupDetailView,
     GroupJoinLeaveView,
@@ -29,6 +31,10 @@ urlpatterns = [
     path('ai/chat/', AIChatView.as_view(), name='ai-chat'),
     path('dashboard/overview/', DashboardOverviewView.as_view(), name='dashboard-overview'),
     path('wari-2025/', WariLocationsView.as_view(), name='wari-locations'),
+
+    # Nearby Resources (admin add/remove, user read)
+    path('nearby-resources/', NearbyResourceListCreateView.as_view(), name='nearby-resources'),
+    path('nearby-resources/<int:pk>/', NearbyResourceDeleteView.as_view(), name='nearby-resource-delete'),
 
     # Groups & Communication
     path('groups/', GroupListView.as_view(), name='group-list-create'),

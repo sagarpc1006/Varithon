@@ -215,3 +215,28 @@ class MessageReport(models.Model):
     def __str__(self):
         return f"Report on msg {self.message_id} by {self.reported_by.username} ({self.status})"
 
+
+class NearbyResource(models.Model):
+    """Resources (food, water, toilets, restrooms, medical) pinned by admin at Palkhi route stops."""
+    RESOURCE_TYPE_CHOICES = (
+        ('FOOD', 'Food / Annachatra'),
+        ('WATER', 'Water Point'),
+        ('TOILETS', 'Toilets'),
+        ('RESTROOMS', 'Restrooms'),
+        ('MEDICAL', 'Medical Camp'),
+    )
+
+    resource_type = models.CharField(max_length=20, choices=RESOURCE_TYPE_CHOICES)
+    location_name = models.CharField(max_length=200, help_text="Palkhi stop place name (e.g. Alandi, Jejuri)")
+    latitude = models.FloatField()
+    longitude = models.FloatField()
+    label = models.CharField(max_length=255, blank=True, default='', help_text="Optional custom label from admin")
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.get_resource_type_display()} at {self.location_name}"
+

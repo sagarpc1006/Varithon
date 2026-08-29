@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import PalkhiLocation, EmergencyAlert, SevaResource, CrowdDensity
+from .models import PalkhiLocation, EmergencyAlert, SevaResource, CrowdDensity, NearbyResource
 
 @admin.register(PalkhiLocation)
 class PalkhiLocationAdmin(admin.ModelAdmin):
@@ -22,3 +22,9 @@ class SevaResourceAdmin(admin.ModelAdmin):
 class CrowdDensityAdmin(admin.ModelAdmin):
     list_display = ('location_name', 'density_level', 'flow_speed', 'active_volunteers_count', 'updated_at')
     list_filter = ('density_level',)
+
+@admin.register(NearbyResource)
+class NearbyResourceAdmin(admin.ModelAdmin):
+    list_display = ('resource_type', 'location_name', 'latitude', 'longitude', 'label', 'is_active', 'created_at')
+    list_filter = ('resource_type', 'is_active')
+    search_fields = ('location_name', 'label')

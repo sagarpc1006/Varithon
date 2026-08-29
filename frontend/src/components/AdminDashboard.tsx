@@ -136,6 +136,7 @@ const ActionCard: React.FC<ActionCardProps> = ({
 import { SOSInbox } from '../pages/admin/SOSInbox';
 import { AdminVolunteers } from './AdminVolunteers';
 import { AlertBroadcast } from '../pages/admin/AlertBroadcast';
+import { NearbyServicesMap } from './NearbyServicesMap';
 
 export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   session,
@@ -145,7 +146,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
 }) => {
   const t = LABELS[language];
   const [mapRefreshing, setMapRefreshing] = useState(false);
-  const [currentView, setCurrentView] = useState<'dashboard' | 'sos-inbox' | 'volunteers' | 'alert-broadcast'>('dashboard');
+  const [currentView, setCurrentView] = useState<'dashboard' | 'sos-inbox' | 'volunteers' | 'alert-broadcast' | 'nearby-services'>('dashboard');
 
   const handleSignOut = async () => {
     await authService.logout();
@@ -215,6 +216,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
           <AdminVolunteers session={session} language={language} onBack={() => setCurrentView('dashboard')} />
         ) : currentView === 'alert-broadcast' ? (
           <AlertBroadcast onBack={() => setCurrentView('dashboard')} />
+        ) : currentView === 'nearby-services' ? (
+          <NearbyServicesMap onBack={() => setCurrentView('dashboard')} variant="admin" />
         ) : (
           <>
             {/* ── COMMAND MAP ── */}
@@ -258,6 +261,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                 colorClass="bg-gradient-to-br from-emerald-500 to-green-600"
                 glowClass="bg-emerald-400"
                 borderClass="border-emerald-100 hover:border-emerald-300"
+                onClick={() => setCurrentView('nearby-services')}
               />
               <ActionCard
                 id="btn-alerts-received"

@@ -106,6 +106,7 @@ const QuickActionCard: React.FC<{
 
 import { SOSPage } from '../pages/user/SOSPage';
 import { UserGroupsOverview } from './groups/UserGroupsOverview';
+import { NearbyServicesMap } from './NearbyServicesMap';
 import { UserGroupChat } from './groups/UserGroupChat';
 import { AlertsFeed } from '../pages/user/AlertsFeed';
 
@@ -117,7 +118,7 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({
 }) => {
   const t = LABELS[language];
   const [mapRefreshing, setMapRefreshing] = useState(false);
-  const [currentView, setCurrentView] = useState<'dashboard' | 'sos' | 'groups' | 'group-chat' | 'alerts'>('dashboard');
+  const [currentView, setCurrentView] = useState<'dashboard' | 'sos' | 'groups' | 'group-chat' | 'alerts' | 'nearby-services'>('dashboard');
   const [activeChatGroupId, setActiveChatGroupId] = useState<number | null>(null);
 
   const handleSignOut = async () => {
@@ -132,6 +133,23 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({
 
   if (currentView === 'sos') {
     return <SOSPage onBackToDashboard={() => setCurrentView('dashboard')} />;
+  }
+
+  if (currentView === 'nearby-services') {
+    return (
+      <div className="min-h-screen bg-[#faf7f2] flex flex-col font-sans">
+        <header className="sticky top-0 z-50 bg-white/85 backdrop-blur-md border-b border-orange-100 shadow-sm">
+          <div className="max-w-5xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between gap-3">
+            <div className="flex items-center gap-3 min-w-0">
+              <VariMitraLogo variant="light" />
+            </div>
+          </div>
+        </header>
+        <main className="flex-1 max-w-5xl mx-auto w-full px-4 sm:px-6 py-5">
+          <NearbyServicesMap onBack={() => setCurrentView('dashboard')} variant="user" />
+        </main>
+      </div>
+    );
   }
 
   return (
@@ -229,6 +247,7 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({
                 colorClass="bg-gradient-to-br from-emerald-500 to-teal-600"
                 glowClass="bg-emerald-400"
                 borderClass="border-emerald-100 hover:border-emerald-300"
+                onClick={() => setCurrentView('nearby-services')}
               />
 
               {/* Alerts */}

@@ -10,6 +10,7 @@ from .models import (
     GroupMember,
     GroupMessage,
     MessageReport,
+    NearbyResource,
 )
 
 class PalkhiLocationSerializer(serializers.ModelSerializer):
@@ -234,3 +235,9 @@ class GroupSerializer(serializers.ModelSerializer):
             })
         return result
 
+
+class NearbyResourceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = NearbyResource
+        fields = '__all__'
+        read_only_fields = ['id', 'created_at']
