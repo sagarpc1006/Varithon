@@ -10,9 +10,10 @@ class SOSReport(models.Model):
         ('general_issue', 'General Issue'),
     ]
     STATUS_CHOICES = [
-        ('open', 'Open'),
-        ('acknowledged', 'Acknowledged'),
-        ('resolved', 'Resolved'),
+        ('active', 'ACTIVE'),
+        ('acknowledged', 'ACKNOWLEDGED / RESPONDED'),
+        ('resolved', 'RESOLVED'),
+        ('open', 'ACTIVE'),
     ]
     reporter = models.ForeignKey(User, on_delete=models.CASCADE, related_name='reported_sos')
     admin = models.ForeignKey(User, null=True, blank=True, related_name='admin_reports', on_delete=models.SET_NULL)
@@ -20,7 +21,7 @@ class SOSReport(models.Model):
     description = models.TextField(null=True, blank=True)
     lat = models.FloatField()
     lng = models.FloatField()
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='open')
+    status = models.CharField(max_length=30, choices=STATUS_CHOICES, default='active')
     admin_reply = models.TextField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 

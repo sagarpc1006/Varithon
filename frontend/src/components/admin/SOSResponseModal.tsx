@@ -7,7 +7,7 @@ interface SOSResponseModalProps {
   item: FeedItemData | null;
   onClose: () => void;
   onSendReply: (id: number, reply: string) => Promise<void>;
-  onUpdateStatus: (id: number, newStatus: 'acknowledged' | 'resolved') => Promise<void>;
+  onUpdateStatus: (id: number, newStatus: 'acknowledged' | 'resolved' | 'active') => Promise<void>;
   isSubmitting: boolean;
 }
 
@@ -35,6 +35,9 @@ export const SOSResponseModal: React.FC<SOSResponseModalProps> = ({
     setReplyText('');
   };
 
+  const isResolved = item.status === 'resolved';
+  const isAcknowledged = item.status === 'acknowledged';
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs animate-in fade-in duration-150">
       <div className="bg-white w-full max-w-xl rounded-2xl shadow-2xl border border-[#D8CDBE] overflow-hidden flex flex-col max-h-[90vh]">
@@ -48,12 +51,12 @@ export const SOSResponseModal: React.FC<SOSResponseModalProps> = ({
                 <h3 className="text-lg font-bold text-[#181716] leading-tight">
                   {item.categoryTitle}
                 </h3>
-                <span className={`px-2 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wider ${
-                  item.status === 'resolved' ? 'bg-green-100 text-green-800' :
-                  item.status === 'acknowledged' ? 'bg-blue-100 text-blue-800' :
-                  'bg-red-100 text-[#B91C1C]'
+                <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-extrabold uppercase tracking-wider ${
+                  isResolved ? 'bg-green-100 text-green-800' :
+                  isAcknowledged ? 'bg-blue-100 text-blue-800' :
+                  'bg-red-100 text-red-800'
                 }`}>
-                  {item.status}
+                  {isResolved ? 'RESOLVED' : isAcknowledged ? 'ACKNOWLEDGED / RESPONDED' : 'ACTIVE'}
                 </span>
               </div>
               <p className="text-xs text-[#514A40] mt-0.5">

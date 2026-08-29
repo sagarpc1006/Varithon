@@ -91,6 +91,15 @@ export const RESOURCE_CONFIG: Record<string, ResourceMeta> = {
     borderColor: '#fca5a5',
     svgIcon: `<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#dc2626" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6v6h6v6h-6v6H9v-6H3V9h6V3z"/></svg>`,
   },
+  WASTE: {
+    key: 'WASTE',
+    label: 'Waste Management / Nirmal Wari',
+    shortLabel: 'Waste',
+    color: '#0d9488',
+    bgColor: '#f0fdfa',
+    borderColor: '#99f6e4',
+    svgIcon: `<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#0d9488" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>`,
+  },
 };
 
 const RESOURCE_TYPES_LIST = Object.values(RESOURCE_CONFIG);
@@ -153,7 +162,7 @@ function makeStopWithResourcesIcon(
 
   // If resources exist, render orange center dot with attached clean resource mini-badges directly at exact location
   const badgesHtml = stopResources
-    .slice(0, 4)
+    .slice(0, 6)
     .map((res) => {
       const cfg = RESOURCE_CONFIG[res.resource_type];
       if (!cfg) return '';
@@ -166,7 +175,7 @@ function makeStopWithResourcesIcon(
     })
     .join('');
 
-  const extraCount = stopResources.length > 4 ? `+${stopResources.length - 4}` : '';
+  const extraCount = stopResources.length > 6 ? `+${stopResources.length - 6}` : '';
 
   const html = `
     <div style="position: relative; display: flex; flex-direction: column; align-items: center; cursor: pointer;">
@@ -643,7 +652,7 @@ export const NearbyServicesMap: React.FC<NearbyServicesMapProps> = ({ onBack, va
               <p className="text-[11px] text-slate-500">
                 {isAdmin
                   ? 'Click any orange stop on the route to add / remove seva resources'
-                  : 'Live Palkhi stops with real-time food, water, medical & shelter points'}
+                  : 'Live Palkhi stops with real-time food, water, sanitation, shelter, medical & waste management points'}
               </p>
             </div>
           </div>

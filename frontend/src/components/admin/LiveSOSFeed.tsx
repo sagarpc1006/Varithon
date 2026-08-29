@@ -56,7 +56,7 @@ export const LiveSOSFeed: React.FC<LiveSOSFeedProps> = ({
     if (showLoading) setIsLoading(true);
     try {
       const data = await api.get<SOSReport[]>(
-        `/sos/nearby/?lat=${adminLocation.lat}&lng=${adminLocation.lng}&radius=5.0`
+        `/sos/nearby/?lat=${adminLocation.lat}&lng=${adminLocation.lng}`
       );
       if (Array.isArray(data)) {
         // Detect newly arrived alerts for animation
@@ -69,10 +69,13 @@ export const LiveSOSFeed: React.FC<LiveSOSFeedProps> = ({
         }
         prevCountRef.current = data.length;
         setReports(data);
-        if (onTotalCountChange) onTotalCountChange(data.length);
+        if (onTotalCountChange) {
+          const activeCount = data.filter(r => r.status === 'active' || r.status === 'open').length;
+          onTotalCountChange(activeCount);
+        }
       }
     } catch (err) {
-      console.warn("Using sample live feed data:", err);
+      console.warn("Error fetching live SOS feed:", err);
     } finally {
       if (showLoading) setIsLoading(false);
     }
@@ -82,56 +85,12 @@ export const LiveSOSFeed: React.FC<LiveSOSFeedProps> = ({
     fetchReports(true);
     const interval = setInterval(() => {
       fetchReports(false);
-    }, 15000);
+    }, 8000);
     return () => clearInterval(interval);
   }, []);
 
-  // Built-in fallback sample alerts if backend has no active records (matching the reference image!)
-  const sampleItems: FeedItemData[] = useMemo(() => [
-    {
-      id: 1042,
-      type: 'medical',
-      categoryTitle: 'Medical Emergency',
-      reporterName: 'Ramesh Kumar',
-      variMitraId: 'ID: V-1042',
-      distanceKm: 1.2,
-      timeAgo: 'Just now',
-      description: 'Severe dehydration & muscle cramps near Saswad junction.',
-      status: 'open',
-      mobile: '9876543210',
-    },
-    {
-      id: 891,
-      type: 'lost_person',
-      categoryTitle: 'Lost Person',
-      reporterName: 'Sita Devi',
-      variMitraId: 'ID: V-0891',
-      distanceKm: 0.5,
-      timeAgo: '5m ago',
-      description: 'Separated from Alandi Dindi No. 1 near first aid post.',
-      status: 'open',
-      mobile: '9822011223',
-    },
-    {
-      id: 2201,
-      type: 'issue',
-      categoryTitle: 'General Issue',
-      reporterName: 'Anil Sharma',
-      variMitraId: 'ID: V-2201',
-      distanceKm: 3.1,
-      timeAgo: '12m ago',
-      description: 'Water tanker supply disruption near dindi holding ground.',
-      status: 'acknowledged',
-      mobile: '9890123456',
-    },
-  ], []);
-
   // Map backend reports to FeedItemData structure
   const formattedReports: FeedItemData[] = useMemo(() => {
-    if (reports.length === 0) {
-      return sampleItems;
-    }
-
     return reports.map((r) => {
       let categoryTitle = 'General Issue';
       let normType = r.type;
@@ -139,14 +98,20 @@ export const LiveSOSFeed: React.FC<LiveSOSFeedProps> = ({
       if (r.type === 'medical') {
         categoryTitle = 'Medical Emergency';
       } else if (r.type === 'lost_item' || r.type === 'lost_person') {
-        categoryTitle = 'Lost Person';
-        normType = 'lost_person';
+        categoryTitle = 'Lost Item / Person';
+        normType = 'lost_item';
       } else if (r.type === 'restroom') {
-        categoryTitle = 'Restroom Issue';
+        categoryTitle = 'Restroom Assistance';
+      } else if (r.type === 'issue' || r.type === 'general_issue') {
+        categoryTitle = 'General Issue';
       }
 
       const dist = calculateDistance(adminLocation.lat, adminLocation.lng, r.lat, r.lng);
       const isNew = r.id === newArrivalId;
+      const rawStatus = (r.status || 'active').toLowerCase();
+      const status: 'active' | 'acknowledged' | 'resolved' =
+        rawStatus === 'resolved' ? 'resolved' :
+        rawStatus === 'acknowledged' || rawStatus === 'responded' ? 'acknowledged' : 'active';
 
       return {
         id: r.id,
@@ -157,15 +122,15 @@ export const LiveSOSFeed: React.FC<LiveSOSFeedProps> = ({
         distanceKm: dist > 0 ? dist : 0.8,
         timeAgo: formatTimeAgo(r.created_at),
         description: r.description,
-        status: (r.status as any) || 'open',
+        status,
         adminReply: r.admin_reply,
         mobile: r.reporter_mobile,
         isNew,
       };
     });
-  }, [reports, sampleItems, adminLocation, newArrivalId]);
+  }, [reports, adminLocation, newArrivalId]);
 
-  // Urgency Priority Sorting: Medical (1) -> Lost (2) -> Issue (3) -> Other, then newest
+  // Urgency Priority Sorting: Active first (Medical -> Lost -> Issue -> Restroom), then resolved
   const sortedReports = useMemo(() => {
     const priorityOrder: Record<string, number> = {
       medical: 1,
@@ -177,25 +142,30 @@ export const LiveSOSFeed: React.FC<LiveSOSFeedProps> = ({
     };
 
     return [...formattedReports].sort((a, b) => {
-      // If one is resolved and other isn't, put active first
+      // 1. Active & Acknowledged before Resolved
       if (a.status === 'resolved' && b.status !== 'resolved') return 1;
       if (a.status !== 'resolved' && b.status === 'resolved') return -1;
 
+      // 2. Unacknowledged Active before Acknowledged
+      if (a.status === 'active' && b.status === 'acknowledged') return -1;
+      if (a.status === 'acknowledged' && b.status === 'active') return 1;
+
+      // 3. Urgency type
       const pA = priorityOrder[a.type.toLowerCase()] || 5;
       const pB = priorityOrder[b.type.toLowerCase()] || 5;
       if (pA !== pB) return pA - pB;
 
+      // 4. Newest ID
       return b.id - a.id;
     });
   }, [formattedReports]);
 
-  // Filter application
+  // Filter application: ALL | ACTIVE | ACKNOWLEDGED / RESPONDED | RESOLVED
   const filteredReports = useMemo(() => {
     return sortedReports.filter((item) => {
-      if (activeFilter === 'all') return item.status !== 'resolved';
-      if (activeFilter === 'medical') return item.type === 'medical' && item.status !== 'resolved';
-      if (activeFilter === 'lost') return (item.type === 'lost_person' || item.type === 'lost_item') && item.status !== 'resolved';
-      if (activeFilter === 'issue') return (item.type === 'issue' || item.type === 'general_issue') && item.status !== 'resolved';
+      if (activeFilter === 'all') return true;
+      if (activeFilter === 'active') return item.status === 'active';
+      if (activeFilter === 'acknowledged') return item.status === 'acknowledged';
       if (activeFilter === 'resolved') return item.status === 'resolved';
       return true;
     });
@@ -204,10 +174,9 @@ export const LiveSOSFeed: React.FC<LiveSOSFeedProps> = ({
   // Filter counts
   const filterCounts = useMemo(() => {
     return {
-      all: sortedReports.filter(r => r.status !== 'resolved').length,
-      medical: sortedReports.filter(r => r.type === 'medical' && r.status !== 'resolved').length,
-      lost: sortedReports.filter(r => (r.type === 'lost_person' || r.type === 'lost_item') && r.status !== 'resolved').length,
-      issue: sortedReports.filter(r => (r.type === 'issue' || r.type === 'general_issue') && r.status !== 'resolved').length,
+      all: sortedReports.length,
+      active: sortedReports.filter(r => r.status === 'active').length,
+      acknowledged: sortedReports.filter(r => r.status === 'acknowledged').length,
       resolved: sortedReports.filter(r => r.status === 'resolved').length,
     };
   }, [sortedReports]);
@@ -227,7 +196,7 @@ export const LiveSOSFeed: React.FC<LiveSOSFeedProps> = ({
   };
 
   // Handle status update
-  const handleUpdateStatus = async (id: number, newStatus: 'acknowledged' | 'resolved') => {
+  const handleUpdateStatus = async (id: number, newStatus: 'acknowledged' | 'resolved' | 'active') => {
     setIsModalSubmitting(true);
     try {
       await api.put(`/sos/${id}/status/`, { status: newStatus });

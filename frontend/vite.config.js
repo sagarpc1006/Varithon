@@ -5,6 +5,7 @@ import tailwindcss from '@tailwindcss/vite'
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   optimizeDeps: {
+    include: ['firebase/app', 'firebase/auth', 'firebase/analytics'],
     exclude: ['maplibre-gl'],
   },
   server: {

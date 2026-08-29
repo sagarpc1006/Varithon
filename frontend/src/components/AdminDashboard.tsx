@@ -72,39 +72,75 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   const [broadcasting, setBroadcasting] = useState(false);
   const [broadcastSuccess, setBroadcastSuccess] = useState(false);
 
-  // Quick Incidents State
+  // Live SOS Incidents State
+  const [activeSOSCount, setActiveSOSCount] = useState<number>(0);
   const [incidents, setIncidents] = useState([
     {
       id: "INC-092",
-      type: "Medical",
+      type: "Medical Emergency",
       icon: Heart,
       iconColor: "text-rose-500 bg-rose-50 border-rose-200",
-      location: "Sector 4, Path B",
-      status: "CRITICAL",
+      location: "Saswad Geofence",
+      status: "ACTIVE",
       statusColor: "bg-red-50 text-red-700 border-red-200 font-bold",
-      time: "2 mins ago",
+      time: "Just now",
     },
     {
       id: "INC-091",
-      type: "Lost Person",
+      type: "Lost Item / Person",
       icon: Users,
       iconColor: "text-amber-500 bg-amber-50 border-amber-200",
-      location: "Base Camp Alpha",
-      status: "INVESTIGATING",
-      statusColor: "bg-amber-50 text-amber-700 border-amber-200 font-bold",
-      time: "8 mins ago",
-    },
-    {
-      id: "INC-090",
-      type: "Logistics",
-      icon: Package,
-      iconColor: "text-blue-500 bg-blue-50 border-blue-200",
-      location: "Gate 2 (Water Shortage)",
-      status: "PENDING",
-      statusColor: "bg-blue-50 text-blue-700 border-blue-200 font-bold",
-      time: "15 mins ago",
+      location: "Alandi Palkhi Route",
+      status: "ACTIVE",
+      statusColor: "bg-red-50 text-red-700 border-red-200 font-bold",
+      time: "5 mins ago",
     },
   ]);
+
+  // Fetch live SOS reports count
+  useEffect(() => {
+    const fetchSOSCount = async () => {
+      try {
+        const data = await api.get<any[]>('/sos/nearby/');
+        if (Array.isArray(data)) {
+          const activeReports = data.filter(r => r.status === 'active' || r.status === 'open' || r.status === 'acknowledged');
+          setActiveSOSCount(activeReports.length);
+          if (data.length > 0) {
+            setIncidents(
+              data.slice(0, 5).map((r) => {
+                const isMed = r.type === 'medical';
+                const isLost = r.type === 'lost_item' || r.type === 'lost_person';
+                const rawStatus = (r.status || 'active').toLowerCase();
+                const displayStatus = rawStatus === 'resolved' ? 'RESOLVED' : rawStatus === 'acknowledged' ? 'RESPONDED' : 'ACTIVE';
+                const statusColor = rawStatus === 'resolved'
+                  ? 'bg-green-50 text-green-700 border-green-200 font-bold'
+                  : rawStatus === 'acknowledged'
+                  ? 'bg-blue-50 text-blue-700 border-blue-200 font-bold'
+                  : 'bg-red-50 text-red-700 border-red-200 font-bold';
+
+                return {
+                  id: `SOS-${r.id}`,
+                  type: isMed ? 'Medical Emergency' : isLost ? 'Lost Item / Person' : r.type === 'restroom' ? 'Restroom Assistance' : 'General Issue',
+                  icon: isMed ? Heart : isLost ? Users : Package,
+                  iconColor: isMed ? 'text-rose-500 bg-rose-50 border-rose-200' : isLost ? 'text-amber-500 bg-amber-50 border-amber-200' : 'text-blue-500 bg-blue-50 border-blue-200',
+                  location: `${r.lat.toFixed(3)}, ${r.lng.toFixed(3)}`,
+                  status: displayStatus,
+                  statusColor,
+                  time: 'Live',
+                };
+              })
+            );
+          }
+        }
+      } catch (err) {
+        console.warn("Could not fetch SOS count in admin:", err);
+      }
+    };
+
+    fetchSOSCount();
+    const interval = setInterval(fetchSOSCount, 8000);
+    return () => clearInterval(interval);
+  }, []);
 
   // Activity Log State
   const [activityLogs, setActivityLogs] = useState([
@@ -274,9 +310,11 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                 <Bell size={16} />
                 <span>Incidents (SOS)</span>
               </div>
-              <span className="text-[10px] font-extrabold bg-red-500 text-white px-1.5 py-0.5 rounded-full">
-                3
-              </span>
+              {activeSOSCount > 0 && (
+                <span className="text-[10px] font-extrabold bg-red-500 text-white px-1.5 py-0.5 rounded-full animate-pulse">
+                  {activeSOSCount}
+                </span>
+              )}
             </button>
 
             {/* 4. Update Emergency Alerts */}

@@ -41,10 +41,10 @@ export const SOSPage: React.FC<SOSPageProps> = ({ onBackToDashboard }) => {
     setSession(s);
     fetchMyReports();
 
-    // Auto-poll history for admin replies every 15s
+    // Auto-poll history for admin replies every 8s
     const timer = setInterval(() => {
       fetchMyReports(false);
-    }, 15000);
+    }, 8000);
 
     return () => clearInterval(timer);
   }, []);

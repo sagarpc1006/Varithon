@@ -37,7 +37,7 @@ export interface SevaResourceData {
   id: number;
   name: string;
   name_mr?: string;
-  category: 'MEDICAL' | 'WATER' | 'FOOD' | 'SHELTER' | 'SANITATION';
+  category: 'MEDICAL' | 'WATER' | 'FOOD' | 'SHELTER' | 'SANITATION' | 'WASTE';
   location_name: string;
   distance_meters: number;
   contact_number: string;

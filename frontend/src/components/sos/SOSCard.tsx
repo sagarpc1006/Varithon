@@ -26,28 +26,37 @@ interface SOSCardProps {
 
 export const SOSCard: React.FC<SOSCardProps> = ({ report, onReply, onStatusChange, isAdmin = false }) => {
     const isMedical = report.type === 'medical';
+    const rawStatus = (report.status || 'active').toLowerCase();
+    const isResolved = rawStatus === 'resolved';
+    const isAcknowledged = rawStatus === 'acknowledged' || rawStatus === 'responded';
     
     // Compute display targets
     const reportedByDisplay = report.reported_by || report.reporter_name || 'Pilgrim';
     const reportedToDisplay = report.reported_to || report.admin_name 
         ? (report.reported_to || report.admin_name)
         : (isMedical ? 'Nearby Admins & Medical Volunteers (Broadcast)' : 'Nearby Wari Control Room Admins');
+
+    let categoryTitle = 'General Issue';
+    if (report.type === 'medical') categoryTitle = 'Medical Emergency';
+    else if (report.type === 'lost_item' || report.type === 'lost_person') categoryTitle = 'Lost Item / Person';
+    else if (report.type === 'restroom') categoryTitle = 'Restroom Assistance';
+    else if (report.type === 'issue' || report.type === 'general_issue') categoryTitle = 'Report Incident / Issue';
     
     return (
-        <div className={`p-4 mb-4 border rounded-xl shadow-sm ${isMedical ? 'border-red-500 bg-red-50' : 'border-gray-200 bg-white'}`}>
+        <div className={`p-4 mb-4 border rounded-xl shadow-sm ${isMedical ? 'border-red-500 bg-red-50/50' : 'border-gray-200 bg-white'}`}>
             <div className="flex justify-between items-start mb-2">
                 <div>
-                    <h3 className={`font-bold text-lg ${isMedical ? 'text-red-700' : 'text-gray-900'}`}>
-                        {report.type.replace('_', ' ').toUpperCase()} {isMedical && '🚨'}
+                    <h3 className={`font-bold text-base sm:text-lg ${isMedical ? 'text-red-700' : 'text-gray-900'}`}>
+                        {categoryTitle} {isMedical && '🚨'}
                     </h3>
-                    <p className="text-sm text-gray-500">{new Date(report.created_at).toLocaleString()}</p>
+                    <p className="text-xs text-gray-500">{new Date(report.created_at).toLocaleString()}</p>
                 </div>
-                <span className={`px-2 py-1 text-xs font-semibold rounded-full ${
-                    report.status === 'resolved' ? 'bg-green-100 text-green-800' :
-                    report.status === 'acknowledged' ? 'bg-blue-100 text-blue-800' :
-                    'bg-yellow-100 text-yellow-800'
+                <span className={`px-2.5 py-0.5 text-xs font-extrabold rounded-full uppercase tracking-wider ${
+                    isResolved ? 'bg-green-100 text-green-800' :
+                    isAcknowledged ? 'bg-blue-100 text-blue-800' :
+                    'bg-red-100 text-red-800 animate-pulse'
                 }`}>
-                    {report.status.toUpperCase()}
+                    {isResolved ? 'RESOLVED' : isAcknowledged ? 'ACKNOWLEDGED / RESPONDED' : 'ACTIVE'}
                 </span>
             </div>
 

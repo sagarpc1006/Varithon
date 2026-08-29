@@ -27,7 +27,7 @@ export const SpecificHelpSection: React.FC<SpecificHelpSectionProps> = ({
     },
     {
       id: 'issue' as HelpType,
-      title: 'Report Issue',
+      title: 'Report Incident / Issue',
       marathi: 'समस्या नोंदवा',
       badgeBg: 'bg-[#F7C52A]',
       badgeColor: 'text-[#3A2A00]',
@@ -41,8 +41,8 @@ export const SpecificHelpSection: React.FC<SpecificHelpSectionProps> = ({
     },
     {
       id: 'restroom' as HelpType,
-      title: 'Find Restroom',
-      marathi: 'शौचालय शोधा',
+      title: 'Restroom Assistance',
+      marathi: 'शौचालय सहाय्य',
       badgeBg: 'bg-[#7A8E77]',
       badgeColor: 'text-white',
       icon: (
@@ -53,8 +53,8 @@ export const SpecificHelpSection: React.FC<SpecificHelpSectionProps> = ({
     },
     {
       id: 'lost_item' as HelpType,
-      title: 'Lost Item',
-      marathi: 'हरवलेली वस्तू',
+      title: 'Lost Item / Person',
+      marathi: 'हरवलेली वस्तू / व्यक्ती',
       badgeBg: 'bg-[#C2B5A5]',
       badgeColor: 'text-[#302720]',
       icon: (

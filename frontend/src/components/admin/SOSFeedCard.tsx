@@ -12,7 +12,7 @@ export interface FeedItemData {
   distanceKm: number;
   timeAgo: string;
   description?: string;
-  status: 'open' | 'acknowledged' | 'resolved';
+  status: 'active' | 'acknowledged' | 'resolved' | 'open';
   adminReply?: string | null;
   mobile?: string;
   isNew?: boolean;
@@ -41,21 +41,37 @@ export const SOSFeedCard: React.FC<SOSFeedCardProps> = ({ item, onActionClick })
     categoryTextColor = 'text-[#2563EB]';
   }
 
+  const isResolved = item.status === 'resolved';
+  const isAcknowledged = item.status === 'acknowledged';
+
   return (
     <div
       className={`bg-[#FFFDFC] rounded-[10px] border border-[#D8CDBE] border-l-4 ${leftBorderClass} p-4 sm:p-4.5 shadow-[0_1px_4px_rgba(0,0,0,0.03)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.06)] hover:-translate-y-0.5 transition-all duration-150 flex flex-col justify-between gap-3 ${
         item.isNew ? 'ring-2 ring-red-300/60 animate-in fade-in slide-in-from-top-3 duration-300' : ''
       }`}
     >
-      {/* ── Top Row: Category + Time Received ── */}
+      {/* ── Top Row: Category + Status Badge + Time Received ── */}
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-1.5 font-bold text-xs sm:text-[13px] tracking-tight">
           <EmergencyTypeIcon type={item.type} className="w-4 h-4" />
           <span className={categoryTextColor}>{item.categoryTitle}</span>
         </div>
-        <span className="text-xs text-[#7A7165] font-medium shrink-0">
-          {item.timeAgo}
-        </span>
+        <div className="flex items-center gap-2">
+          <span
+            className={`px-2 py-0.5 rounded-full text-[10px] font-extrabold tracking-wide uppercase ${
+              isResolved
+                ? 'bg-green-100 text-green-800'
+                : isAcknowledged
+                ? 'bg-blue-100 text-blue-800'
+                : 'bg-red-100 text-red-800 animate-pulse'
+            }`}
+          >
+            {isResolved ? 'RESOLVED' : isAcknowledged ? 'RESPONDED' : 'ACTIVE'}
+          </span>
+          <span className="text-xs text-[#7A7165] font-medium shrink-0">
+            {item.timeAgo}
+          </span>
+        </div>
       </div>
 
       {/* ── Middle Row: Person Name + VariMitra ID ── */}

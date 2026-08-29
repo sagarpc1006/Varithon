@@ -76,6 +76,7 @@ class SevaResource(models.Model):
         ('FOOD', 'Annachatra / Mahaprasad'),
         ('SHELTER', 'Night Shelter & Tent Ground'),
         ('SANITATION', 'Mobile Toilets & Sanitation'),
+        ('WASTE', 'Waste Management & Nirmal Wari'),
     )
 
     name = models.CharField(max_length=150)
@@ -217,13 +218,14 @@ class MessageReport(models.Model):
 
 
 class NearbyResource(models.Model):
-    """Resources (food, water, toilets, restrooms, medical) pinned by admin at Palkhi route stops."""
+    """Resources (food, water, toilets, restrooms, medical, waste) pinned by admin at Palkhi route stops."""
     RESOURCE_TYPE_CHOICES = (
         ('FOOD', 'Food / Annachatra'),
         ('WATER', 'Water Point'),
         ('TOILETS', 'Toilets'),
         ('RESTROOMS', 'Restrooms'),
         ('MEDICAL', 'Medical Camp'),
+        ('WASTE', 'Waste Management / Nirmal Wari'),
     )
 
     resource_type = models.CharField(max_length=20, choices=RESOURCE_TYPE_CHOICES)
