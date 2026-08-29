@@ -101,7 +101,17 @@ export const authService = {
     return this.getStoredSession();
   },
 
-  // 7. Logout
+  // 7. Update Profile
+  async updateProfile(data: Partial<UserSession> & { dindi_number?: string; emergency_contact?: string }): Promise<UserSession> {
+    const res = await api.patch<{ message: string; session: UserSession }>('/auth/me/', data);
+    if (res && res.session) {
+      this.saveSession(res.session);
+      return res.session;
+    }
+    throw new Error('Failed to update profile.');
+  },
+
+  // 8. Logout
   async logout(): Promise<void> {
     try {
       await api.post('/auth/logout/');

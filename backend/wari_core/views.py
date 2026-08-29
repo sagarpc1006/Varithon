@@ -777,3 +777,101 @@ class AdminReportsListView(APIView):
         }, status=status.HTTP_200_OK)
 
 
+class WariWeatherView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        location = request.query_params.get('location', 'Saswad')
+        
+        weather_data = {
+            'Alandi': {
+                'temp_c': 27, 'feels_like_c': 29, 'condition': 'Partly Cloudy', 'condition_code': 'partly_cloudy',
+                'humidity': 78, 'precipitation_prob': 20, 'wind_kph': 14, 'uv_index': 6,
+                'advisory': 'Mild humidity. Good trekking conditions in early morning.',
+                'status': 'optimal'
+            },
+            'Pune': {
+                'temp_c': 28, 'feels_like_c': 30, 'condition': 'Light Drizzle', 'condition_code': 'rain_light',
+                'humidity': 82, 'precipitation_prob': 45, 'wind_kph': 16, 'uv_index': 5,
+                'advisory': 'Passing light showers expected. Keep rain ponchos accessible.',
+                'status': 'caution'
+            },
+            'Dive Ghat': {
+                'temp_c': 25, 'feels_like_c': 26, 'condition': 'Foggy & Gusty', 'condition_code': 'windy',
+                'humidity': 88, 'precipitation_prob': 60, 'wind_kph': 26, 'uv_index': 4,
+                'advisory': 'Ghat section is misty with strong crosswinds. Watch slippery stone paths.',
+                'status': 'warning'
+            },
+            'Saswad': {
+                'temp_c': 26, 'feels_like_c': 27, 'condition': 'Overcast & Cool', 'condition_code': 'cloudy',
+                'humidity': 74, 'precipitation_prob': 30, 'wind_kph': 18, 'uv_index': 5,
+                'advisory': 'Comfortable walking weather. Adequate water points available.',
+                'status': 'optimal'
+            },
+            'Jejuri': {
+                'temp_c': 29, 'feels_like_c': 32, 'condition': 'Sunny & Warm', 'condition_code': 'sunny',
+                'humidity': 62, 'precipitation_prob': 10, 'wind_kph': 12, 'uv_index': 8,
+                'advisory': 'High afternoon UV index. Wear caps/turbans and stay hydrated.',
+                'status': 'optimal'
+            },
+            'Lonand': {
+                'temp_c': 30, 'feels_like_c': 33, 'condition': 'Partly Cloudy', 'condition_code': 'partly_cloudy',
+                'humidity': 65, 'precipitation_prob': 15, 'wind_kph': 15, 'uv_index': 7,
+                'advisory': 'Warm breeze across sugarcane plains. Refill water bottles frequently.',
+                'status': 'optimal'
+            },
+            'Phaltan': {
+                'temp_c': 31, 'feels_like_c': 34, 'condition': 'Scattered Clouds', 'condition_code': 'partly_cloudy',
+                'humidity': 58, 'precipitation_prob': 10, 'wind_kph': 14, 'uv_index': 8,
+                'advisory': 'Clear trek paths. Rest under designated Seva shelters during noon.',
+                'status': 'optimal'
+            },
+            'Natepute': {
+                'temp_c': 28, 'feels_like_c': 30, 'condition': 'Moderate Rain', 'condition_code': 'rain_moderate',
+                'humidity': 85, 'precipitation_prob': 75, 'wind_kph': 20, 'uv_index': 4,
+                'advisory': 'Rain spells likely during afternoon procession. Waterproof footwear recommended.',
+                'status': 'caution'
+            },
+            'Velapur': {
+                'temp_c': 29, 'feels_like_c': 31, 'condition': 'Overcast', 'condition_code': 'cloudy',
+                'humidity': 70, 'precipitation_prob': 25, 'wind_kph': 16, 'uv_index': 6,
+                'advisory': 'Mild breeze with cloud cover. Pleasant evening walking conditions.',
+                'status': 'optimal'
+            },
+            'Pandharpur': {
+                'temp_c': 30, 'feels_like_c': 33, 'condition': 'Passing Showers', 'condition_code': 'rain_light',
+                'humidity': 76, 'precipitation_prob': 40, 'wind_kph': 18, 'uv_index': 7,
+                'advisory': 'Chandrabhaga river banks are cool. Evening Aarti weather is pleasant.',
+                'status': 'optimal'
+            },
+        }
+
+        current = weather_data.get(location, weather_data['Saswad'])
+
+        hourly = [
+            {'time': '06:00 AM', 'temp_c': 23, 'condition': 'Clear & Cool', 'rain_prob': 10, 'icon': 'cloudy'},
+            {'time': '09:00 AM', 'temp_c': 26, 'condition': 'Mild Sunshine', 'rain_prob': 15, 'icon': 'sunny'},
+            {'time': '12:00 PM', 'temp_c': 30, 'condition': 'Warm & Humid', 'rain_prob': 25, 'icon': 'partly_cloudy'},
+            {'time': '03:00 PM', 'temp_c': 28, 'condition': 'Scattered Clouds', 'rain_prob': 35, 'icon': 'rain_light'},
+            {'time': '06:00 PM', 'temp_c': 26, 'condition': 'Gentle Breeze', 'rain_prob': 20, 'icon': 'cloudy'},
+            {'time': '09:00 PM', 'temp_c': 24, 'condition': 'Pleasant Night', 'rain_prob': 10, 'icon': 'cloudy'},
+        ]
+
+        five_day = [
+            {'day': 'Today (Day 4)', 'halt': 'Saswad', 'temp_high': 29, 'temp_low': 22, 'condition': 'Overcast & Cool', 'rain_prob': 30},
+            {'day': 'Tomorrow (Day 5)', 'halt': 'Jejuri', 'temp_high': 31, 'temp_low': 23, 'condition': 'Sunny & Warm', 'rain_prob': 15},
+            {'day': 'Day 6', 'halt': 'Valhe / Lonand', 'temp_high': 30, 'temp_low': 22, 'condition': 'Passing Showers', 'rain_prob': 45},
+            {'day': 'Day 7', 'halt': 'Taradgaon', 'temp_high': 30, 'temp_low': 23, 'condition': 'Partly Cloudy', 'rain_prob': 20},
+            {'day': 'Day 8', 'halt': 'Phaltan', 'temp_high': 32, 'temp_low': 24, 'condition': 'Scattered Sunshine', 'rain_prob': 10},
+        ]
+
+        return Response({
+            'selected_location': location,
+            'current': current,
+            'all_locations': weather_data,
+            'hourly': hourly,
+            'five_day_forecast': five_day,
+            'last_updated': timezone.now().strftime('%I:%M %p')
+        }, status=status.HTTP_200_OK)
+
+

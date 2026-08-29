@@ -281,10 +281,61 @@ class MeView(APIView):
                     'email': request.user.email,
                     'mobile_number': profile.mobile_number,
                     'organization': profile.organization,
+                    'dindi_number': profile.dindi_number,
+                    'emergency_contact': profile.emergency_contact,
                     'id': request.user.id
-                }
+                },
+                'profile': serializer.data
             })
         return Response({'authenticated': False, 'session': None})
+
+    def put(self, request):
+        return self.patch(request)
+
+    def patch(self, request):
+        if not request.user.is_authenticated:
+            return Response({'error': 'Authentication required'}, status=status.HTTP_401_UNAUTHORIZED)
+        
+        user = request.user
+        profile, _ = UserProfile.objects.get_or_create(user=user)
+
+        data = request.data
+        name = data.get('name', '').strip()
+        if name:
+            parts = name.split(' ', 1)
+            user.first_name = parts[0]
+            user.last_name = parts[1] if len(parts) > 1 else ''
+        
+        if 'email' in data:
+            user.email = data['email'].strip()
+        user.save()
+
+        if 'mobile_number' in data:
+            profile.mobile_number = data['mobile_number'].strip() or None
+        if 'organization' in data:
+            profile.organization = data['organization'].strip()
+        if 'dindi_number' in data:
+            profile.dindi_number = data['dindi_number'].strip()
+        if 'emergency_contact' in data:
+            profile.emergency_contact = data['emergency_contact'].strip()
+        profile.save()
+
+        serializer = UserProfileSerializer(profile)
+        return Response({
+            'message': 'Profile updated successfully!',
+            'session': {
+                'role': profile.role,
+                'identifier': profile.mobile_number or user.email or user.username,
+                'name': serializer.data['name'],
+                'email': user.email,
+                'mobile_number': profile.mobile_number,
+                'organization': profile.organization,
+                'dindi_number': profile.dindi_number,
+                'emergency_contact': profile.emergency_contact,
+                'id': user.id
+            },
+            'profile': serializer.data
+        }, status=status.HTTP_200_OK)
 
 
 class LogoutView(APIView):

@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Language, ScreenType, PortalType, UserSession } from './types';
 import { HomeScreen } from './components/HomeScreen';
 import { SignInScreen } from './components/SignInScreen';
-import { PostLoginScreen } from './components/PostLoginScreen';
 import { UserDashboard } from './components/UserDashboard';
 import { AdminDashboard } from './components/AdminDashboard';
 import { authService } from './services/auth';
