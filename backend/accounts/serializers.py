@@ -61,3 +61,21 @@ class ResetPasswordSerializer(serializers.Serializer):
     identifier = serializers.CharField(required=True)
     otp = serializers.CharField(required=True, max_length=6)
     new_password = serializers.CharField(required=True, min_length=4)
+
+
+class CheckIdentifierSerializer(serializers.Serializer):
+    identifier = serializers.CharField(required=True)
+    role = serializers.ChoiceField(choices=['pilgrim', 'admin'], default='pilgrim')
+
+
+class FirebaseLoginSerializer(serializers.Serializer):
+    email = serializers.EmailField(required=True)
+    name = serializers.CharField(required=False, allow_blank=True, default='')
+    uid = serializers.CharField(required=False, allow_blank=True, default='')
+    role = serializers.ChoiceField(choices=['pilgrim', 'admin'], default='pilgrim')
+    phone_number = serializers.CharField(required=False, allow_blank=True, default='')
+    photo_url = serializers.CharField(required=False, allow_blank=True, default='')
+    organization = serializers.CharField(required=False, allow_blank=True, default='')
+    id_token = serializers.CharField(required=False, allow_blank=True, default='')
+
+

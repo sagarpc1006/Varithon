@@ -50,6 +50,15 @@ export interface Translations {
   needAdminAccount: string;
   requestAccess: string;
   
+  // Role & Error notices
+  switchToAdminPortal: string;
+  switchToPilgrimPortal: string;
+  accountNotFoundPilgrim: string;
+  accountNotFoundAdmin: string;
+  registerWithNumber: string;
+  requestWithEmail: string;
+  roleMismatchNotice: string;
+  
   // Feature highlights
   aiAssistantTitle: string;
   aiAssistantDesc: string;
@@ -109,6 +118,14 @@ export const translations: Record<Language, Translations> = {
     needAdminAccount: "Need an admin account?",
     requestAccess: "Request Access",
     
+    switchToAdminPortal: "Switch to Admin Portal",
+    switchToPilgrimPortal: "Switch to Pilgrim Portal",
+    accountNotFoundPilgrim: "No account found with this mobile number. Please register to continue.",
+    accountNotFoundAdmin: "No Admin account found with this email. Please request admin access.",
+    registerWithNumber: "Create Account with this Number",
+    requestWithEmail: "Request Admin Access with this Email",
+    roleMismatchNotice: "Account belongs to a different portal",
+    
     aiAssistantTitle: "AI Assistant",
     aiAssistantDesc: "24/7 help in Marathi, Hindi, English",
     liveLocationTitle: "Live Location",
@@ -165,6 +182,14 @@ export const translations: Record<Language, Translations> = {
     needAdminAccount: "प्रशासक खाते हवे आहे?",
     requestAccess: "परवानगीसाठी विनंती करा",
     
+    switchToAdminPortal: "प्रशासक पोर्टलवर जा",
+    switchToPilgrimPortal: "वारकरी पोर्टलवर जा",
+    accountNotFoundPilgrim: "या मोबाईल नंबरवर कोणतेही खाते नाही. कृपया नवीन खाते तयार करा.",
+    accountNotFoundAdmin: "या ईमेलवर प्रशासक खाते नाही. कृपया परवानगी विनंती पाठवा.",
+    registerWithNumber: "या नंबरवर नवीन खाते तयार करा",
+    requestWithEmail: "या ईमेलने परवानगी विनंती करा",
+    roleMismatchNotice: "हे खाते दुसऱ्या पोर्टलचे आहे",
+    
     aiAssistantTitle: "AI सहाय्यक",
     aiAssistantDesc: "मराठी, हिंदी, इंग्रजीत २४/७ मदत",
     liveLocationTitle: "थेट स्थान (Live)",
@@ -220,6 +245,14 @@ export const translations: Record<Language, Translations> = {
     createPilgrimAccount: "वारकरी खाता बनाएं",
     needAdminAccount: "एडमिन खाता चाहिए?",
     requestAccess: "एक्सेस का अनुरोध करें",
+    
+    switchToAdminPortal: "एडमिन पोर्टल पर जाएं",
+    switchToPilgrimPortal: "वारकरी पोर्टल पर जाएं",
+    accountNotFoundPilgrim: "इस मोबाइल नंबर पर कोई खाता नहीं मिला। कृपया नया खाता बनाएं।",
+    accountNotFoundAdmin: "इस ईमेल पर कोई एडमिन खाता नहीं मिला। कृपया एक्सेस का अनुरोध करें।",
+    registerWithNumber: "इस नंबर से नया खाता बनाएं",
+    requestWithEmail: "इस ईमेल से एक्सेस अनुरोध भेजें",
+    roleMismatchNotice: "यह खाता दूसरे पोर्टल का है",
     
     aiAssistantTitle: "AI सहायक",
     aiAssistantDesc: "मराठी, हिंदी, अंग्रेजी में 24/7 सहायता",

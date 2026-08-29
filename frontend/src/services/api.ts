@@ -61,7 +61,11 @@ class ApiClient {
 
       if (!response.ok) {
         const errorMessage = data?.error || data?.detail || data?.message || `HTTP Error ${response.status}: ${response.statusText}`;
-        throw new Error(typeof errorMessage === 'string' ? errorMessage : JSON.stringify(errorMessage));
+        const err: any = new Error(typeof errorMessage === 'string' ? errorMessage : JSON.stringify(errorMessage));
+        err.data = data;
+        err.code = data?.code;
+        err.status = response.status;
+        throw err;
       }
 
       return data as T;
@@ -89,7 +93,12 @@ class ApiClient {
             data = { raw: text };
           }
           if (!fallbackRes.ok) {
-            throw new Error(data?.error || data?.detail || data?.message || `Error ${fallbackRes.status}`);
+            const errorMessage = data?.error || data?.detail || data?.message || `Error ${fallbackRes.status}`;
+            const err: any = new Error(typeof errorMessage === 'string' ? errorMessage : JSON.stringify(errorMessage));
+            err.data = data;
+            err.code = data?.code;
+            err.status = fallbackRes.status;
+            throw err;
           }
           return data as T;
         } catch (fallbackErr: any) {

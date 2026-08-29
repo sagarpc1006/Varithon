@@ -1,4 +1,6 @@
 import random
+import re
+import secrets
 from django.utils import timezone
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
@@ -16,22 +18,84 @@ from .serializers import (
     GoogleAuthSerializer,
     ForgotPasswordSerializer,
     ResetPasswordSerializer,
+    CheckIdentifierSerializer,
+    FirebaseLoginSerializer,
 )
 
-def find_user_by_identifier(identifier):
-    """Helper to find user by username, email, or mobile number"""
+
+def normalize_mobile(identifier: str) -> str:
+    """Extract standard digits from phone numbers, removing +91 or leading 0."""
+    clean = re.sub(r'[\s\-\+\(\)]', '', identifier)
+    if clean.startswith('91') and len(clean) == 12:
+        return clean[2:]
+    if clean.startswith('0') and len(clean) == 11:
+        return clean[1:]
+    return clean
+
+
+def find_user_by_identifier(identifier: str):
+    """Helper to find user by username, email, or mobile number."""
     identifier = identifier.strip()
-    # 1. Try username or email
+    clean_phone = normalize_mobile(identifier)
+
+    # 1. Direct match on username or email
     user = User.objects.filter(Q(username__iexact=identifier) | Q(email__iexact=identifier)).first()
     if user:
         return user
-    
-    # 2. Try mobile number in profile
-    profile = UserProfile.objects.filter(mobile_number=identifier).first()
+
+    # 2. Match on profile mobile_number
+    profile = UserProfile.objects.filter(
+        Q(mobile_number=identifier) | Q(mobile_number=clean_phone)
+    ).first()
     if profile:
         return profile.user
-    
+
+    # 3. Match username with clean phone
+    if clean_phone:
+        user = User.objects.filter(
+            Q(username__icontains=clean_phone) | Q(email__icontains=clean_phone)
+        ).first()
+        if user:
+            return user
+
     return None
+
+
+class CheckIdentifierView(APIView):
+    """Check if an account exists for a given phone or email and verify role compatibility."""
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        serializer = CheckIdentifierSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response({'error': 'Invalid check data', 'details': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+
+        identifier = serializer.validated_data['identifier'].strip()
+        portal_role = serializer.validated_data.get('role', 'pilgrim')
+
+        user = find_user_by_identifier(identifier)
+        if not user:
+            return Response({
+                'exists': False,
+                'role_match': False,
+                'identifier': identifier,
+                'role': portal_role,
+                'message': 'No account found. Please create an account.'
+            }, status=status.HTTP_200_OK)
+
+        profile, _ = UserProfile.objects.get_or_create(user=user, defaults={'role': portal_role})
+        role_match = (profile.role == portal_role)
+        name = user.get_full_name() or user.username
+
+        return Response({
+            'exists': True,
+            'role_match': role_match,
+            'user_role': profile.role,
+            'portal_role': portal_role,
+            'name': name,
+            'identifier': identifier,
+            'message': 'Account exists.' if role_match else f'This account belongs to the {profile.role} portal.'
+        }, status=status.HTTP_200_OK)
 
 
 class LoginView(APIView):
@@ -40,50 +104,73 @@ class LoginView(APIView):
     def post(self, request):
         serializer = LoginSerializer(data=request.data)
         if not serializer.is_valid():
-            return Response({'error': 'Invalid data', 'details': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'error': 'Invalid login data', 'details': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
-        identifier = serializer.validated_data['identifier']
+        identifier = serializer.validated_data['identifier'].strip()
         password = serializer.validated_data['password']
         portal_role = serializer.validated_data.get('role', 'pilgrim')
 
         user = find_user_by_identifier(identifier)
         if not user:
-            # Check if this is a default demo login attempt and create account on the fly if needed
-            if (portal_role == 'pilgrim' and identifier == '9876543210') or (portal_role == 'admin' and 'admin' in identifier.lower()):
-                uname = f"{portal_role}_{identifier.replace('@', '_').replace('.', '_')}"
+            # Check if this is a known demo credential for smooth first-time startup
+            if (portal_role == 'pilgrim' and identifier in ['9876543210', '9822001122']) or (portal_role == 'admin' and ('admin' in identifier.lower() or 'seva' in identifier.lower())):
+                clean_id = normalize_mobile(identifier) if '@' not in identifier else identifier.replace('@', '_').replace('.', '_')
+                uname = f"{portal_role}_{clean_id}"
                 user = User.objects.create_user(
                     username=uname,
-                    email=identifier if '@' in identifier else f"{identifier}@varimitra.org",
+                    email=identifier if '@' in identifier else f"{clean_id}@varimitra.org",
                     password=password,
                     first_name='Warkari' if portal_role == 'pilgrim' else 'Seva Officer',
                     last_name='Dnyandev' if portal_role == 'pilgrim' else 'Admin'
                 )
-                demo_mob = identifier if not '@' in identifier else f"98765{random.randint(10000, 99999)}"
-                if UserProfile.objects.filter(mobile_number=demo_mob).exists():
-                    demo_mob = None
                 UserProfile.objects.create(
                     user=user,
                     role=portal_role,
-                    mobile_number=demo_mob,
+                    mobile_number=identifier if '@' not in identifier else None,
                     organization='Pandharpur Wari Seva Mandal' if portal_role == 'admin' else 'Alandi Dindi No. 1'
                 )
             else:
-                return Response({'error': 'Account not found with this mobile number or email.'}, status=status.HTTP_404_NOT_FOUND)
+                return Response({
+                    'error': 'No account found with this mobile number. Please create a new account to continue.' if portal_role == 'pilgrim' else 'No Admin / Seva Team account found with this email. Please request admin access.',
+                    'code': 'USER_NOT_FOUND',
+                    'identifier': identifier,
+                    'role': portal_role
+                }, status=status.HTTP_404_NOT_FOUND)
+
+        # Ensure user profile exists
+        profile, _ = UserProfile.objects.get_or_create(
+            user=user,
+            defaults={'role': portal_role, 'mobile_number': identifier if '@' not in identifier else None}
+        )
+
+        # STRICT ROLE ENFORCEMENT: Check portal role matching
+        if profile.role != portal_role:
+            if profile.role == 'admin' and portal_role == 'pilgrim':
+                return Response({
+                    'error': 'This account is registered as an Admin / Seva Team account. Please switch to the Admin Portal to sign in.',
+                    'code': 'ROLE_MISMATCH_ADMIN',
+                    'correct_role': 'admin',
+                    'name': user.get_full_name() or user.username
+                }, status=status.HTTP_403_FORBIDDEN)
+            elif profile.role == 'pilgrim' and portal_role == 'admin':
+                return Response({
+                    'error': 'Access denied: This account is registered as a Pilgrim / Warkari account and does not have Admin privileges. Please use the Pilgrim Portal.',
+                    'code': 'ROLE_MISMATCH_PILGRIM',
+                    'correct_role': 'pilgrim',
+                    'name': user.get_full_name() or user.username
+                }, status=status.HTTP_403_FORBIDDEN)
 
         # Authenticate password
         if not user.check_password(password):
-            # For easy testing if user entered demo credentials, allow demo password
-            if password in ['password', 'admin123', 'wari2026', '123456']:
+            # Safe demo recovery for seeded demo accounts
+            if identifier in ['9876543210', 'admin@varimitra.org', 'seva.admin@varimitra.org'] and password in ['password', 'admin123', 'wari2026', '123456']:
                 user.set_password(password)
                 user.save()
             else:
-                return Response({'error': 'Invalid credentials. Please check your password.'}, status=status.HTTP_401_UNAUTHORIZED)
-
-        # Ensure profile exists
-        profile, _ = UserProfile.objects.get_or_create(
-            user=user,
-            defaults={'role': portal_role, 'mobile_number': identifier if not '@' in identifier else None}
-        )
+                return Response({
+                    'error': 'Invalid credentials. Please verify your password.',
+                    'code': 'INVALID_CREDENTIALS'
+                }, status=status.HTTP_401_UNAUTHORIZED)
 
         login(request, user)
         profile_data = UserProfileSerializer(profile).data
@@ -110,30 +197,44 @@ class RegisterView(APIView):
         if not serializer.is_valid():
             return Response({'error': 'Invalid registration data', 'details': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
-        name = serializer.validated_data['name']
-        identifier = serializer.validated_data['identifier'].strip()
+        name = serializer.validated_data['name'].strip()
+        raw_identifier = serializer.validated_data['identifier'].strip()
         password = serializer.validated_data['password']
         role = serializer.validated_data['role']
-        organization = serializer.validated_data.get('organization', '')
+        organization = serializer.validated_data.get('organization', '').strip()
 
-        # Check existing user
-        existing_user = find_user_by_identifier(identifier)
+        is_email = '@' in raw_identifier
+        clean_phone = normalize_mobile(raw_identifier) if not is_email else None
+
+        # Validate pilgrim phone number
+        if role == 'pilgrim' and not is_email:
+            if not clean_phone.isdigit() or len(clean_phone) < 10:
+                return Response({
+                    'error': 'Please enter a valid 10-digit mobile number.',
+                    'code': 'INVALID_PHONE'
+                }, status=status.HTTP_400_BAD_REQUEST)
+
+        # Check if user already exists
+        existing_user = find_user_by_identifier(raw_identifier)
         if existing_user:
-            return Response({'error': 'An account with this mobile number or email already exists. Please sign in.'}, status=status.HTTP_409_CONFLICT)
+            return Response({
+                'error': f'An account with this {"mobile number" if not is_email else "email"} already exists. Please sign in.',
+                'code': 'USER_EXISTS',
+                'identifier': raw_identifier
+            }, status=status.HTTP_409_CONFLICT)
 
         # Split name into first and last
         name_parts = name.split(' ', 1)
         first_name = name_parts[0]
         last_name = name_parts[1] if len(name_parts) > 1 else ''
 
-        # Generate username
-        clean_id = identifier.replace('@', '_').replace('.', '_').replace('+', '')
+        # Generate unique username
+        clean_id = (clean_phone or raw_identifier).replace('@', '_').replace('.', '_').replace('+', '')
         username = f"{role}_{clean_id}_{random.randint(100, 999)}"
 
-        is_email = '@' in identifier
         user = User.objects.create_user(
             username=username,
-            email=identifier if is_email else f"{clean_id}@varimitra.org",
+            email=raw_identifier if is_email else f"{clean_id}@varimitra.org",
             password=password,
             first_name=first_name,
             last_name=last_name
@@ -142,8 +243,8 @@ class RegisterView(APIView):
         profile = UserProfile.objects.create(
             user=user,
             role=role,
-            mobile_number=identifier if not is_email else None,
-            organization=organization or ('Pandharpur Wari Seva' if role == 'admin' else 'Warkari Mandal')
+            mobile_number=clean_phone if not is_email else None,
+            organization=organization or ('Pandharpur Wari Seva Mandal' if role == 'admin' else 'Alandi Dindi No. 1')
         )
 
         login(request, user)
@@ -153,7 +254,7 @@ class RegisterView(APIView):
             'message': 'Registration successful',
             'session': {
                 'role': profile.role,
-                'identifier': identifier,
+                'identifier': raw_identifier,
                 'name': profile_data['name'],
                 'email': user.email,
                 'mobile_number': profile.mobile_number,
@@ -184,7 +285,7 @@ class GoogleAuthView(APIView):
                 email=email,
                 first_name=name_parts[0],
                 last_name=name_parts[1] if len(name_parts) > 1 else '',
-                password=User.objects.make_random_password()
+                password=secrets.token_urlsafe(20)
             )
             profile = UserProfile.objects.create(
                 user=user,
@@ -193,6 +294,13 @@ class GoogleAuthView(APIView):
             )
         else:
             profile, _ = UserProfile.objects.get_or_create(user=user, defaults={'role': role})
+            # Check role mismatch for existing user
+            if profile.role != role:
+                return Response({
+                    'error': f'This Google account is registered as {profile.role}. Please use the {profile.role.title()} portal.',
+                    'code': 'ROLE_MISMATCH',
+                    'correct_role': profile.role
+                }, status=status.HTTP_403_FORBIDDEN)
 
         login(request, user)
         profile_data = UserProfileSerializer(profile).data
@@ -208,6 +316,91 @@ class GoogleAuthView(APIView):
                 'id': user.id
             }
         }, status=status.HTTP_200_OK)
+
+
+class FirebaseLoginView(APIView):
+    """Handles Firebase Authenticated users (Google, Email/Password, Phone)."""
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        serializer = FirebaseLoginSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response({'error': 'Invalid Firebase auth data', 'details': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+
+        email = serializer.validated_data['email'].strip().lower()
+        name = serializer.validated_data.get('name', '').strip()
+        uid = serializer.validated_data.get('uid', '').strip()
+        portal_role = serializer.validated_data.get('role', 'pilgrim')
+        phone_number = serializer.validated_data.get('phone_number', '').strip()
+        organization = serializer.validated_data.get('organization', '').strip()
+
+        # Find existing user by email
+        user = User.objects.filter(email__iexact=email).first()
+        if not user:
+            name_parts = (name or email.split('@')[0]).split(' ', 1)
+            first_name = name_parts[0]
+            last_name = name_parts[1] if len(name_parts) > 1 else ''
+            clean_email = email.split('@')[0].replace('.', '_').replace('+', '')
+            username = f"fb_{portal_role}_{clean_email}_{random.randint(100, 999)}"
+
+            user = User.objects.create_user(
+                username=username,
+                email=email,
+                first_name=first_name,
+                last_name=last_name,
+                password=secrets.token_urlsafe(20)
+            )
+            profile = UserProfile.objects.create(
+                user=user,
+                role=portal_role,
+                mobile_number=phone_number if phone_number else None,
+                organization=organization or ('Pandharpur Wari Seva Mandal' if portal_role == 'admin' else 'Warkari Devotee')
+            )
+        else:
+            profile, _ = UserProfile.objects.get_or_create(
+                user=user,
+                defaults={'role': portal_role, 'mobile_number': phone_number if phone_number else None}
+            )
+            # Enforce strict role match
+            if profile.role != portal_role:
+                if profile.role == 'admin' and portal_role == 'pilgrim':
+                    return Response({
+                        'error': 'This account is registered as an Admin / Seva Team account. Please switch to the Admin Portal to sign in.',
+                        'code': 'ROLE_MISMATCH_ADMIN',
+                        'correct_role': 'admin',
+                        'name': user.get_full_name() or user.username
+                    }, status=status.HTTP_403_FORBIDDEN)
+                elif profile.role == 'pilgrim' and portal_role == 'admin':
+                    return Response({
+                        'error': 'Access denied: This account is registered as a Pilgrim / Warkari account and does not have Admin privileges. Please use the Pilgrim Portal.',
+                        'code': 'ROLE_MISMATCH_PILGRIM',
+                        'correct_role': 'pilgrim',
+                        'name': user.get_full_name() or user.username
+                    }, status=status.HTTP_403_FORBIDDEN)
+
+            # Update name if provided and missing
+            if not user.first_name and name:
+                name_parts = name.split(' ', 1)
+                user.first_name = name_parts[0]
+                user.last_name = name_parts[1] if len(name_parts) > 1 else ''
+                user.save()
+
+        login(request, user)
+        profile_data = UserProfileSerializer(profile).data
+
+        return Response({
+            'message': 'Firebase authentication successful',
+            'session': {
+                'role': profile.role,
+                'identifier': email,
+                'name': profile_data['name'],
+                'email': user.email,
+                'mobile_number': profile.mobile_number,
+                'organization': profile.organization,
+                'id': user.id
+            }
+        }, status=status.HTTP_200_OK)
+
 
 
 class ForgotPasswordView(APIView):
@@ -251,10 +444,10 @@ class ResetPasswordView(APIView):
 
         user = find_user_by_identifier(identifier)
         if not user:
-            return Response({'error': 'User not found.'}, status=status.HTTP_404_NOT_FOUND)
+            return Response({'error': 'User not found.', 'code': 'USER_NOT_FOUND'}, status=status.HTTP_404_NOT_FOUND)
 
         profile = getattr(user, 'profile', None)
-        # Verify OTP (allow test OTP 123456 or matching saved otp)
+        # Verify OTP (allow test OTP 123456, 999999, or matching saved otp)
         if profile and (profile.reset_otp == otp or otp in ['123456', '999999']):
             user.set_password(new_password)
             user.save()

@@ -9,7 +9,6 @@ import {
   Sparkles,
   Bot,
   MapPin,
-  Flame,
   BellRing,
   Shield,
   Footprints,
@@ -19,6 +18,9 @@ import {
   Phone,
   Building2,
   KeyRound,
+  ArrowRight,
+  UserPlus,
+  Info,
 } from 'lucide-react';
 import { Language, PortalType, UserSession } from '../types';
 import { translations } from '../translations';
@@ -34,6 +36,13 @@ interface SignInScreenProps {
   onPortalChange: (portal: PortalType) => void;
   onBackToHome: () => void;
   onLoginSuccess: (session: UserSession) => void;
+}
+
+interface PromptBanner {
+  type: 'not_found' | 'role_mismatch_admin' | 'role_mismatch_pilgrim' | 'invalid_creds';
+  message: string;
+  identifier?: string;
+  name?: string;
 }
 
 export const SignInScreen: React.FC<SignInScreenProps> = ({
@@ -53,6 +62,9 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // In-card prompt & alert banner
+  const [promptBanner, setPromptBanner] = useState<PromptBanner | null>(null);
+
   // Register modal states
   const [showRegisterModal, setShowRegisterModal] = useState(false);
   const [regName, setRegName] = useState('');
@@ -70,22 +82,40 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
   const [isForgotSubmitting, setIsForgotSubmitting] = useState(false);
 
   // Toast Notification state
-  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
 
-  const showToast = (message: string, type: 'success' | 'error' = 'success') => {
+  const showToast = (message: string, type: 'success' | 'error' | 'info' = 'success') => {
     setToast({ message, type });
     setTimeout(() => setToast(null), 5000);
+  };
+
+  // Helper to open registration modal with pre-filled identifier
+  const openRegisterModalWithIdentifier = (ident: string) => {
+    setRegIdentifier(ident);
+    setPromptBanner(null);
+    setShowRegisterModal(true);
   };
 
   // 1. Handle Sign In
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
+    setPromptBanner(null);
+
     const identifier = activePortal === 'pilgrim' ? mobileNumber.trim() : emailId.trim();
 
     if (!identifier) {
       showToast(activePortal === 'pilgrim' ? 'Please enter your mobile number' : 'Please enter your email ID', 'error');
       return;
     }
+
+    if (activePortal === 'pilgrim') {
+      const cleanPhone = identifier.replace(/[\s\-\+\(\)]/g, '');
+      if (cleanPhone.length < 10 && !identifier.includes('@')) {
+        showToast('Please enter a valid 10-digit mobile number.', 'error');
+        return;
+      }
+    }
+
     if (!password) {
       showToast('Please enter your password', 'error');
       return;
@@ -97,7 +127,43 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
       showToast(`Welcome back, ${session.name}!`);
       onLoginSuccess(session);
     } catch (err: any) {
-      showToast(err.message || 'Login failed. Please verify credentials.', 'error');
+      const code = err.code || err.data?.code;
+      const message = err.message || 'Login failed. Please verify credentials.';
+
+      if (code === 'USER_NOT_FOUND') {
+        setPromptBanner({
+          type: 'not_found',
+          message: activePortal === 'pilgrim'
+            ? `No account found with mobile number +91 ${identifier}. Please create a new account to continue.`
+            : `No Admin account found with email "${identifier}". Please request admin access.`,
+          identifier,
+        });
+        showToast(activePortal === 'pilgrim' ? 'Mobile number not registered. Please create account.' : 'Admin account not found.', 'info');
+      } else if (code === 'ROLE_MISMATCH_ADMIN') {
+        setPromptBanner({
+          type: 'role_mismatch_admin',
+          message: `This account (${err.data?.name || identifier}) is registered as an Admin / Seva Team account.`,
+          identifier,
+          name: err.data?.name,
+        });
+        showToast('This account is registered for Admin Portal. Switch portal to login.', 'error');
+      } else if (code === 'ROLE_MISMATCH_PILGRIM') {
+        setPromptBanner({
+          type: 'role_mismatch_pilgrim',
+          message: `Access denied: This account is registered as a Pilgrim / Warkari account and cannot access the Admin Portal.`,
+          identifier,
+          name: err.data?.name,
+        });
+        showToast('This account belongs to Pilgrim Portal. Switch portal to login.', 'error');
+      } else {
+        setPromptBanner({
+          type: 'invalid_creds',
+          message: message.includes('Invalid credentials') || message.includes('password')
+            ? 'Incorrect password. Please verify your password or reset it.'
+            : message,
+        });
+        showToast(message, 'error');
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -106,6 +172,7 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
   // 2. Handle Google Sign In
   const handleGoogleSignIn = async () => {
     setIsSubmitting(true);
+    setPromptBanner(null);
     try {
       const session = await authService.googleLogin(activePortal);
       showToast(`Google authenticated for ${session.name}`);
@@ -123,6 +190,14 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
     if (!regName.trim() || !regIdentifier.trim() || !regPassword.trim()) {
       showToast('Please fill all required fields.', 'error');
       return;
+    }
+
+    if (activePortal === 'pilgrim') {
+      const clean = regIdentifier.trim().replace(/[\s\-\+\(\)]/g, '');
+      if (clean.length < 10 && !regIdentifier.includes('@')) {
+        showToast('Please enter a valid 10-digit mobile number.', 'error');
+        return;
+      }
     }
 
     setIsRegistering(true);
@@ -191,17 +266,38 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
     }
   };
 
+  // Quick Demo Auto-fill helpers
+  const handleFillDemoPilgrim = () => {
+    setMobileNumber('9876543210');
+    setPassword('password');
+    setPromptBanner(null);
+    showToast('Demo Pilgrim credentials filled (Phone: 9876543210 / Password: password)', 'info');
+  };
+
+  const handleFillDemoAdmin = () => {
+    setEmailId('admin@varimitra.org');
+    setPassword('admin123');
+    setPromptBanner(null);
+    showToast('Demo Admin credentials filled (Email: admin@varimitra.org / Password: admin123)', 'info');
+  };
+
   return (
     <div className="relative min-h-screen bg-[#faf7f2] flex flex-col justify-between overflow-x-hidden font-sans text-slate-800">
       {/* Toast Notification */}
       {toast && (
-        <div className={`fixed top-5 left-1/2 transform -translate-x-1/2 z-50 px-5 py-3 rounded-2xl shadow-2xl flex items-center gap-3 text-sm font-medium border animate-in fade-in slide-in-from-top-3 ${
-          toast.type === 'error'
-            ? 'bg-rose-900 text-white border-rose-700'
-            : 'bg-slate-900 text-white border-slate-700'
-        }`}>
+        <div
+          className={`fixed top-5 left-1/2 transform -translate-x-1/2 z-50 px-5 py-3 rounded-2xl shadow-2xl flex items-center gap-3 text-sm font-medium border animate-in fade-in slide-in-from-top-3 ${
+            toast.type === 'error'
+              ? 'bg-rose-900 text-white border-rose-700'
+              : toast.type === 'info'
+              ? 'bg-amber-900 text-white border-amber-700'
+              : 'bg-slate-900 text-white border-slate-700'
+          }`}
+        >
           {toast.type === 'error' ? (
             <AlertCircle className="w-5 h-5 text-rose-400 shrink-0" />
+          ) : toast.type === 'info' ? (
+            <Info className="w-5 h-5 text-amber-400 shrink-0" />
           ) : (
             <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
           )}
@@ -232,10 +328,7 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
 
         {/* Right: Language Dropdown */}
         <div className="flex justify-end">
-          <LanguageDropdown
-            currentLanguage={language}
-            onLanguageChange={onLanguageChange}
-          />
+          <LanguageDropdown currentLanguage={language} onLanguageChange={onLanguageChange} />
         </div>
       </header>
 
@@ -243,13 +336,10 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
       <main className="relative z-10 flex-1 flex flex-col items-center justify-center px-4 py-6 max-w-lg mx-auto w-full">
         {/* Main Heading */}
         <div className="text-center space-y-1.5 mb-5">
-          <h1
-            id="signin-title"
-            className="text-2xl sm:text-3xl font-extrabold text-[#111827] tracking-tight"
-          >
+          <h1 id="signin-title" className="text-2xl sm:text-3xl font-extrabold text-[#111827] tracking-tight">
             {t.signInHeading}
           </h1>
-          
+
           {/* Decorative Sparkle */}
           <div className="flex items-center justify-center gap-2 text-amber-500">
             <div className="h-[1px] w-6 bg-amber-400/60" />
@@ -257,21 +347,22 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
             <div className="h-[1px] w-6 bg-amber-400/60" />
           </div>
 
-          <p className="text-xs sm:text-sm text-slate-500 font-medium">
-            {t.choosePortal}
-          </p>
+          <p className="text-xs sm:text-sm text-slate-500 font-medium">{t.choosePortal}</p>
         </div>
 
         {/* Segmented Switcher (Pilgrim vs Admin) */}
         <div
           id="portal-tab-selector"
-          className="w-full max-w-md bg-white p-1 rounded-full border border-slate-200/90 shadow-sm flex items-center justify-between gap-1 mb-6"
+          className="w-full max-w-md bg-white p-1 rounded-full border border-slate-200/90 shadow-sm flex items-center justify-between gap-1 mb-5"
         >
           {/* Pilgrim Tab */}
           <button
             id="tab-btn-pilgrim"
             type="button"
-            onClick={() => onPortalChange('pilgrim')}
+            onClick={() => {
+              onPortalChange('pilgrim');
+              setPromptBanner(null);
+            }}
             className={`flex-1 flex items-center justify-center gap-2 py-2 sm:py-2.5 px-3 rounded-full text-xs sm:text-sm font-semibold transition-all duration-200 cursor-pointer ${
               activePortal === 'pilgrim'
                 ? 'bg-[#ea580c] text-white shadow-sm'
@@ -286,7 +377,10 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
           <button
             id="tab-btn-admin"
             type="button"
-            onClick={() => onPortalChange('admin')}
+            onClick={() => {
+              onPortalChange('admin');
+              setPromptBanner(null);
+            }}
             className={`flex-1 flex items-center justify-center gap-2 py-2 sm:py-2.5 px-3 rounded-full text-xs sm:text-sm font-semibold transition-all duration-200 cursor-pointer ${
               activePortal === 'admin'
                 ? 'bg-[#1e293b] text-white shadow-sm'
@@ -304,7 +398,7 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
           className="w-full bg-white rounded-3xl p-6 sm:p-8 shadow-xl border border-slate-200/80 transition-all duration-300 relative"
         >
           {/* Top Badge Icon & Portal Header */}
-          <div className="flex flex-col items-center text-center space-y-1.5 mb-6">
+          <div className="flex flex-col items-center text-center space-y-1.5 mb-5">
             {activePortal === 'pilgrim' ? (
               <PilgrimBadgeIcon size="md" className="mb-1" />
             ) : (
@@ -319,14 +413,105 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
             </p>
           </div>
 
+          {/* Prompt / Alert Banner */}
+          {promptBanner && (
+            <div
+              id="auth-prompt-banner"
+              className={`mb-5 p-3.5 rounded-2xl border text-xs font-medium animate-in fade-in slide-in-from-top-2 ${
+                promptBanner.type === 'not_found'
+                  ? 'bg-amber-50 border-amber-300 text-amber-900'
+                  : promptBanner.type === 'role_mismatch_admin'
+                  ? 'bg-blue-50 border-blue-300 text-blue-900'
+                  : promptBanner.type === 'role_mismatch_pilgrim'
+                  ? 'bg-orange-50 border-orange-300 text-orange-900'
+                  : 'bg-rose-50 border-rose-200 text-rose-800'
+              }`}
+            >
+              <div className="flex items-start gap-2.5">
+                {promptBanner.type === 'not_found' ? (
+                  <UserPlus className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+                ) : promptBanner.type === 'role_mismatch_admin' ? (
+                  <Shield className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
+                ) : promptBanner.type === 'role_mismatch_pilgrim' ? (
+                  <Footprints className="w-4 h-4 text-orange-600 shrink-0 mt-0.5" />
+                ) : (
+                  <AlertCircle className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
+                )}
+                <div className="flex-1">
+                  <p className="leading-snug">{promptBanner.message}</p>
+
+                  {/* Contextual Action Button */}
+                  {promptBanner.type === 'not_found' && (
+                    <button
+                      type="button"
+                      onClick={() => openRegisterModalWithIdentifier(promptBanner.identifier || '')}
+                      className="mt-2.5 inline-flex items-center gap-1.5 px-3 py-1.5 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-lg text-xs shadow-xs cursor-pointer transition-colors"
+                    >
+                      <UserPlus className="w-3.5 h-3.5" />
+                      <span>
+                        {activePortal === 'pilgrim' ? t.registerWithNumber : t.requestWithEmail}
+                      </span>
+                    </button>
+                  )}
+
+                  {promptBanner.type === 'role_mismatch_admin' && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        onPortalChange('admin');
+                        setEmailId(promptBanner.identifier || '');
+                        setPromptBanner(null);
+                      }}
+                      className="mt-2.5 inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-900 hover:bg-black text-white font-bold rounded-lg text-xs shadow-xs cursor-pointer transition-colors"
+                    >
+                      <Shield className="w-3.5 h-3.5 text-blue-400" />
+                      <span>{t.switchToAdminPortal}</span>
+                      <ArrowRight className="w-3 h-3" />
+                    </button>
+                  )}
+
+                  {promptBanner.type === 'role_mismatch_pilgrim' && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        onPortalChange('pilgrim');
+                        setMobileNumber(promptBanner.identifier || '');
+                        setPromptBanner(null);
+                      }}
+                      className="mt-2.5 inline-flex items-center gap-1.5 px-3 py-1.5 bg-orange-600 hover:bg-orange-700 text-white font-bold rounded-lg text-xs shadow-xs cursor-pointer transition-colors"
+                    >
+                      <Footprints className="w-3.5 h-3.5 text-white" />
+                      <span>{t.switchToPilgrimPortal}</span>
+                      <ArrowRight className="w-3 h-3" />
+                    </button>
+                  )}
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setPromptBanner(null)}
+                  className="text-slate-400 hover:text-slate-600 cursor-pointer"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            </div>
+          )}
+
           {/* Sign In Form */}
           <form onSubmit={handleSignIn} className="space-y-4">
             {/* Input 1: Mobile Number for Pilgrim OR Email ID for Admin */}
             <div>
+              <label className="text-[11px] font-bold text-slate-600 uppercase tracking-wide mb-1.5 block">
+                {activePortal === 'pilgrim' ? t.mobileNumberLabel : t.emailLabel}
+              </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
                   {activePortal === 'pilgrim' ? (
-                    <Phone className="w-4 h-4 text-slate-500" />
+                    <span className="text-xs font-bold text-slate-500 flex items-center gap-1">
+                      <Phone className="w-3.5 h-3.5 text-slate-500" />
+                      +91
+                    </span>
                   ) : (
                     <Mail className="w-4 h-4 text-slate-500" />
                   )}
@@ -336,18 +521,27 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
                     id="input-mobile-number"
                     type="tel"
                     value={mobileNumber}
-                    onChange={(e) => setMobileNumber(e.target.value)}
-                    placeholder={t.mobileNumberPlaceholder}
-                    className="w-full pl-10 pr-4 py-3 bg-[#f8f9fa] border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all"
+                    onChange={(e) => {
+                      setMobileNumber(e.target.value);
+                      if (promptBanner) setPromptBanner(null);
+                    }}
+                    placeholder="9876543210 (10 digits)"
+                    maxLength={14}
+                    required
+                    className="w-full pl-16 pr-4 py-3 bg-[#f8f9fa] border border-slate-200 rounded-xl text-sm font-medium text-slate-800 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all"
                   />
                 ) : (
                   <input
                     id="input-email-id"
                     type="email"
                     value={emailId}
-                    onChange={(e) => setEmailId(e.target.value)}
-                    placeholder={t.emailPlaceholder}
-                    className="w-full pl-10 pr-4 py-3 bg-[#f8f9fa] border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-slate-700/20 focus:border-slate-700 transition-all"
+                    onChange={(e) => {
+                      setEmailId(e.target.value);
+                      if (promptBanner) setPromptBanner(null);
+                    }}
+                    placeholder="officer@varimitra.org"
+                    required
+                    className="w-full pl-10 pr-4 py-3 bg-[#f8f9fa] border border-slate-200 rounded-xl text-sm font-medium text-slate-800 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-slate-700/20 focus:border-slate-700 transition-all"
                   />
                 )}
               </div>
@@ -355,6 +549,9 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
 
             {/* Input 2: Password */}
             <div>
+              <label className="text-[11px] font-bold text-slate-600 uppercase tracking-wide mb-1.5 block">
+                {t.passwordLabel}
+              </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
                   <Lock className="w-4 h-4 text-slate-500" />
@@ -363,8 +560,12 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
                   id="input-password"
                   type={showPassword ? 'text' : 'password'}
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                    if (promptBanner) setPromptBanner(null);
+                  }}
                   placeholder={t.passwordPlaceholder}
+                  required
                   className={`w-full pl-10 pr-11 py-3 bg-[#f8f9fa] border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:bg-white focus:outline-none transition-all ${
                     activePortal === 'pilgrim'
                       ? 'focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500'
@@ -426,8 +627,32 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
             </button>
           </form>
 
+          {/* Quick Demo Credentials Autofill Pill */}
+          <div className="mt-3.5 pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
+            <span className="font-medium text-slate-400">Testing Demo:</span>
+            {activePortal === 'pilgrim' ? (
+              <button
+                type="button"
+                id="btn-quick-pilgrim-demo"
+                onClick={handleFillDemoPilgrim}
+                className="font-bold text-orange-600 hover:text-orange-700 bg-orange-50 hover:bg-orange-100/80 px-2.5 py-1 rounded-full cursor-pointer transition-colors border border-orange-200/60 flex items-center gap-1"
+              >
+                <span>⚡ Fill Demo Warkari (9876543210)</span>
+              </button>
+            ) : (
+              <button
+                type="button"
+                id="btn-quick-admin-demo"
+                onClick={handleFillDemoAdmin}
+                className="font-bold text-slate-700 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 px-2.5 py-1 rounded-full cursor-pointer transition-colors border border-slate-300/60 flex items-center gap-1"
+              >
+                <span>⚡ Fill Demo Admin (admin@varimitra.org)</span>
+              </button>
+            )}
+          </div>
+
           {/* Divider */}
-          <div className="relative my-5 flex items-center justify-center">
+          <div className="relative my-4 flex items-center justify-center">
             <div className="border-t border-slate-200 w-full" />
             <span className="bg-white px-3 text-xs text-slate-400 uppercase font-medium">
               {t.or}
@@ -447,17 +672,14 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
           </button>
 
           {/* Card Footer Register/Access Link */}
-          <div className="mt-6 text-center text-xs text-slate-500">
+          <div className="mt-5 text-center text-xs text-slate-500">
             {activePortal === 'pilgrim' ? (
               <span>
                 {t.newHere}{' '}
                 <button
                   type="button"
                   id="btn-create-pilgrim-account"
-                  onClick={() => {
-                    setRegIdentifier(mobileNumber);
-                    setShowRegisterModal(true);
-                  }}
+                  onClick={() => openRegisterModalWithIdentifier(mobileNumber)}
                   className="font-bold text-[#ea580c] hover:underline cursor-pointer"
                 >
                   {t.createPilgrimAccount}
@@ -469,10 +691,7 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
                 <button
                   type="button"
                   id="btn-request-admin-access"
-                  onClick={() => {
-                    setRegIdentifier(emailId);
-                    setShowRegisterModal(true);
-                  }}
+                  onClick={() => openRegisterModalWithIdentifier(emailId)}
                   className="font-bold text-[#1e293b] hover:underline cursor-pointer"
                 >
                   {t.requestAccess}
@@ -492,12 +711,8 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
               <Bot className="w-5 h-5 text-slate-700" />
             </div>
             <div className="space-y-0.5">
-              <h4 className="text-xs sm:text-sm font-bold text-slate-800">
-                {t.aiAssistantTitle}
-              </h4>
-              <p className="text-[11px] sm:text-xs text-slate-600 leading-snug">
-                {t.aiAssistantDesc}
-              </p>
+              <h4 className="text-xs sm:text-sm font-bold text-slate-800">{t.aiAssistantTitle}</h4>
+              <p className="text-[11px] sm:text-xs text-slate-600 leading-snug">{t.aiAssistantDesc}</p>
             </div>
           </div>
 
@@ -507,12 +722,8 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
               <MapPin className="w-5 h-5" />
             </div>
             <div className="space-y-0.5">
-              <h4 className="text-xs sm:text-sm font-bold text-slate-800">
-                {t.liveLocationTitle}
-              </h4>
-              <p className="text-[11px] sm:text-xs text-slate-600 leading-snug">
-                {t.liveLocationDesc}
-              </p>
+              <h4 className="text-xs sm:text-sm font-bold text-slate-800">{t.liveLocationTitle}</h4>
+              <p className="text-[11px] sm:text-xs text-slate-600 leading-snug">{t.liveLocationDesc}</p>
             </div>
           </div>
 
@@ -522,12 +733,8 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
               <span className="leading-none text-rose-600 font-extrabold">*</span>
             </div>
             <div className="space-y-0.5">
-              <h4 className="text-xs sm:text-sm font-bold text-slate-800">
-                {t.emergencySosTitle}
-              </h4>
-              <p className="text-[11px] sm:text-xs text-slate-600 leading-snug">
-                {t.emergencySosDesc}
-              </p>
+              <h4 className="text-xs sm:text-sm font-bold text-slate-800">{t.emergencySosTitle}</h4>
+              <p className="text-[11px] sm:text-xs text-slate-600 leading-snug">{t.emergencySosDesc}</p>
             </div>
           </div>
 
@@ -537,12 +744,8 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
               <BellRing className="w-5 h-5" />
             </div>
             <div className="space-y-0.5">
-              <h4 className="text-xs sm:text-sm font-bold text-slate-800">
-                {t.smartAlertsTitle}
-              </h4>
-              <p className="text-[11px] sm:text-xs text-slate-600 leading-snug">
-                {t.smartAlertsDesc}
-              </p>
+              <h4 className="text-xs sm:text-sm font-bold text-slate-800">{t.smartAlertsTitle}</h4>
+              <p className="text-[11px] sm:text-xs text-slate-600 leading-snug">{t.smartAlertsDesc}</p>
             </div>
           </div>
         </div>
@@ -607,7 +810,7 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
                   type="password"
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
-                  placeholder="Set New Password"
+                  placeholder="Set New Password (min. 4 characters)"
                   required
                   className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-orange-500/20"
                 />
@@ -636,22 +839,32 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
             >
               <X className="w-5 h-5" />
             </button>
-            <h3 className="text-lg font-bold text-slate-800 mb-1">
-              {activePortal === 'pilgrim' ? 'Create Warkari Account' : 'Request Seva Team Admin Access'}
+            <h3 className="text-lg font-bold text-slate-800 mb-1 flex items-center gap-2">
+              {activePortal === 'pilgrim' ? (
+                <>
+                  <Footprints className="w-5 h-5 text-orange-600" />
+                  <span>Create Warkari Account</span>
+                </>
+              ) : (
+                <>
+                  <Shield className="w-5 h-5 text-slate-800" />
+                  <span>Request Seva Team Admin Access</span>
+                </>
+              )}
             </h3>
             <p className="text-xs text-slate-500 mb-4">
               {activePortal === 'pilgrim'
-                ? 'Join thousands of Warkaris for real-time tracking, medical support, and food & shelter spots.'
-                : 'Submit your temple trust or volunteer organization credentials for admin clearance.'}
+                ? 'Join thousands of Warkaris for real-time tracking, group chat, medical aid, and seva spots.'
+                : 'Submit your volunteer or seva team organization credentials for admin access.'}
             </p>
             <form onSubmit={handleRegisterSubmit} className="space-y-3 mb-4">
               <div>
-                <label className="text-[11px] font-bold text-slate-600 uppercase mb-1 block">Full Name</label>
+                <label className="text-[11px] font-bold text-slate-600 uppercase mb-1 block">Full Name *</label>
                 <input
                   type="text"
                   value={regName}
                   onChange={(e) => setRegName(e.target.value)}
-                  placeholder="Full Name (पूर्ण नाव)"
+                  placeholder="Full Name (e.g. Tukaram Maharaj)"
                   required
                   className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-orange-500/20"
                 />
@@ -659,13 +872,13 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
 
               <div>
                 <label className="text-[11px] font-bold text-slate-600 uppercase mb-1 block">
-                  {activePortal === 'pilgrim' ? 'Mobile Number (मोबाईल क्र.)' : 'Work Email'}
+                  {activePortal === 'pilgrim' ? 'Mobile Number (10 digits) *' : 'Work Email *'}
                 </label>
                 <input
                   type={activePortal === 'pilgrim' ? 'tel' : 'email'}
                   value={regIdentifier}
                   onChange={(e) => setRegIdentifier(e.target.value)}
-                  placeholder={activePortal === 'pilgrim' ? '10-digit Mobile Number' : 'officer@varimitra.org'}
+                  placeholder={activePortal === 'pilgrim' ? '9876543210' : 'officer@varimitra.org'}
                   required
                   className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-orange-500/20"
                 />
@@ -673,7 +886,7 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
 
               <div>
                 <label className="text-[11px] font-bold text-slate-600 uppercase mb-1 block">
-                  {activePortal === 'pilgrim' ? 'Dindi / Mandal Name (Optional)' : 'Organization / Unit'}
+                  {activePortal === 'pilgrim' ? 'Dindi / Mandal Name (Optional)' : 'Organization / Unit *'}
                 </label>
                 <input
                   type="text"
@@ -685,13 +898,14 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
               </div>
 
               <div>
-                <label className="text-[11px] font-bold text-slate-600 uppercase mb-1 block">Password</label>
+                <label className="text-[11px] font-bold text-slate-600 uppercase mb-1 block">Password *</label>
                 <input
                   type="password"
                   value={regPassword}
                   onChange={(e) => setRegPassword(e.target.value)}
-                  placeholder="Set New Password (min. 4 characters)"
+                  placeholder="Set Password (min. 4 characters)"
                   required
+                  minLength={4}
                   className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-orange-500/20"
                 />
               </div>
@@ -709,9 +923,9 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
                     <span>Registering Account in Database...</span>
                   </>
                 ) : activePortal === 'pilgrim' ? (
-                  'Create Warkari Account'
+                  'Create Warkari Account & Sign In'
                 ) : (
-                  'Submit Access Request'
+                  'Submit Access Request & Sign In'
                 )}
               </button>
             </form>
