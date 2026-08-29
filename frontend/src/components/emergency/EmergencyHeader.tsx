@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Bell, User, AlertTriangle, Menu, X } from 'lucide-react';
 import { UserSession } from '../../types';
+import { VariMitraLogo } from '../VariMitraLogo';
 
 interface EmergencyHeaderProps {
   activeTab: 'dashboard' | 'history' | 'map' | 'resources';
@@ -29,20 +30,10 @@ export const EmergencyHeader: React.FC<EmergencyHeaderProps> = ({
         {/* Left: Brand Logo */}
         <div 
           onClick={onBackToMain}
-          className="flex items-center gap-2.5 cursor-pointer select-none group"
+          className="cursor-pointer select-none group"
           title="Return to VariMitra Home"
         >
-          {/* VariMitra Lotus Icon in Brand Red */}
-          <div className="w-9 h-9 rounded-xl bg-red-50 flex items-center justify-center text-[#C51B1B] border border-red-100 group-hover:scale-105 transition-transform">
-            <svg viewBox="0 0 24 24" className="w-5 h-5 fill-current" stroke="currentColor" strokeWidth="0.5">
-              <path d="M12 2C12 2 8 7 8 12C8 15 10 18 12 22C14 18 16 15 16 12C16 7 12 2 12 2Z" opacity="0.9" />
-              <path d="M12 22C9 18 4 17 2 12C5 11 8 13 12 18" opacity="0.65" />
-              <path d="M12 22C15 18 20 17 22 12C19 11 16 13 12 18" opacity="0.65" />
-            </svg>
-          </div>
-          <span className="text-2xl font-bold tracking-tight text-[#C51B1B] font-sans">
-            VariMitra
-          </span>
+          <VariMitraLogo variant="light" tagline="" />
         </div>
 
         {/* Center: Desktop Navigation Tabs */}

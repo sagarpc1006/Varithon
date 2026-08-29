@@ -82,7 +82,7 @@ class LoginView(APIView):
         # Ensure profile exists
         profile, _ = UserProfile.objects.get_or_create(
             user=user,
-            defaults={'role': portal_role, 'mobile_number': identifier if not '@' in identifier else ''}
+            defaults={'role': portal_role, 'mobile_number': identifier if not '@' in identifier else None}
         )
 
         login(request, user)
