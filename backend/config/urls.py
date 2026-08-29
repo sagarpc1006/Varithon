@@ -43,5 +43,6 @@ urlpatterns = [
     path('api/auth/', include('accounts.urls')),
     path('api/sos/', include('sos.urls')),
     path('api/alerts/', include('alerts.urls')),
+    path('api/crowdflow/', include('crowdflow.urls')),
     path('api/', include('wari_core.urls')),
 ]

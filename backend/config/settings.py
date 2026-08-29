@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'wari_core',
     'sos',
     'alerts',
+    'crowdflow',
 ]
 
 MIDDLEWARE = [
