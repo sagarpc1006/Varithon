@@ -1,25 +1,12 @@
-import math
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework import status, views, response
-from rest_framework.permissions import IsAuthenticated
 from .models import SOSReport
 from .serializers import SOSReportSerializer, SOSReportCreateSerializer
 from .notifications import notify_sos, notify_user_reply
-
-def haversine(lat1, lon1, lat2, lon2):
-    R = 6371  # Earth radius in km
-    dlat = math.radians(lat2 - lat1)
-    dlon = math.radians(lon2 - lon1)
-    a = math.sin(dlat/2) * math.sin(dlat/2) + math.cos(math.radians(lat1)) \
-        * math.cos(math.radians(lat2)) * math.sin(dlon/2) * math.sin(dlon/2)
-    c = 2 * math.atan2(math.sqrt(a), math.sqrt(1-a))
-    distance = R * c
-    return distance
-
-class IsAdminUser(IsAuthenticated):
-    def has_permission(self, request, view):
-        return bool(request.user and request.user.is_authenticated and hasattr(request.user, 'profile') and request.user.profile.role == 'admin')
+from wari_core.geo_utils import haversine
+from wari_core.permissions import IsAdminUser
+from rest_framework.permissions import IsAuthenticated
 
 @method_decorator(csrf_exempt, name='dispatch')
 class SOSReportCreateView(views.APIView):

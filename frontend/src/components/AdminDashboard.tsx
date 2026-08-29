@@ -135,6 +135,7 @@ const ActionCard: React.FC<ActionCardProps> = ({
 
 import { SOSInbox } from '../pages/admin/SOSInbox';
 import { AdminVolunteers } from './AdminVolunteers';
+import { AlertBroadcast } from '../pages/admin/AlertBroadcast';
 
 export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   session,
@@ -144,7 +145,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
 }) => {
   const t = LABELS[language];
   const [mapRefreshing, setMapRefreshing] = useState(false);
-  const [currentView, setCurrentView] = useState<'dashboard' | 'sos-inbox' | 'volunteers'>('dashboard');
+  const [currentView, setCurrentView] = useState<'dashboard' | 'sos-inbox' | 'volunteers' | 'alert-broadcast'>('dashboard');
 
   const handleSignOut = async () => {
     await authService.logout();
@@ -212,6 +213,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
           <SOSInbox onBackToCommandMap={() => setCurrentView('dashboard')} />
         ) : currentView === 'volunteers' ? (
           <AdminVolunteers session={session} language={language} onBack={() => setCurrentView('dashboard')} />
+        ) : currentView === 'alert-broadcast' ? (
+          <AlertBroadcast onBack={() => setCurrentView('dashboard')} />
         ) : (
           <>
             {/* ── COMMAND MAP ── */}
@@ -277,6 +280,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                 colorClass="bg-gradient-to-br from-red-500 to-rose-700"
                 glowClass="bg-red-400"
                 borderClass="border-red-100 hover:border-red-300"
+                onClick={() => setCurrentView('alert-broadcast')}
               />
               <ActionCard
                 id="btn-crowd-analytics"

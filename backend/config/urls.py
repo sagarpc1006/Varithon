@@ -31,6 +31,8 @@ def api_root(request):
             'crowd_density': '/api/crowdflow/',
             'ai_chat': '/api/ai/chat/',
             'dashboard_overview': '/api/dashboard/overview/',
+            'alerts_feed': '/api/alerts/feed',
+            'alerts_broadcast': '/api/alerts/broadcast',
         }
     })
 
@@ -40,5 +42,6 @@ urlpatterns = [
     path('api/', api_root, name='api-root'),
     path('api/auth/', include('accounts.urls')),
     path('api/sos/', include('sos.urls')),
+    path('api/alerts/', include('alerts.urls')),
     path('api/', include('wari_core.urls')),
 ]

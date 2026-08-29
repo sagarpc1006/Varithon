@@ -107,6 +107,7 @@ const QuickActionCard: React.FC<{
 import { SOSPage } from '../pages/user/SOSPage';
 import { UserGroupsOverview } from './groups/UserGroupsOverview';
 import { UserGroupChat } from './groups/UserGroupChat';
+import { AlertsFeed } from '../pages/user/AlertsFeed';
 
 export const UserDashboard: React.FC<UserDashboardProps> = ({
   session,
@@ -116,7 +117,7 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({
 }) => {
   const t = LABELS[language];
   const [mapRefreshing, setMapRefreshing] = useState(false);
-  const [currentView, setCurrentView] = useState<'dashboard' | 'sos' | 'groups' | 'group-chat'>('dashboard');
+  const [currentView, setCurrentView] = useState<'dashboard' | 'sos' | 'groups' | 'group-chat' | 'alerts'>('dashboard');
   const [activeChatGroupId, setActiveChatGroupId] = useState<number | null>(null);
 
   const handleSignOut = async () => {
@@ -199,11 +200,21 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({
               setCurrentView('group-chat');
             }}
           />
+        ) : currentView === 'alerts' ? (
+          <AlertsFeed onBack={() => setCurrentView('dashboard')} />
         ) : (
           <>
             {/* ── MAP SECTION ── */}
             <section className="relative w-full rounded-2xl overflow-hidden border border-orange-100 shadow-lg" style={{ minHeight: "280px", height: "38vh", maxHeight: "420px" }}>
-              <WariMap className="absolute inset-0" />
+              <WariMap className="w-full h-full" />
+              <button
+                id="btn-refresh-map"
+                onClick={handleMapRefresh}
+                title="Refresh Map"
+                className="absolute top-3 right-3 z-10 bg-white/90 backdrop-blur-sm border border-orange-200 text-orange-700 hover:bg-orange-500 hover:text-white p-2 rounded-xl shadow-md transition-all duration-200"
+              >
+                <RefreshCw size={15} className={mapRefreshing ? "animate-spin" : ""} />
+              </button>
             </section>
 
             {/* ── QUICK ACTION BUTTONS 2×2 GRID ── */}
@@ -229,6 +240,7 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({
                 colorClass="bg-gradient-to-br from-amber-500 to-orange-500"
                 glowClass="bg-amber-400"
                 borderClass="border-amber-100 hover:border-amber-300"
+                onClick={() => setCurrentView('alerts')}
               />
 
               {/* Groups */}
