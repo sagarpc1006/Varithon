@@ -134,15 +134,20 @@ export const LiveSOSFeed: React.FC<LiveSOSFeedProps> = ({
 
     return reports.map((r) => {
       let categoryTitle = 'General Issue';
-      let normType = r.type;
+      let normType = (r.type || '').toLowerCase();
 
-      if (r.type === 'medical') {
+      if (normType === 'medical') {
         categoryTitle = 'Medical Emergency';
-      } else if (r.type === 'lost_item' || r.type === 'lost_person') {
-        categoryTitle = 'Lost Person';
+        normType = 'medical';
+      } else if (normType === 'lost_item' || normType === 'lost_person' || normType === 'lost') {
+        categoryTitle = normType === 'lost_item' ? 'Lost Item' : 'Lost Person';
         normType = 'lost_person';
-      } else if (r.type === 'restroom') {
+      } else if (normType === 'restroom') {
         categoryTitle = 'Restroom Issue';
+        normType = 'restroom';
+      } else {
+        categoryTitle = 'General Issue';
+        normType = 'issue';
       }
 
       const dist = calculateDistance(adminLocation.lat, adminLocation.lng, r.lat, r.lng);
@@ -171,9 +176,10 @@ export const LiveSOSFeed: React.FC<LiveSOSFeedProps> = ({
       medical: 1,
       lost_person: 2,
       lost_item: 2,
-      issue: 3,
-      general_issue: 3,
-      restroom: 4,
+      lost: 2,
+      restroom: 3,
+      issue: 4,
+      general_issue: 4,
     };
 
     return [...formattedReports].sort((a, b) => {
@@ -192,23 +198,38 @@ export const LiveSOSFeed: React.FC<LiveSOSFeedProps> = ({
   // Filter application
   const filteredReports = useMemo(() => {
     return sortedReports.filter((item) => {
-      if (activeFilter === 'all') return item.status !== 'resolved';
-      if (activeFilter === 'medical') return item.type === 'medical' && item.status !== 'resolved';
-      if (activeFilter === 'lost') return (item.type === 'lost_person' || item.type === 'lost_item') && item.status !== 'resolved';
-      if (activeFilter === 'issue') return (item.type === 'issue' || item.type === 'general_issue') && item.status !== 'resolved';
-      if (activeFilter === 'resolved') return item.status === 'resolved';
+      const type = item.type.toLowerCase();
+      const isResolved = item.status === 'resolved';
+
+      if (activeFilter === 'resolved') {
+        return isResolved;
+      }
+      
+      // All other filters only show active (non-resolved) items
+      if (isResolved) return false;
+
+      if (activeFilter === 'all') return true;
+      if (activeFilter === 'medical') return type === 'medical';
+      if (activeFilter === 'lost') return type === 'lost_person' || type === 'lost_item' || type === 'lost';
+      if (activeFilter === 'restroom') return type === 'restroom';
+      if (activeFilter === 'issue') return type === 'issue' || type === 'general_issue' || !['medical', 'lost_person', 'lost_item', 'lost', 'restroom'].includes(type);
+
       return true;
     });
   }, [sortedReports, activeFilter]);
 
   // Filter counts
   const filterCounts = useMemo(() => {
+    const activeReports = sortedReports.filter(r => r.status !== 'resolved');
+    const resolvedReports = sortedReports.filter(r => r.status === 'resolved');
+
     return {
-      all: sortedReports.filter(r => r.status !== 'resolved').length,
-      medical: sortedReports.filter(r => r.type === 'medical' && r.status !== 'resolved').length,
-      lost: sortedReports.filter(r => (r.type === 'lost_person' || r.type === 'lost_item') && r.status !== 'resolved').length,
-      issue: sortedReports.filter(r => (r.type === 'issue' || r.type === 'general_issue') && r.status !== 'resolved').length,
-      resolved: sortedReports.filter(r => r.status === 'resolved').length,
+      all: activeReports.length,
+      medical: activeReports.filter(r => r.type.toLowerCase() === 'medical').length,
+      lost: activeReports.filter(r => ['lost_person', 'lost_item', 'lost'].includes(r.type.toLowerCase())).length,
+      restroom: activeReports.filter(r => r.type.toLowerCase() === 'restroom').length,
+      issue: activeReports.filter(r => ['issue', 'general_issue'].includes(r.type.toLowerCase()) || !['medical', 'lost_person', 'lost_item', 'lost', 'restroom'].includes(r.type.toLowerCase())).length,
+      resolved: resolvedReports.length,
     };
   }, [sortedReports]);
 
@@ -230,7 +251,7 @@ export const LiveSOSFeed: React.FC<LiveSOSFeedProps> = ({
   const handleUpdateStatus = async (id: number, newStatus: 'acknowledged' | 'resolved') => {
     setIsModalSubmitting(true);
     try {
-      await api.put(`/sos/${id}/status/`, { status: newStatus });
+      await api.patch(`/sos/${id}/status/`, { status: newStatus });
       await fetchReports(false);
       setSelectedItem(prev => prev ? { ...prev, status: newStatus } : null);
       if (newStatus === 'resolved') {

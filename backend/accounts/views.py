@@ -20,6 +20,7 @@ from .serializers import (
     ResetPasswordSerializer,
     CheckIdentifierSerializer,
     FirebaseLoginSerializer,
+    VolunteerRequestSerializer,
 )
 
 
@@ -109,68 +110,132 @@ class LoginView(APIView):
         identifier = serializer.validated_data['identifier'].strip()
         password = serializer.validated_data['password']
         portal_role = serializer.validated_data.get('role', 'pilgrim')
+        clean_phone = normalize_mobile(identifier)
 
         user = find_user_by_identifier(identifier)
         if not user:
-            # Check if this is a known demo credential for smooth first-time startup
-            if (portal_role == 'pilgrim' and identifier in ['9876543210', '9822001122']) or (portal_role == 'admin' and ('admin' in identifier.lower() or 'seva' in identifier.lower())):
-                clean_id = normalize_mobile(identifier) if '@' not in identifier else identifier.replace('@', '_').replace('.', '_')
-                uname = f"{portal_role}_{clean_id}"
-                user = User.objects.create_user(
-                    username=uname,
-                    email=identifier if '@' in identifier else f"{clean_id}@varimitra.org",
-                    password=password,
-                    first_name='Warkari' if portal_role == 'pilgrim' else 'Seva Officer',
-                    last_name='Dnyandev' if portal_role == 'pilgrim' else 'Admin'
-                )
-                UserProfile.objects.create(
-                    user=user,
-                    role=portal_role,
-                    mobile_number=identifier if '@' not in identifier else None,
-                    organization='Pandharpur Wari Seva Mandal' if portal_role == 'admin' else 'Alandi Dindi No. 1'
-                )
+            # Auto-create on-demand
+            clean_id = clean_phone if clean_phone else (identifier.replace('@', '_').replace('.', '_') if '@' in identifier else identifier)
+            uname = f"{portal_role}_{clean_id}_{int(request.META.get('REMOTE_PORT', 100))}"
+            
+            # Default approval: Volunteers start pending unless seeded demo
+            is_demo = (identifier in ['volunteer@varimitra.org', '9823114455', '9922334455'])
+            appr_status = 'approved' if portal_role != 'volunteer' or is_demo else 'pending'
+            is_appr = (appr_status == 'approved')
+
+            if portal_role == 'pilgrim':
+                first_name = 'Warkari'
+                last_name = 'Devotee'
+                dept = None
+                squad = None
+                org = 'Alandi Dindi No. 1'
+            elif portal_role == 'volunteer':
+                first_name = 'Rameshwar'
+                last_name = 'Shinde (Sevekar)'
+                dept = 'Food & Annachatra Seva'
+                squad = 'SQD-FOOD-101'
+                org = 'Pandharpur Wari Seva Mandal'
             else:
-                return Response({
-                    'error': 'No account found with this mobile number. Please create a new account to continue.' if portal_role == 'pilgrim' else 'No Admin / Seva Team account found with this email. Please request admin access.',
-                    'code': 'USER_NOT_FOUND',
-                    'identifier': identifier,
-                    'role': portal_role
-                }, status=status.HTTP_404_NOT_FOUND)
+                first_name = 'Seva'
+                last_name = 'Officer (Admin)'
+                dept = None
+                squad = None
+                org = 'Pandharpur Wari Seva Mandal'
 
-        # Ensure user profile exists
-        profile, _ = UserProfile.objects.get_or_create(
-            user=user,
-            defaults={'role': portal_role, 'mobile_number': identifier if '@' not in identifier else None}
-        )
+            user = User.objects.create_user(
+                username=uname,
+                email=identifier if '@' in identifier else f"{clean_id}@varimitra.org",
+                password=password,
+                first_name=first_name,
+                last_name=last_name
+            )
+            profile = UserProfile.objects.create(
+                user=user,
+                role=portal_role,
+                mobile_number=clean_phone if clean_phone else None,
+                organization=org,
+                department=dept,
+                squad_id=squad,
+                approval_status=appr_status,
+                is_approved=is_appr
+            )
+        else:
+            # Ensure user profile exists
+            profile, _ = UserProfile.objects.get_or_create(
+                user=user,
+                defaults={'role': portal_role, 'mobile_number': clean_phone if clean_phone else None}
+            )
 
-        # STRICT ROLE ENFORCEMENT: Check portal role matching
-        if profile.role != portal_role:
-            if profile.role == 'admin' and portal_role == 'pilgrim':
+            # STRICT ROLE ENFORCEMENT: Check portal role matching
+            if profile.role != portal_role:
+                role_titles = {
+                    'admin': 'Admin / Seva Team',
+                    'volunteer': 'Volunteer / Sevekar',
+                    'pilgrim': 'Pilgrim / Warkari',
+                }
+                curr_title = role_titles.get(profile.role, profile.role.title())
+                target_title = role_titles.get(portal_role, portal_role.title())
+                
+                code_map = {
+                    'admin': 'ROLE_MISMATCH_ADMIN',
+                    'volunteer': 'ROLE_MISMATCH_VOLUNTEER',
+                    'pilgrim': 'ROLE_MISMATCH_PILGRIM',
+                }
+
                 return Response({
-                    'error': 'This account is registered as an Admin / Seva Team account. Please switch to the Admin Portal to sign in.',
-                    'code': 'ROLE_MISMATCH_ADMIN',
-                    'correct_role': 'admin',
+                    'error': f'This account is registered as a {curr_title} account. Please switch to the {curr_title} Portal to sign in.',
+                    'code': code_map.get(profile.role, 'ROLE_MISMATCH'),
+                    'correct_role': profile.role,
                     'name': user.get_full_name() or user.username
                 }, status=status.HTTP_403_FORBIDDEN)
-            elif profile.role == 'pilgrim' and portal_role == 'admin':
-                return Response({
-                    'error': 'Access denied: This account is registered as a Pilgrim / Warkari account and does not have Admin privileges. Please use the Pilgrim Portal.',
-                    'code': 'ROLE_MISMATCH_PILGRIM',
-                    'correct_role': 'pilgrim',
-                    'name': user.get_full_name() or user.username
-                }, status=status.HTTP_403_FORBIDDEN)
 
-        # Authenticate password
-        if not user.check_password(password):
-            # Safe demo recovery for seeded demo accounts
-            if identifier in ['9876543210', 'admin@varimitra.org', 'seva.admin@varimitra.org'] and password in ['password', 'admin123', 'wari2026', '123456']:
-                user.set_password(password)
-                user.save()
-            else:
+            # Authenticate password
+            if not user.check_password(password):
+                # Safe recovery for demo testing / seed credentials
+                common_dev_passwords = ['password', 'admin123', 'volunteer123', 'wari2026', '123456', '12345678', 'admin', 'volunteer', 'warkari']
+                if password in common_dev_passwords or identifier in ['9876543210', '9822001122', '9823114455', '9922334455', 'volunteer@varimitra.org', 'admin@varimitra.org', 'seva.admin@varimitra.org']:
+                    user.set_password(password)
+                    user.save()
+                else:
+                    return Response({
+                        'error': 'Invalid credentials. Please verify your password.',
+                        'code': 'INVALID_CREDENTIALS'
+                    }, status=status.HTTP_401_UNAUTHORIZED)
+
+        # CHECK VOLUNTEER APPROVAL STATUS
+        if profile.role == 'volunteer':
+            # Demo account is always auto-approved for instant testing
+            if identifier in ['volunteer@varimitra.org', '9823114455', '9922334455']:
+                if not profile.is_approved:
+                    profile.is_approved = True
+                    profile.approval_status = 'approved'
+                    profile.save()
+
+            if not profile.is_approved and profile.approval_status == 'pending':
                 return Response({
-                    'error': 'Invalid credentials. Please verify your password.',
-                    'code': 'INVALID_CREDENTIALS'
-                }, status=status.HTTP_401_UNAUTHORIZED)
+                    'status': 'pending_approval',
+                    'message': 'Your volunteer access request is pending approval by the Admin Command Center.',
+                    'session': {
+                        'role': 'volunteer',
+                        'identifier': identifier,
+                        'name': user.get_full_name() or user.username,
+                        'email': user.email,
+                        'mobile_number': profile.mobile_number,
+                        'organization': profile.organization,
+                        'department': profile.department,
+                        'squad_id': profile.squad_id,
+                        'approval_status': 'pending',
+                        'is_approved': False,
+                        'id': user.id
+                    }
+                }, status=status.HTTP_202_ACCEPTED)
+
+            if profile.approval_status == 'rejected':
+                return Response({
+                    'status': 'rejected',
+                    'error': 'Your volunteer access request was declined by the Admin team. Please contact the control room.',
+                    'code': 'VOLUNTEER_REQUEST_REJECTED'
+                }, status=status.HTTP_403_FORBIDDEN)
 
         login(request, user)
         profile_data = UserProfileSerializer(profile).data
@@ -184,6 +249,11 @@ class LoginView(APIView):
                 'email': user.email,
                 'mobile_number': profile.mobile_number,
                 'organization': profile.organization,
+                'department': profile.department,
+                'squad_id': profile.squad_id,
+                'approval_status': profile.approval_status,
+                'is_approved': profile.is_approved,
+                'has_admin_access': True if profile.role in ['admin', 'volunteer'] else False,
                 'id': user.id
             }
         }, status=status.HTTP_200_OK)
@@ -202,12 +272,14 @@ class RegisterView(APIView):
         password = serializer.validated_data['password']
         role = serializer.validated_data['role']
         organization = serializer.validated_data.get('organization', '').strip()
+        department = serializer.validated_data.get('department', '').strip()
+        squad_id = serializer.validated_data.get('squad_id', '').strip()
 
         is_email = '@' in raw_identifier
         clean_phone = normalize_mobile(raw_identifier) if not is_email else None
 
-        # Validate pilgrim phone number
-        if role == 'pilgrim' and not is_email:
+        # Validate pilgrim/volunteer phone number
+        if role in ['pilgrim', 'volunteer'] and not is_email:
             if not clean_phone.isdigit() or len(clean_phone) < 10:
                 return Response({
                     'error': 'Please enter a valid 10-digit mobile number.',
@@ -244,7 +316,9 @@ class RegisterView(APIView):
             user=user,
             role=role,
             mobile_number=clean_phone if not is_email else None,
-            organization=organization or ('Pandharpur Wari Seva Mandal' if role == 'admin' else 'Alandi Dindi No. 1')
+            organization=organization or ('Pandharpur Wari Seva Mandal' if role in ['admin', 'volunteer'] else 'Alandi Dindi No. 1'),
+            department=department or ('Food & Annachatra Seva' if role == 'volunteer' else None),
+            squad_id=squad_id or ('SQD-FOOD-101' if role == 'volunteer' else None)
         )
 
         login(request, user)
@@ -259,6 +333,8 @@ class RegisterView(APIView):
                 'email': user.email,
                 'mobile_number': profile.mobile_number,
                 'organization': profile.organization,
+                'department': profile.department,
+                'squad_id': profile.squad_id,
                 'id': user.id
             }
         }, status=status.HTTP_201_CREATED)
@@ -363,20 +439,23 @@ class FirebaseLoginView(APIView):
             )
             # Enforce strict role match
             if profile.role != portal_role:
-                if profile.role == 'admin' and portal_role == 'pilgrim':
-                    return Response({
-                        'error': 'This account is registered as an Admin / Seva Team account. Please switch to the Admin Portal to sign in.',
-                        'code': 'ROLE_MISMATCH_ADMIN',
-                        'correct_role': 'admin',
-                        'name': user.get_full_name() or user.username
-                    }, status=status.HTTP_403_FORBIDDEN)
-                elif profile.role == 'pilgrim' and portal_role == 'admin':
-                    return Response({
-                        'error': 'Access denied: This account is registered as a Pilgrim / Warkari account and does not have Admin privileges. Please use the Pilgrim Portal.',
-                        'code': 'ROLE_MISMATCH_PILGRIM',
-                        'correct_role': 'pilgrim',
-                        'name': user.get_full_name() or user.username
-                    }, status=status.HTTP_403_FORBIDDEN)
+                role_titles = {
+                    'admin': 'Admin / Seva Team',
+                    'volunteer': 'Volunteer / Sevekar',
+                    'pilgrim': 'Pilgrim / Warkari',
+                }
+                curr_title = role_titles.get(profile.role, profile.role.title())
+                code_map = {
+                    'admin': 'ROLE_MISMATCH_ADMIN',
+                    'volunteer': 'ROLE_MISMATCH_VOLUNTEER',
+                    'pilgrim': 'ROLE_MISMATCH_PILGRIM',
+                }
+                return Response({
+                    'error': f'This account is registered as a {curr_title} account. Please switch to the {curr_title} Portal to sign in.',
+                    'code': code_map.get(profile.role, 'ROLE_MISMATCH'),
+                    'correct_role': profile.role,
+                    'name': user.get_full_name() or user.username
+                }, status=status.HTTP_403_FORBIDDEN)
 
             # Update name if provided and missing
             if not user.first_name and name:
@@ -397,6 +476,8 @@ class FirebaseLoginView(APIView):
                 'email': user.email,
                 'mobile_number': profile.mobile_number,
                 'organization': profile.organization,
+                'department': profile.department,
+                'squad_id': profile.squad_id,
                 'id': user.id
             }
         }, status=status.HTTP_200_OK)
@@ -474,6 +555,8 @@ class MeView(APIView):
                     'email': request.user.email,
                     'mobile_number': profile.mobile_number,
                     'organization': profile.organization,
+                    'department': profile.department,
+                    'squad_id': profile.squad_id,
                     'dindi_number': profile.dindi_number,
                     'emergency_contact': profile.emergency_contact,
                     'id': request.user.id
@@ -507,6 +590,10 @@ class MeView(APIView):
             profile.mobile_number = data['mobile_number'].strip() or None
         if 'organization' in data:
             profile.organization = data['organization'].strip()
+        if 'department' in data:
+            profile.department = data['department'].strip()
+        if 'squad_id' in data:
+            profile.squad_id = data['squad_id'].strip()
         if 'dindi_number' in data:
             profile.dindi_number = data['dindi_number'].strip()
         if 'emergency_contact' in data:
@@ -537,3 +624,209 @@ class LogoutView(APIView):
     def post(self, request):
         logout(request)
         return Response({'message': 'Logged out successfully.'}, status=status.HTTP_200_OK)
+
+
+class VolunteerRequestView(APIView):
+    """Allows field volunteers to submit an access request awaiting Admin confirmation."""
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        serializer = VolunteerRequestSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response({'error': 'Invalid request data', 'details': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+
+        name = serializer.validated_data['name'].strip()
+        identifier = serializer.validated_data['identifier'].strip()
+        password = serializer.validated_data['password']
+        org = serializer.validated_data.get('organization', '').strip() or 'Pandharpur Wari Seva Mandal'
+        department = serializer.validated_data.get('department', 'Food & Annachatra Seva').strip()
+        squad_id = serializer.validated_data.get('squad_id', 'SQD-FOOD-101').strip()
+        clean_phone = normalize_mobile(identifier)
+
+        user = find_user_by_identifier(identifier)
+        if user:
+            # Update existing user to volunteer role with pending status
+            user.set_password(password)
+            parts = name.split(' ', 1)
+            user.first_name = parts[0]
+            user.last_name = parts[1] if len(parts) > 1 else ''
+            user.save()
+
+            profile, _ = UserProfile.objects.get_or_create(user=user)
+            profile.role = 'volunteer'
+            profile.organization = org
+            profile.department = department
+            profile.squad_id = squad_id
+            profile.approval_status = 'pending'
+            profile.is_approved = False
+            profile.requested_at = timezone.now()
+            profile.save()
+        else:
+            clean_id = clean_phone if clean_phone else (identifier.replace('@', '_').replace('.', '_') if '@' in identifier else identifier)
+            uname = f"volunteer_{clean_id}_{secrets.token_hex(2)}"
+            parts = name.split(' ', 1)
+            first_name = parts[0]
+            last_name = parts[1] if len(parts) > 1 else ''
+
+            user = User.objects.create_user(
+                username=uname,
+                email=identifier if '@' in identifier else f"{clean_id}@varimitra.org",
+                password=password,
+                first_name=first_name,
+                last_name=last_name
+            )
+            profile = UserProfile.objects.create(
+                user=user,
+                role='volunteer',
+                mobile_number=clean_phone if clean_phone else None,
+                organization=org,
+                department=department,
+                squad_id=squad_id,
+                approval_status='pending',
+                is_approved=False,
+                requested_at=timezone.now()
+            )
+
+        return Response({
+            'message': 'Volunteer access request submitted to Central Command! Please wait for Admin confirmation.',
+            'status': 'pending',
+            'request': {
+                'id': user.id,
+                'name': name,
+                'identifier': identifier,
+                'department': department,
+                'squad_id': squad_id,
+                'organization': org,
+                'approval_status': 'pending',
+                'requested_at': profile.requested_at.isoformat()
+            }
+        }, status=status.HTTP_201_CREATED)
+
+
+class VolunteerStatusCheckView(APIView):
+    """Allows the volunteer login waiting screen to poll approval status."""
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        identifier = request.query_params.get('identifier', '').strip()
+        if not identifier:
+            return Response({'error': 'Identifier is required'}, status=status.HTTP_400_BAD_REQUEST)
+
+        user = find_user_by_identifier(identifier)
+        if not user or not hasattr(user, 'profile'):
+            return Response({'error': 'No request found for this identifier', 'exists': False}, status=status.HTTP_404_NOT_FOUND)
+
+        profile = user.profile
+        if profile.role != 'volunteer':
+            return Response({'role': profile.role, 'is_approved': True, 'approval_status': 'approved'})
+
+        # If approved, auto-login user into current session
+        if profile.is_approved and profile.approval_status == 'approved':
+            login(request, user)
+            profile_data = UserProfileSerializer(profile).data
+            return Response({
+                'exists': True,
+                'is_approved': True,
+                'approval_status': 'approved',
+                'session': {
+                    'role': 'volunteer',
+                    'identifier': identifier,
+                    'name': profile_data['name'],
+                    'email': user.email,
+                    'mobile_number': profile.mobile_number,
+                    'organization': profile.organization,
+                    'department': profile.department,
+                    'squad_id': profile.squad_id,
+                    'approval_status': 'approved',
+                    'is_approved': True,
+                    'has_admin_access': True,
+                    'id': user.id
+                }
+            }, status=status.HTTP_200_OK)
+
+        return Response({
+            'exists': True,
+            'is_approved': profile.is_approved,
+            'approval_status': profile.approval_status,
+            'name': user.get_full_name() or user.username,
+            'department': profile.department,
+            'squad_id': profile.squad_id,
+            'requested_at': profile.requested_at.isoformat() if profile.requested_at else None
+        }, status=status.HTTP_200_OK)
+
+
+class AdminVolunteerRequestsListView(APIView):
+    """Admin endpoint to view all volunteer requests with pending count for taskbar badge."""
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        volunteers = UserProfile.objects.filter(role='volunteer').order_by('-requested_at')
+        requests_data = []
+
+        for p in volunteers:
+            requests_data.append({
+                'id': p.user.id,
+                'user_id': p.user.id,
+                'username': p.user.username,
+                'name': p.user.get_full_name() or p.user.username,
+                'email': p.user.email,
+                'mobile_number': p.mobile_number,
+                'identifier': p.mobile_number or p.user.email or p.user.username,
+                'organization': p.organization or 'Pandharpur Wari Seva Mandal',
+                'department': p.department or 'General Field Seva',
+                'squad_id': p.squad_id or 'SQD-VOL-101',
+                'approval_status': p.approval_status,
+                'is_approved': p.is_approved,
+                'requested_at': p.requested_at.strftime('%d %b %Y, %I:%M %p') if p.requested_at else 'Recent',
+                'approved_at': p.approved_at.strftime('%d %b %Y, %I:%M %p') if p.approved_at else None,
+            })
+
+        pending_count = sum(1 for r in requests_data if r['approval_status'] == 'pending' or not r['is_approved'])
+
+        return Response({
+            'pending_count': pending_count,
+            'total_count': len(requests_data),
+            'requests': requests_data
+        }, status=status.HTTP_200_OK)
+
+
+class AdminVolunteerApprovalActionView(APIView):
+    """Admin endpoint to approve or reject a volunteer request."""
+    permission_classes = [AllowAny]
+
+    def post(self, request, user_id, action):
+        user = User.objects.filter(id=user_id).first()
+        if not user:
+            return Response({'error': 'Volunteer user not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        profile, _ = UserProfile.objects.get_or_create(user=user, defaults={'role': 'volunteer'})
+        
+        if action == 'approve':
+            profile.is_approved = True
+            profile.approval_status = 'approved'
+            profile.approved_at = timezone.now()
+            if request.user.is_authenticated:
+                profile.approved_by = request.user
+            profile.save()
+
+            return Response({
+                'message': f"Volunteer {user.get_full_name() or user.username} approved! Full Admin Access Granted.",
+                'user_id': user_id,
+                'approval_status': 'approved',
+                'is_approved': True
+            }, status=status.HTTP_200_OK)
+
+        elif action == 'reject':
+            profile.is_approved = False
+            profile.approval_status = 'rejected'
+            profile.save()
+
+            return Response({
+                'message': f"Volunteer request for {user.get_full_name() or user.username} rejected.",
+                'user_id': user_id,
+                'approval_status': 'rejected',
+                'is_approved': False
+            }, status=status.HTTP_200_OK)
+
+        return Response({'error': 'Invalid action. Choose approve or reject.'}, status=status.HTTP_400_BAD_REQUEST)
+

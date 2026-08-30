@@ -21,6 +21,10 @@ from .views import (
     GroupMemberManageView,
     AdminGroupStatsView,
     AdminReportsListView,
+    GarbageDustbinListCreateView,
+    GarbageDustbinDetailView,
+    GarbageDustbinEmptyActionView,
+    GarbageDustbinReportOverflowView,
 )
 
 urlpatterns = [
@@ -53,5 +57,13 @@ urlpatterns = [
     path('admin/groups/stats/', AdminGroupStatsView.as_view(), name='admin-group-stats'),
     path('admin/groups/reports/', AdminReportsListView.as_view(), name='admin-reports-list'),
     path('admin/groups/reports/<int:report_id>/', AdminReportsListView.as_view(), name='admin-report-resolve'),
+
+    # Garbage & Dustbin Management (Swachh Wari)
+    path('garbage/dustbins/', GarbageDustbinListCreateView.as_view(), name='garbage-dustbins-list-create'),
+    path('garbage/dustbins/<int:pk>/', GarbageDustbinDetailView.as_view(), name='garbage-dustbin-detail'),
+    path('garbage/dustbins/<int:pk>/empty/', GarbageDustbinEmptyActionView.as_view(), name='garbage-dustbin-empty'),
+    path('garbage/dustbins/<int:pk>/report-overflow/', GarbageDustbinReportOverflowView.as_view(), name='garbage-dustbin-report-overflow'),
 ]
+
+
 

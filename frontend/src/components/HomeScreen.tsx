@@ -117,7 +117,37 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                   <ArrowRight className="w-4 h-4 text-slate-400 group-hover:text-orange-400 group-hover:translate-x-0.5 transition-all" />
                 </button>
 
-                {/* Option 2: Admin / Seva Team Login */}
+                {/* Option 2: Volunteer / Sevekar Login */}
+                <button
+                  id="btn-popover-volunteer"
+                  onClick={() => {
+                    setShowLoginMenu(false);
+                    onSelectPortal('volunteer');
+                  }}
+                  className="w-full flex items-center justify-between p-2.5 rounded-xl hover:bg-white/10 transition-colors group text-left cursor-pointer mt-1"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 rounded-full bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400 group-hover:scale-110 transition-transform">
+                      <svg viewBox="0 0 24 24" className="w-4 h-4 fill-none stroke-current" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                        <circle cx="9" cy="7" r="4" />
+                        <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                      </svg>
+                    </div>
+                    <div>
+                      <p className="text-xs sm:text-sm font-bold text-white group-hover:text-emerald-400 transition-colors">
+                        Volunteer / Sevekar
+                      </p>
+                      <p className="text-[11px] text-slate-400">
+                        Field duty & emergency responder
+                      </p>
+                    </div>
+                  </div>
+                  <ArrowRight className="w-4 h-4 text-slate-400 group-hover:text-emerald-400 group-hover:translate-x-0.5 transition-all" />
+                </button>
+
+                {/* Option 3: Admin / Seva Team Login */}
                 <button
                   id="btn-popover-admin"
                   onClick={() => {
@@ -184,6 +214,83 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
           >
             {t.heroSubtext}
           </p>
+
+          {/* Interactive Portal Quick Launch Cards */}
+          <div className="pt-6 sm:pt-8 grid grid-cols-1 sm:grid-cols-3 gap-3.5 sm:gap-4 max-w-3xl mx-auto w-full">
+            {/* Card 1: Pilgrim / Warkari */}
+            <button
+              id="hero-btn-pilgrim"
+              onClick={() => onSelectPortal('pilgrim')}
+              className="group relative p-4 rounded-2xl bg-slate-900/80 hover:bg-orange-950/80 backdrop-blur-md border border-orange-500/30 hover:border-orange-500 shadow-xl transition-all duration-200 hover:-translate-y-1 text-left flex flex-col justify-between cursor-pointer"
+            >
+              <div className="flex items-center gap-3 mb-2">
+                <div className="w-10 h-10 rounded-xl bg-orange-500/20 border border-orange-500/40 flex items-center justify-center text-orange-400 group-hover:scale-110 group-hover:bg-orange-500 group-hover:text-white transition-all">
+                  <Footprints className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-sm sm:text-base font-bold text-white group-hover:text-orange-300 transition-colors">
+                    {t.pilgrimTitle}
+                  </h3>
+                  <p className="text-[11px] text-slate-400">Devotee Login</p>
+                </div>
+              </div>
+              <div className="mt-2 flex items-center justify-between text-xs font-semibold text-orange-400">
+                <span>Enter Pilgrim Portal</span>
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </div>
+            </button>
+
+            {/* Card 2: Volunteer / Sevekar */}
+            <button
+              id="hero-btn-volunteer"
+              onClick={() => onSelectPortal('volunteer')}
+              className="group relative p-4 rounded-2xl bg-slate-900/80 hover:bg-emerald-950/80 backdrop-blur-md border border-emerald-500/30 hover:border-emerald-500 shadow-xl transition-all duration-200 hover:-translate-y-1 text-left flex flex-col justify-between cursor-pointer"
+            >
+              <div className="flex items-center gap-3 mb-2">
+                <div className="w-10 h-10 rounded-xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400 group-hover:scale-110 group-hover:bg-emerald-500 group-hover:text-white transition-all">
+                  <svg viewBox="0 0 24 24" className="w-5 h-5 fill-none stroke-current" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                    <circle cx="9" cy="7" r="4" />
+                    <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                  </svg>
+                </div>
+                <div>
+                  <h3 className="text-sm sm:text-base font-bold text-white group-hover:text-emerald-300 transition-colors">
+                    {t.volunteerTitle}
+                  </h3>
+                  <p className="text-[11px] text-slate-400">Sevekar Portal</p>
+                </div>
+              </div>
+              <div className="mt-2 flex items-center justify-between text-xs font-semibold text-emerald-400">
+                <span>Enter Volunteer Portal</span>
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </div>
+            </button>
+
+            {/* Card 3: Admin / Seva Team */}
+            <button
+              id="hero-btn-admin"
+              onClick={() => onSelectPortal('admin')}
+              className="group relative p-4 rounded-2xl bg-slate-900/80 hover:bg-blue-950/80 backdrop-blur-md border border-blue-500/30 hover:border-blue-500 shadow-xl transition-all duration-200 hover:-translate-y-1 text-left flex flex-col justify-between cursor-pointer"
+            >
+              <div className="flex items-center gap-3 mb-2">
+                <div className="w-10 h-10 rounded-xl bg-blue-500/20 border border-blue-500/40 flex items-center justify-center text-blue-400 group-hover:scale-110 group-hover:bg-blue-500 group-hover:text-white transition-all">
+                  <Shield className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-sm sm:text-base font-bold text-white group-hover:text-blue-300 transition-colors">
+                    {t.adminTitle}
+                  </h3>
+                  <p className="text-[11px] text-slate-400">Command Center</p>
+                </div>
+              </div>
+              <div className="mt-2 flex items-center justify-between text-xs font-semibold text-blue-400">
+                <span>Enter Admin Portal</span>
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </div>
+            </button>
+          </div>
         </div>
       </main>
     </div>

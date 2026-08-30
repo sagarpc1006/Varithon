@@ -35,6 +35,42 @@ export const PilgrimBadgeIcon: React.FC<{ size?: 'sm' | 'md' | 'lg' | 'hero'; cl
   );
 };
 
+// Volunteer / Sevekar Badge Icon (Emerald green hands with heart / service emblem)
+export const VolunteerBadgeIcon: React.FC<{ size?: 'sm' | 'md' | 'lg' | 'hero'; className?: string }> = ({
+  size = 'md',
+  className = '',
+}) => {
+  const sizeClasses = {
+    sm: 'w-8 h-8',
+    md: 'w-14 h-14',
+    lg: 'w-16 h-16',
+    hero: 'w-20 h-20',
+  }[size];
+
+  return (
+    <div className={`rounded-full bg-[#dcfce7] flex items-center justify-center text-[#15803d] shadow-sm flex-shrink-0 ${sizeClasses} ${className}`}>
+      <svg viewBox="0 0 48 48" className="w-3/5 h-3/5 fill-current" stroke="none">
+        {/* Person with protective/service hands */}
+        <circle cx="24" cy="14" r="5" fill="#15803d" />
+        <path
+          d="M14 26 C14 22 18 20 24 20 C30 20 34 22 34 26 V28 H14 V26 Z"
+          fill="#15803d"
+        />
+        {/* Service Hands / Wings beneath */}
+        <path
+          d="M10 32 C14 36 20 38 24 38 C28 38 34 36 38 32 C37 36 31 42 24 42 C17 42 11 36 10 32 Z"
+          fill="#16a34a"
+        />
+        <path
+          d="M6 24 C10 28 17 31 24 31 C31 31 38 28 42 24 C40 30 33 37 24 37 C15 37 8 30 6 24 Z"
+          fill="#22c55e"
+          opacity="0.8"
+        />
+      </svg>
+    </div>
+  );
+};
+
 // Admin / Seva Team Badge Icon (Navy blue shield with person)
 export const AdminBadgeIcon: React.FC<{ size?: 'sm' | 'md' | 'lg' | 'hero'; className?: string }> = ({
   size = 'md',

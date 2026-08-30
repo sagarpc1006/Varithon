@@ -2,7 +2,7 @@ export type Language = 'en' | 'mr' | 'hi';
 
 export type ScreenType = 'home' | 'signin';
 
-export type PortalType = 'pilgrim' | 'admin';
+export type PortalType = 'pilgrim' | 'volunteer' | 'admin';
 
 export interface UserSession {
   id?: number;
@@ -12,6 +12,28 @@ export interface UserSession {
   email?: string;
   mobile_number?: string;
   organization?: string;
+  department?: string;
+  squad_id?: string;
+  approval_status?: 'pending' | 'approved' | 'rejected';
+  is_approved?: boolean;
+  has_admin_access?: boolean;
+}
+
+export interface VolunteerRequestItem {
+  id: number;
+  user_id: number;
+  username: string;
+  name: string;
+  email?: string;
+  mobile_number?: string;
+  identifier: string;
+  organization: string;
+  department: string;
+  squad_id: string;
+  approval_status: 'pending' | 'approved' | 'rejected';
+  is_approved: boolean;
+  requested_at: string;
+  approved_at?: string | null;
 }
 
 export interface PalkhiLocationData {
@@ -37,12 +59,41 @@ export interface SevaResourceData {
   id: number;
   name: string;
   name_mr?: string;
-  category: 'MEDICAL' | 'WATER' | 'FOOD' | 'SHELTER' | 'SANITATION';
+  category: 'MEDICAL' | 'WATER' | 'FOOD' | 'SHELTER' | 'SANITATION' | 'DUSTBIN';
   location_name: string;
   distance_meters: number;
   contact_number: string;
   is_active: boolean;
   capacity_or_supplies: string;
+}
+
+export interface GarbageDustbinData {
+  id: number;
+  name: string;
+  name_mr?: string;
+  category: 'ORGANIC_DRY' | 'PLASTIC_ONLY' | 'BIO_MEDICAL' | 'COMMUNITY_COMPACTOR';
+  category_display?: string;
+  location_name: string;
+  latitude: number;
+  longitude: number;
+  capacity_liters: number;
+  fill_level_percent: number;
+  status: 'OPERATIONAL' | 'NEEDS_EMPTYING' | 'OVERFLOWING' | 'CLEANED';
+  status_display?: string;
+  assigned_squad: string;
+  reported_overflow_count: number;
+  is_active: boolean;
+  last_cleaned_at: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface GarbageSummaryData {
+  total_count: number;
+  critical_count: number;
+  operational_count: number;
+  avg_fill_percent: number;
+  active_squads_count: number;
 }
 
 export interface CrowdDensityData {

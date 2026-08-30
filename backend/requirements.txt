@@ -3,3 +3,5 @@ djangorestframework>=3.14.0
 django-cors-headers>=4.3.0
 asgiref>=3.7.0
 sqlparse>=0.4.4
+channels>=4.0.0
+daphne>=4.0.0

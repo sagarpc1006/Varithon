@@ -21,7 +21,8 @@ import {
   MessageSquare,
   Sparkles,
   PhoneCall,
-  CloudSun
+  CloudSun,
+  Trash2
 } from "lucide-react";
 import { UserSession, Language } from "../types";
 import { VariMitraLogo } from "./VariMitraLogo";
@@ -35,6 +36,7 @@ import { UserGroupsOverview } from "./groups/UserGroupsOverview";
 import { UserGroupChat } from "./groups/UserGroupChat";
 import { ProfileView } from "./ProfileView";
 import { WeatherView } from "./WeatherView";
+import { UserGarbageView } from "./UserGarbageView";
 
 interface UserDashboardProps {
   session: UserSession;
@@ -51,6 +53,7 @@ type UserView =
   | "groups"
   | "group-chat"
   | "weather"
+  | "garbage"
   | "sos"
   | "profile";
 
@@ -221,7 +224,24 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({
               <span>Route Weather</span>
             </button>
 
-            {/* 7. Emergency SOS Help */}
+            {/* 7. Cleanliness & Dustbins (Swachh Wari) */}
+            <button
+              id="nav-user-garbage"
+              onClick={() => {
+                setCurrentView("garbage");
+                setMobileMenuOpen(false);
+              }}
+              className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all text-left cursor-pointer ${
+                currentView === "garbage"
+                  ? "bg-gradient-to-r from-orange-500 to-amber-600 text-white shadow-md shadow-orange-500/25"
+                  : "text-slate-600 hover:text-slate-900 hover:bg-slate-100/80"
+              }`}
+            >
+              <Trash2 size={16} className={currentView === "garbage" ? "text-white" : "text-emerald-600"} />
+              <span>Cleanliness & Dustbins</span>
+            </button>
+
+            {/* 8. Emergency SOS Help */}
             <button
               id="nav-emergency-sos"
               onClick={() => {
@@ -306,6 +326,8 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({
                   ? "Dindi Live Chat"
                   : currentView === "weather"
                   ? "Live Route Weather Station"
+                  : currentView === "garbage"
+                  ? "Swachh Wari — Dustbin & Sanitation Locator"
                   : currentView === "sos"
                   ? "Emergency SOS Dispatch"
                   : "Pilgrim Profile"}
@@ -358,6 +380,8 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({
               onBack={() => setCurrentView("dashboard")}
               variant="user"
             />
+          ) : currentView === "garbage" ? (
+            <UserGarbageView onOpenMap={() => setCurrentView("nearby-services")} />
           ) : currentView === "alerts" ? (
             <AlertsFeed onBack={() => setCurrentView("dashboard")} />
           ) : currentView === "weather" ? (

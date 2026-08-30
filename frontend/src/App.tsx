@@ -3,6 +3,7 @@ import { Language, ScreenType, PortalType, UserSession } from './types';
 import { HomeScreen } from './components/HomeScreen';
 import { SignInScreen } from './components/SignInScreen';
 import { UserDashboard } from './components/UserDashboard';
+import { VolunteerDashboard } from './components/VolunteerDashboard';
 import { AdminDashboard } from './components/AdminDashboard';
 import { authService } from './services/auth';
 
@@ -64,6 +65,16 @@ export default function App() {
     if (session.role === 'pilgrim') {
       return (
         <UserDashboard
+          session={session}
+          language={language}
+          onLanguageChange={setLanguage}
+          onSignOut={handleSignOut}
+        />
+      );
+    }
+    if (session.role === 'volunteer') {
+      return (
+        <VolunteerDashboard
           session={session}
           language={language}
           onLanguageChange={setLanguage}

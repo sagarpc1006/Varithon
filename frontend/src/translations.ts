@@ -12,6 +12,10 @@ export interface Translations {
   pilgrimTitle: string;
   pilgrimDescription: string;
   loginAsPilgrim: string;
+
+  volunteerTitle: string;
+  volunteerDescription: string;
+  loginAsVolunteer: string;
   
   adminTitle: string;
   adminDescription: string;
@@ -35,6 +39,12 @@ export interface Translations {
   passwordPlaceholder: string;
   forgotPassword: string;
   signInPilgrimBtn: string;
+
+  volunteerSignInTitle: string;
+  volunteerWelcome: string;
+  volunteerIdLabel: string;
+  volunteerIdPlaceholder: string;
+  signInVolunteerBtn: string;
   
   adminSignInTitle: string;
   adminWelcome: string;
@@ -47,15 +57,20 @@ export interface Translations {
   
   newHere: string;
   createPilgrimAccount: string;
+  needVolunteerAccount: string;
+  createVolunteerAccount: string;
   needAdminAccount: string;
   requestAccess: string;
   
   // Role & Error notices
   switchToAdminPortal: string;
+  switchToVolunteerPortal: string;
   switchToPilgrimPortal: string;
   accountNotFoundPilgrim: string;
+  accountNotFoundVolunteer: string;
   accountNotFoundAdmin: string;
   registerWithNumber: string;
+  registerAsVolunteer: string;
   requestWithEmail: string;
   roleMismatchNotice: string;
   
@@ -82,6 +97,10 @@ export const translations: Record<Language, Translations> = {
     pilgrimTitle: "Pilgrim / Warkari",
     pilgrimDescription: "Access assistance, navigation, facilities, AI helper and emergency support.",
     loginAsPilgrim: "Login as Pilgrim",
+
+    volunteerTitle: "Volunteer / Sevekar",
+    volunteerDescription: "Field telemetry, duty squads, distress responder & route assistance.",
+    loginAsVolunteer: "Login as Volunteer",
     
     adminTitle: "Admin / Seva Team",
     adminDescription: "Monitor pilgrims, manage emergencies, facilities, volunteers and alerts.",
@@ -103,6 +122,12 @@ export const translations: Record<Language, Translations> = {
     passwordPlaceholder: "Password",
     forgotPassword: "Forgot Password?",
     signInPilgrimBtn: "Sign In as Pilgrim",
+
+    volunteerSignInTitle: "Volunteer Sign In",
+    volunteerWelcome: "Welcome back, Dedicated Sevekar!",
+    volunteerIdLabel: "Mobile Number or Volunteer ID",
+    volunteerIdPlaceholder: "9823114455 / volunteer@varimitra.org",
+    signInVolunteerBtn: "Sign In as Volunteer",
     
     adminSignInTitle: "Admin Sign In",
     adminWelcome: "Welcome back, Seva Team!",
@@ -115,14 +140,19 @@ export const translations: Record<Language, Translations> = {
     
     newHere: "New here?",
     createPilgrimAccount: "Create Pilgrim Account",
+    needVolunteerAccount: "Join as a field volunteer?",
+    createVolunteerAccount: "Register as Volunteer",
     needAdminAccount: "Need an admin account?",
     requestAccess: "Request Access",
     
     switchToAdminPortal: "Switch to Admin Portal",
+    switchToVolunteerPortal: "Switch to Volunteer Portal",
     switchToPilgrimPortal: "Switch to Pilgrim Portal",
     accountNotFoundPilgrim: "No account found with this mobile number. Please register to continue.",
+    accountNotFoundVolunteer: "No Volunteer account found with this credential. Please register as volunteer.",
     accountNotFoundAdmin: "No Admin account found with this email. Please request admin access.",
     registerWithNumber: "Create Account with this Number",
+    registerAsVolunteer: "Register as Volunteer",
     requestWithEmail: "Request Admin Access with this Email",
     roleMismatchNotice: "Account belongs to a different portal",
     
@@ -146,6 +176,10 @@ export const translations: Record<Language, Translations> = {
     pilgrimTitle: "वारकरी / भाविक",
     pilgrimDescription: "मार्गदर्शन, सुविधा माहिती, AI सहाय्यक आणि आपत्कालीन मदत मिळवा.",
     loginAsPilgrim: "वारकरी म्हणून लॉगिन करा",
+
+    volunteerTitle: "स्वयंसेवक / सेवेकरी",
+    volunteerDescription: "पथक ड्युटी, मदत कार्य, वारकरी सहाय्यता आणि समन्वय व्यवस्था.",
+    loginAsVolunteer: "स्वयंसेवक म्हणून लॉगिन करा",
     
     adminTitle: "प्रशासक / सेवा दल",
     adminDescription: "वारकरी सुरक्षा, सुविधा नियोजन, स्वयंसेवक आणि सूचनांचे व्यवस्थापन करा.",
@@ -167,6 +201,12 @@ export const translations: Record<Language, Translations> = {
     passwordPlaceholder: "पासवर्ड प्रविष्ट करा",
     forgotPassword: "पासवर्ड विसरलात?",
     signInPilgrimBtn: "वारकरी म्हणून साइन इन करा",
+
+    volunteerSignInTitle: "स्वयंसेवक साइन इन",
+    volunteerWelcome: "पुन्हा स्वागत आहे, निष्ठावंत सेवेकरी!",
+    volunteerIdLabel: "मोबाईल नंबर किंवा स्वयंसेवक आयडी",
+    volunteerIdPlaceholder: "मोबाईल नंबर किंवा ईमेल प्रविष्ट करा",
+    signInVolunteerBtn: "स्वयंसेवक म्हणून साइन इन करा",
     
     adminSignInTitle: "प्रशासक साइन इन",
     adminWelcome: "पुन्हा स्वागत आहे, सेवा दल!",
@@ -179,14 +219,19 @@ export const translations: Record<Language, Translations> = {
     
     newHere: "नवीन आहात?",
     createPilgrimAccount: "वारकरी खाते तयार करा",
+    needVolunteerAccount: "स्वयंसेवक म्हणून रुजू व्हा?",
+    createVolunteerAccount: "स्वयंसेवक नोंदणी करा",
     needAdminAccount: "प्रशासक खाते हवे आहे?",
     requestAccess: "परवानगीसाठी विनंती करा",
     
     switchToAdminPortal: "प्रशासक पोर्टलवर जा",
+    switchToVolunteerPortal: "स्वयंसेवक पोर्टलवर जा",
     switchToPilgrimPortal: "वारकरी पोर्टलवर जा",
     accountNotFoundPilgrim: "या मोबाईल नंबरवर कोणतेही खाते नाही. कृपया नवीन खाते तयार करा.",
+    accountNotFoundVolunteer: "या माहितीवर स्वयंसेवक खाते नाही. कृपया नोंदणी करा.",
     accountNotFoundAdmin: "या ईमेलवर प्रशासक खाते नाही. कृपया परवानगी विनंती पाठवा.",
     registerWithNumber: "या नंबरवर नवीन खाते तयार करा",
+    registerAsVolunteer: "स्वयंसेवक म्हणून नोंदणी करा",
     requestWithEmail: "या ईमेलने परवानगी विनंती करा",
     roleMismatchNotice: "हे खाते दुसऱ्या पोर्टलचे आहे",
     
@@ -210,6 +255,10 @@ export const translations: Record<Language, Translations> = {
     pilgrimTitle: "तीर्थयात्री / वारकरी",
     pilgrimDescription: "सहायता, नेविगेशन, सुविधाएं, AI सहायक और आपातकालीन सहायता प्राप्त करें।",
     loginAsPilgrim: "वारकरी के रूप में लॉगिन करें",
+
+    volunteerTitle: "स्वयंसेवक / सेवेकरी",
+    volunteerDescription: "फील्ड ड्यूटी, आपातकालीन सेवा, राहत कार्य और वारकरी सहायता।",
+    loginAsVolunteer: "स्वयंसेवक के रूप में लॉगिन करें",
     
     adminTitle: "एडमिन / सेवा दल",
     adminDescription: "यात्रियों की निगरानी, आपातकालीन प्रबंधन, स्वयंसेवक और अलर्ट प्रबंधित करें।",
@@ -231,6 +280,12 @@ export const translations: Record<Language, Translations> = {
     passwordPlaceholder: "पासवर्ड दर्ज करें",
     forgotPassword: "पासवर्ड भूल गए?",
     signInPilgrimBtn: "वारकरी के रूप में साइन इन करें",
+
+    volunteerSignInTitle: "स्वयंसेवक साइन इन",
+    volunteerWelcome: "वापसी पर स्वागत है, समर्पित सेवेकरी!",
+    volunteerIdLabel: "मोबाइल नंबर या स्वयंसेवक आईडी",
+    volunteerIdPlaceholder: "मोबाइल या ईमेल दर्ज करें",
+    signInVolunteerBtn: "स्वयंसेवक के रूप में साइन इन करें",
     
     adminSignInTitle: "एडमिन साइन इन",
     adminWelcome: "वापसी पर स्वागत है, सेवा दल!",
@@ -243,14 +298,19 @@ export const translations: Record<Language, Translations> = {
     
     newHere: "नए हैं?",
     createPilgrimAccount: "वारकरी खाता बनाएं",
+    needVolunteerAccount: "स्वयंसेवक के रूप में जुड़ें?",
+    createVolunteerAccount: "स्वयंसेवक पंजीकरण करें",
     needAdminAccount: "एडमिन खाता चाहिए?",
     requestAccess: "एक्सेस का अनुरोध करें",
     
     switchToAdminPortal: "एडमिन पोर्टल पर जाएं",
+    switchToVolunteerPortal: "स्वयंसेवक पोर्टल पर जाएं",
     switchToPilgrimPortal: "वारकरी पोर्टल पर जाएं",
     accountNotFoundPilgrim: "इस मोबाइल नंबर पर कोई खाता नहीं मिला। कृपया नया खाता बनाएं।",
+    accountNotFoundVolunteer: "इस विवरण पर कोई स्वयंसेवक खाता नहीं मिला। कृपया पंजीकरण करें।",
     accountNotFoundAdmin: "इस ईमेल पर कोई एडमिन खाता नहीं मिला। कृपया एक्सेस का अनुरोध करें।",
     registerWithNumber: "इस नंबर से नया खाता बनाएं",
+    registerAsVolunteer: "स्वयंसेवक के रूप में पंजीकरण करें",
     requestWithEmail: "इस ईमेल से एक्सेस अनुरोध भेजें",
     roleMismatchNotice: "यह खाता दूसरे पोर्टल का है",
     

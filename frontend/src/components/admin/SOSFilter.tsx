@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { SlidersHorizontal, Check } from 'lucide-react';
 
-export type FilterCategory = 'all' | 'medical' | 'lost' | 'issue' | 'resolved';
+export type FilterCategory = 'all' | 'medical' | 'lost' | 'restroom' | 'issue' | 'resolved';
 
 interface SOSFilterProps {
   activeFilter: FilterCategory;
@@ -12,6 +12,7 @@ interface SOSFilterProps {
     all: number;
     medical: number;
     lost: number;
+    restroom: number;
     issue: number;
     resolved: number;
   };
@@ -24,20 +25,37 @@ export const SOSFilter: React.FC<SOSFilterProps> = ({
   onToggle,
   counts,
 }) => {
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        onToggle();
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isOpen, onToggle]);
+
   const options: { id: FilterCategory; label: string; count: number; color?: string }[] = [
     { id: 'all', label: 'All Active', count: counts.all },
     { id: 'medical', label: 'Medical Emergency', count: counts.medical, color: 'text-[#B91C1C]' },
-    { id: 'lost', label: 'Lost Person', count: counts.lost, color: 'text-[#E67E16]' },
+    { id: 'lost', label: 'Lost Person / Item', count: counts.lost, color: 'text-[#E67E16]' },
+    { id: 'restroom', label: 'Restroom Issue', count: counts.restroom, color: 'text-[#2563EB]' },
     { id: 'issue', label: 'General Issue', count: counts.issue, color: 'text-[#8C751A]' },
-    { id: 'resolved', label: 'Resolved Alerts', count: counts.resolved },
+    { id: 'resolved', label: 'Resolved Alerts', count: counts.resolved, color: 'text-emerald-700' },
   ];
 
   return (
-    <div className="relative">
+    <div className="relative" ref={menuRef}>
       {/* Filter Trigger Button */}
       <button
         onClick={onToggle}
-        className={`p-2 rounded-lg text-[#514A40] hover:text-[#181716] hover:bg-[#FAF7F3] transition-colors border ${
+        className={`p-2 rounded-lg text-[#514A40] hover:text-[#181716] hover:bg-[#FAF7F3] transition-colors border cursor-pointer ${
           isOpen || activeFilter !== 'all' ? 'border-[#8A6800] bg-amber-50/50 text-[#8A6800]' : 'border-transparent'
         }`}
         aria-label="Filter Live SOS Feed"
@@ -49,9 +67,20 @@ export const SOSFilter: React.FC<SOSFilterProps> = ({
 
       {/* Popover Menu */}
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-xl border border-[#D8CDBE] py-1.5 z-50 text-xs animate-in fade-in zoom-in-95">
-          <div className="px-3 py-1.5 text-[11px] font-bold text-gray-400 uppercase tracking-wider border-b border-gray-100 mb-1">
-            Filter Alerts
+        <div className="absolute right-0 mt-2 w-60 bg-white rounded-xl shadow-xl border border-[#D8CDBE] py-1.5 z-50 text-xs animate-in fade-in zoom-in-95">
+          <div className="px-3 py-1.5 text-[11px] font-bold text-gray-400 uppercase tracking-wider border-b border-gray-100 mb-1 flex items-center justify-between">
+            <span>Filter Alerts</span>
+            {activeFilter !== 'all' && (
+              <button
+                onClick={() => {
+                  onSelectFilter('all');
+                  onToggle();
+                }}
+                className="text-[10px] text-[#8A6800] hover:underline font-semibold cursor-pointer"
+              >
+                Reset
+              </button>
+            )}
           </div>
           {options.map((opt) => {
             const isSelected = activeFilter === opt.id;
@@ -62,7 +91,7 @@ export const SOSFilter: React.FC<SOSFilterProps> = ({
                   onSelectFilter(opt.id);
                   onToggle();
                 }}
-                className={`w-full px-3 py-2 text-left flex items-center justify-between transition-colors ${
+                className={`w-full px-3 py-2 text-left flex items-center justify-between transition-colors cursor-pointer ${
                   isSelected ? 'bg-[#FAF7F3] font-bold text-[#181716]' : 'text-[#514A40] hover:bg-gray-50'
                 }`}
               >
@@ -74,7 +103,9 @@ export const SOSFilter: React.FC<SOSFilterProps> = ({
                   )}
                   <span className={opt.color || ''}>{opt.label}</span>
                 </div>
-                <span className="px-1.5 py-0.5 rounded-full text-[10px] font-semibold bg-gray-100 text-gray-600">
+                <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                  isSelected ? 'bg-amber-100 text-amber-900' : 'bg-gray-100 text-gray-600'
+                }`}>
                   {opt.count}
                 </span>
               </button>

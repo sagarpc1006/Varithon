@@ -24,7 +24,8 @@ import {
   Siren,
   Bell,
   MoreVertical,
-  Plus
+  Plus,
+  Trash2
 } from "lucide-react";
 import { UserSession, Language } from "../types";
 import { VariMitraLogo } from "./VariMitraLogo";
@@ -37,6 +38,9 @@ import { AlertBroadcast } from "../pages/admin/AlertBroadcast";
 import { NearbyServicesMap } from "./NearbyServicesMap";
 import { CrowdAnalytics } from "../pages/admin/CrowdAnalytics";
 import { ProfileView } from "./ProfileView";
+import { VolunteerApprovalModal } from "./VolunteerApprovalModal";
+import { VolunteerApprovalsView } from "./VolunteerApprovalsView";
+import { AdminGarbageManagement } from "./admin/AdminGarbageManagement";
 import { api } from "../services/api";
 
 interface AdminDashboardProps {
@@ -53,6 +57,8 @@ type AdminView =
   | "alert-broadcast"
   | "nearby-services"
   | "crowd-analytics"
+  | "volunteer-approvals"
+  | "garbage-management"
   | "profile";
 
 export const AdminDashboard: React.FC<AdminDashboardProps> = ({
@@ -137,6 +143,27 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
       color: "bg-emerald-500",
     },
   ]);
+
+  // Volunteer Approval Taskbar State
+  const [showVolunteerApprovals, setShowVolunteerApprovals] = useState(false);
+  const [pendingVolunteerCount, setPendingVolunteerCount] = useState(0);
+
+  const fetchPendingVolunteerCount = async () => {
+    try {
+      const res = await authService.getVolunteerRequests();
+      if (res && typeof res.pending_count === 'number') {
+        setPendingVolunteerCount(res.pending_count);
+      }
+    } catch (e) {
+      // silently ignore
+    }
+  };
+
+  useEffect(() => {
+    fetchPendingVolunteerCount();
+    const interval = setInterval(fetchPendingVolunteerCount, 4000);
+    return () => clearInterval(interval);
+  }, []);
 
   const handleSignOut = async () => {
     await authService.logout();
@@ -329,6 +356,51 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
               <BarChart3 size={16} />
               <span>Live Crowd Analytics</span>
             </button>
+
+            {/* 7. Volunteer Login Requests (New Taskbar Navigation Element) */}
+            <button
+              id="nav-volunteer-approvals"
+              onClick={() => {
+                setCurrentView("volunteer-approvals");
+                setMobileMenuOpen(false);
+              }}
+              className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all text-left cursor-pointer ${
+                currentView === "volunteer-approvals"
+                  ? "bg-gradient-to-r from-orange-500 to-amber-600 text-white shadow-md shadow-orange-500/25"
+                  : "text-slate-600 hover:text-slate-900 hover:bg-slate-100/80"
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <UserCheck size={16} className={currentView === "volunteer-approvals" ? "text-white" : "text-emerald-600"} />
+                <span>Volunteer Login Requests</span>
+              </div>
+              {pendingVolunteerCount > 0 ? (
+                <span className="text-[10px] font-extrabold bg-emerald-600 text-white px-2 py-0.5 rounded-full animate-pulse shadow-sm">
+                  {pendingVolunteerCount}
+                </span>
+              ) : (
+                <span className="text-[10px] font-bold text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded-md">
+                  0
+                </span>
+              )}
+            </button>
+
+            {/* 8. Garbage & Dustbin Management (Swachh Wari) */}
+            <button
+              id="nav-garbage-management"
+              onClick={() => {
+                setCurrentView("garbage-management");
+                setMobileMenuOpen(false);
+              }}
+              className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all text-left cursor-pointer ${
+                currentView === "garbage-management"
+                  ? "bg-gradient-to-r from-orange-500 to-amber-600 text-white shadow-md shadow-orange-500/25"
+                  : "text-slate-600 hover:text-slate-900 hover:bg-slate-100/80"
+              }`}
+            >
+              <Trash2 size={16} className={currentView === "garbage-management" ? "text-white" : "text-emerald-600"} />
+              <span>Garbage (Dustbin) Mgmt</span>
+            </button>
           </nav>
         </div>
 
@@ -409,15 +481,35 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                   ? "Global Map & Nearby Services"
                   : currentView === "crowd-analytics"
                   ? "Live Crowd Analytics"
+                  : currentView === "volunteer-approvals"
+                  ? "Volunteer Access Approvals"
+                  : currentView === "garbage-management"
+                  ? "Garbage & Dustbin Management"
                   : "Admin Profile"}
               </h2>
             </div>
           </div>
 
           {/* Center/Right Search Bar & Controls */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2.5 sm:gap-3">
+            {/* Taskbar: Volunteer Access Requests Confirmation Element */}
+            <button
+              id="btn-taskbar-volunteer-approvals"
+              onClick={() => setShowVolunteerApprovals(true)}
+              title="Confirm Volunteer Access Requests"
+              className="relative flex items-center gap-1.5 sm:gap-2 px-3 sm:px-3.5 py-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 text-emerald-900 font-bold text-xs shadow-xs transition-all hover:scale-105 active:scale-95 cursor-pointer"
+            >
+              <UserCheck size={16} className="text-emerald-700 shrink-0" />
+              <span className="hidden sm:inline">Volunteer Requests</span>
+              {pendingVolunteerCount > 0 && (
+                <span className="px-1.5 py-0.2 rounded-full bg-rose-600 text-white text-[10px] font-black animate-pulse">
+                  {pendingVolunteerCount}
+                </span>
+              )}
+            </button>
+
             {/* Search Bar */}
-            <div className="relative hidden sm:block w-64 md:w-80">
+            <div className="relative hidden sm:block w-48 md:w-72">
               <Search
                 size={14}
                 className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"
@@ -472,6 +564,10 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
               session={session}
               onBack={() => setCurrentView("command-center")}
             />
+          ) : currentView === "volunteer-approvals" ? (
+            <VolunteerApprovalsView onApprovalsUpdated={fetchPendingVolunteerCount} />
+          ) : currentView === "garbage-management" ? (
+            <AdminGarbageManagement />
           ) : currentView === "profile" ? (
             <ProfileView
               session={session}
@@ -786,6 +882,13 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
           VariMitra Admin · Seva Central Monitoring · जय हरी विठ्ठल 🙏
         </footer>
       </div>
+
+      {/* ── VOLUNTEER APPROVALS TASKBAR MODAL ── */}
+      <VolunteerApprovalModal
+        isOpen={showVolunteerApprovals}
+        onClose={() => setShowVolunteerApprovals(false)}
+        onApprovalsUpdated={fetchPendingVolunteerCount}
+      />
     </div>
   );
 };

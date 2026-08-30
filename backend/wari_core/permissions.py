@@ -2,9 +2,7 @@ from rest_framework.permissions import IsAuthenticated
 
 
 class IsAdminUser(IsAuthenticated):
-    """Allow access only to users whose profile role is 'admin'.
-    Shared by sos and alerts apps.
-    """
+    """Allow access to users whose profile role is 'admin' or 'volunteer', or staff."""
 
     def has_permission(self, request, view):
         if not (request.user and request.user.is_authenticated):
@@ -13,5 +11,5 @@ class IsAdminUser(IsAuthenticated):
             return True
         return bool(
             hasattr(request.user, 'profile')
-            and request.user.profile.role == 'admin'
+            and request.user.profile.role in ['admin', 'volunteer']
         )

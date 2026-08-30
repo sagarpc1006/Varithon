@@ -217,13 +217,14 @@ class MessageReport(models.Model):
 
 
 class NearbyResource(models.Model):
-    """Resources (food, water, toilets, restrooms, medical) pinned by admin at Palkhi route stops."""
+    """Resources (food, water, toilets, restrooms, medical, dustbins) pinned by admin at Palkhi route stops."""
     RESOURCE_TYPE_CHOICES = (
         ('FOOD', 'Food / Annachatra'),
         ('WATER', 'Water Point'),
         ('TOILETS', 'Toilets'),
         ('RESTROOMS', 'Restrooms'),
         ('MEDICAL', 'Medical Camp'),
+        ('DUSTBIN', 'Garbage Bin / Swachhata Point'),
     )
 
     resource_type = models.CharField(max_length=20, choices=RESOURCE_TYPE_CHOICES)
@@ -239,4 +240,44 @@ class NearbyResource(models.Model):
 
     def __str__(self):
         return f"{self.get_resource_type_display()} at {self.location_name}"
+
+
+class GarbageDustbin(models.Model):
+    """Garbage & Dustbin Management for route cleanliness and pilgrim waste disposal."""
+    CATEGORY_CHOICES = (
+        ('ORGANIC_DRY', 'Wet & Dry Dual Bins / ओला व सुका कचरा'),
+        ('PLASTIC_ONLY', 'Plastic Bottle Crusher & Collector / प्लॅस्टिक संकलन'),
+        ('BIO_MEDICAL', 'Sanitary & Medical Waste / वैद्यकीय कचरा'),
+        ('COMMUNITY_COMPACTOR', 'Community Mega Compactor / मोठा संकलन केंद्र'),
+    )
+
+    STATUS_CHOICES = (
+        ('OPERATIONAL', 'Operational / चालू'),
+        ('NEEDS_EMPTYING', 'Nearly Full / साफ करणे आवश्यक'),
+        ('OVERFLOWING', 'Overflow Alert / कचरा भरला आहे'),
+        ('CLEANED', 'Recently Cleaned / नुकतेच स्वच्छ केले'),
+    )
+
+    name = models.CharField(max_length=150)
+    name_mr = models.CharField(max_length=150, blank=True)
+    category = models.CharField(max_length=30, choices=CATEGORY_CHOICES, default='ORGANIC_DRY')
+    location_name = models.CharField(max_length=200)
+    latitude = models.FloatField(default=18.3444)
+    longitude = models.FloatField(default=74.0305)
+    capacity_liters = models.IntegerField(default=240)
+    fill_level_percent = models.IntegerField(default=25)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='OPERATIONAL')
+    assigned_squad = models.CharField(max_length=100, default='Swachhata Seva Squad 04')
+    reported_overflow_count = models.IntegerField(default=0)
+    is_active = models.BooleanField(default=True)
+    last_cleaned_at = models.DateTimeField(auto_now=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-updated_at']
+
+    def __str__(self):
+        return f"{self.name} ({self.fill_level_percent}%) - {self.location_name}"
+
 

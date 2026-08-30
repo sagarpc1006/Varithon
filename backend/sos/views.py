@@ -102,3 +102,6 @@ class SOSStatusView(views.APIView):
         report.save()
         
         return response.Response(SOSReportSerializer(report).data, status=status.HTTP_200_OK)
+
+    def put(self, request, id):
+        return self.patch(request, id)

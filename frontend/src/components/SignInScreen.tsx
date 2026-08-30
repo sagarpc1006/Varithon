@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   ChevronLeft,
   User,
@@ -10,10 +10,12 @@ import {
   Bot,
   MapPin,
   BellRing,
+  Bell,
   Shield,
   Footprints,
   CheckCircle2,
   AlertCircle,
+  AlertTriangle,
   X,
   Phone,
   Building2,
@@ -21,13 +23,16 @@ import {
   ArrowRight,
   UserPlus,
   Info,
+  Radio,
+  UserCheck,
 } from 'lucide-react';
 import { Language, PortalType, UserSession } from '../types';
 import { translations } from '../translations';
 import { VariMitraLogo } from './VariMitraLogo';
 import { LanguageDropdown } from './LanguageDropdown';
-import { PilgrimBadgeIcon, AdminBadgeIcon, GoogleIcon } from './PortalIcons';
+import { PilgrimBadgeIcon, VolunteerBadgeIcon, AdminBadgeIcon, GoogleIcon } from './PortalIcons';
 import { authService } from '../services/auth';
+import { api } from '../services/api';
 
 interface SignInScreenProps {
   language: Language;
@@ -39,10 +44,20 @@ interface SignInScreenProps {
 }
 
 interface PromptBanner {
-  type: 'not_found' | 'role_mismatch_admin' | 'role_mismatch_pilgrim' | 'invalid_creds';
+  type: 'not_found' | 'role_mismatch_admin' | 'role_mismatch_volunteer' | 'role_mismatch_pilgrim' | 'invalid_creds';
   message: string;
   identifier?: string;
   name?: string;
+}
+
+interface PendingVolunteerData {
+  name: string;
+  identifier: string;
+  department: string;
+  squad_id: string;
+  organization?: string;
+  requested_at?: string;
+  userId?: number;
 }
 
 export const SignInScreen: React.FC<SignInScreenProps> = ({
@@ -57,6 +72,7 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
 
   // Sign in form states
   const [mobileNumber, setMobileNumber] = useState('');
+  const [volunteerIdentifier, setVolunteerIdentifier] = useState('');
   const [emailId, setEmailId] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -65,11 +81,16 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
   // In-card prompt & alert banner
   const [promptBanner, setPromptBanner] = useState<PromptBanner | null>(null);
 
+  // Live Volunteer Approval Waiting State
+  const [pendingVolunteer, setPendingVolunteer] = useState<PendingVolunteerData | null>(null);
+
   // Register modal states
   const [showRegisterModal, setShowRegisterModal] = useState(false);
   const [regName, setRegName] = useState('');
   const [regIdentifier, setRegIdentifier] = useState('');
   const [regOrg, setRegOrg] = useState('');
+  const [regDepartment, setRegDepartment] = useState('Food & Annachatra Seva');
+  const [regSquadId, setRegSquadId] = useState('SQD-FOOD-101');
   const [regPassword, setRegPassword] = useState('');
   const [isRegistering, setIsRegistering] = useState(false);
 
@@ -89,6 +110,44 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
     setTimeout(() => setToast(null), 5000);
   };
 
+  // Live Polling Effect for Volunteer Approval
+  useEffect(() => {
+    if (!pendingVolunteer) return;
+
+    const interval = setInterval(async () => {
+      try {
+        const res = await authService.checkVolunteerStatus(pendingVolunteer.identifier);
+        if (res && res.is_approved && res.session) {
+          showToast(`🎉 Volunteer Request Approved by Admin! Welcome, ${res.session.name}!`);
+          setPendingVolunteer(null);
+          onLoginSuccess(res.session);
+        }
+      } catch (e) {
+        // Continue polling silently
+      }
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, [pendingVolunteer, onLoginSuccess]);
+
+  // Simulate Instant Admin Confirmation for quick testing
+  const handleSimulateAdminApproval = async () => {
+    if (!pendingVolunteer) return;
+    try {
+      if (pendingVolunteer.userId) {
+        await authService.approveVolunteerRequest(pendingVolunteer.userId);
+      }
+      const res = await authService.checkVolunteerStatus(pendingVolunteer.identifier);
+      if (res && res.session) {
+        showToast('🎉 Volunteer Request Approved! Access granted as Admin.');
+        setPendingVolunteer(null);
+        onLoginSuccess(res.session);
+      }
+    } catch (e: any) {
+      showToast(e?.message || 'Error simulating approval', 'error');
+    }
+  };
+
   // Helper to open registration modal with pre-filled identifier
   const openRegisterModalWithIdentifier = (ident: string) => {
     setRegIdentifier(ident);
@@ -101,10 +160,22 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
     e.preventDefault();
     setPromptBanner(null);
 
-    const identifier = activePortal === 'pilgrim' ? mobileNumber.trim() : emailId.trim();
+    const identifier =
+      activePortal === 'pilgrim'
+        ? mobileNumber.trim()
+        : activePortal === 'volunteer'
+        ? volunteerIdentifier.trim()
+        : emailId.trim();
 
     if (!identifier) {
-      showToast(activePortal === 'pilgrim' ? 'Please enter your mobile number' : 'Please enter your email ID', 'error');
+      showToast(
+        activePortal === 'pilgrim'
+          ? 'Please enter your mobile number'
+          : activePortal === 'volunteer'
+          ? 'Please enter your mobile number or volunteer email'
+          : 'Please enter your email ID',
+        'error'
+      );
       return;
     }
 
@@ -123,22 +194,55 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
 
     setIsSubmitting(true);
     try {
-      const session = await authService.login(identifier, password, activePortal);
-      showToast(`Welcome back, ${session.name}!`);
-      onLoginSuccess(session);
+      const res: any = await api.post('/auth/login/', {
+        identifier,
+        password,
+        role: activePortal,
+      });
+
+      if (res.status === 'pending_approval' || (res.session && !res.session.is_approved)) {
+        setPendingVolunteer({
+          name: res.session?.name || 'Field Sevekar',
+          identifier: identifier,
+          department: res.session?.department || 'Food & Annachatra Seva',
+          squad_id: res.session?.squad_id || 'SQD-FOOD-101',
+          requested_at: 'Just now',
+          userId: res.session?.id,
+        });
+        showToast('Volunteer access request is awaiting Admin approval ⏳', 'info');
+        return;
+      }
+
+      if (res && res.session) {
+        authService.saveSession(res.session);
+        showToast(`Welcome back, ${res.session.name}!`);
+        onLoginSuccess(res.session);
+      }
     } catch (err: any) {
       const code = err.code || err.data?.code;
       const message = err.message || 'Login failed. Please verify credentials.';
 
       if (code === 'USER_NOT_FOUND') {
+        const notFoundMsg =
+          activePortal === 'pilgrim'
+            ? `No account found with mobile number +91 ${identifier}. Please create a new account to continue.`
+            : activePortal === 'volunteer'
+            ? `No Volunteer account found with "${identifier}". Please register as a field volunteer.`
+            : `No Admin account found with email "${identifier}". Please request admin access.`;
+
         setPromptBanner({
           type: 'not_found',
-          message: activePortal === 'pilgrim'
-            ? `No account found with mobile number +91 ${identifier}. Please create a new account to continue.`
-            : `No Admin account found with email "${identifier}". Please request admin access.`,
+          message: notFoundMsg,
           identifier,
         });
-        showToast(activePortal === 'pilgrim' ? 'Mobile number not registered. Please create account.' : 'Admin account not found.', 'info');
+        showToast(
+          activePortal === 'pilgrim'
+            ? 'Mobile number not registered. Please create account.'
+            : activePortal === 'volunteer'
+            ? 'Volunteer account not found. Please register.'
+            : 'Admin account not found.',
+          'info'
+        );
       } else if (code === 'ROLE_MISMATCH_ADMIN') {
         setPromptBanner({
           type: 'role_mismatch_admin',
@@ -147,10 +251,18 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
           name: err.data?.name,
         });
         showToast('This account is registered for Admin Portal. Switch portal to login.', 'error');
+      } else if (code === 'ROLE_MISMATCH_VOLUNTEER') {
+        setPromptBanner({
+          type: 'role_mismatch_volunteer',
+          message: `This account (${err.data?.name || identifier}) is registered as a Volunteer / Sevekar account.`,
+          identifier,
+          name: err.data?.name,
+        });
+        showToast('This account belongs to Volunteer Portal. Switch portal to login.', 'error');
       } else if (code === 'ROLE_MISMATCH_PILGRIM') {
         setPromptBanner({
           type: 'role_mismatch_pilgrim',
-          message: `Access denied: This account is registered as a Pilgrim / Warkari account and cannot access the Admin Portal.`,
+          message: `Access denied: This account is registered as a Pilgrim / Warkari account.`,
           identifier,
           name: err.data?.name,
         });
@@ -184,7 +296,7 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
     }
   };
 
-  // 3. Handle Registration
+  // 3. Handle Registration & Volunteer Access Request
   const handleRegisterSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!regName.trim() || !regIdentifier.trim() || !regPassword.trim()) {
@@ -202,6 +314,29 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
 
     setIsRegistering(true);
     try {
+      if (activePortal === 'volunteer') {
+        const res: any = await authService.requestVolunteerAccess(
+          regName.trim(),
+          regIdentifier.trim(),
+          regPassword,
+          regOrg.trim(),
+          regDepartment,
+          regSquadId
+        );
+        setShowRegisterModal(false);
+        setPendingVolunteer({
+          name: regName.trim(),
+          identifier: regIdentifier.trim(),
+          department: regDepartment,
+          squad_id: regSquadId,
+          organization: regOrg.trim(),
+          requested_at: 'Just now',
+          userId: res?.request?.id,
+        });
+        showToast('Volunteer Request Transmitted to Admin! Awaiting confirmation.');
+        return;
+      }
+
       const session = await authService.register(
         regName.trim(),
         regIdentifier.trim(),
@@ -258,27 +393,13 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
       setForgotStep('request');
       setPassword(newPassword);
       if (activePortal === 'pilgrim') setMobileNumber(forgotIdentifier);
+      else if (activePortal === 'volunteer') setVolunteerIdentifier(forgotIdentifier);
       else setEmailId(forgotIdentifier);
     } catch (err: any) {
       showToast(err.message || 'Password reset failed. Check OTP.', 'error');
     } finally {
       setIsForgotSubmitting(false);
     }
-  };
-
-  // Quick Demo Auto-fill helpers
-  const handleFillDemoPilgrim = () => {
-    setMobileNumber('9876543210');
-    setPassword('password');
-    setPromptBanner(null);
-    showToast('Demo Pilgrim credentials filled (Phone: 9876543210 / Password: password)', 'info');
-  };
-
-  const handleFillDemoAdmin = () => {
-    setEmailId('admin@varimitra.org');
-    setPassword('admin123');
-    setPromptBanner(null);
-    showToast('Demo Admin credentials filled (Email: admin@varimitra.org / Password: admin123)', 'info');
   };
 
   return (
@@ -350,7 +471,7 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
           <p className="text-xs sm:text-sm text-slate-500 font-medium">{t.choosePortal}</p>
         </div>
 
-        {/* Segmented Switcher (Pilgrim vs Admin) */}
+        {/* Segmented Switcher (Pilgrim vs Volunteer vs Admin) */}
         <div
           id="portal-tab-selector"
           className="w-full max-w-md bg-white p-1 rounded-full border border-slate-200/90 shadow-sm flex items-center justify-between gap-1 mb-5"
@@ -363,14 +484,37 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
               onPortalChange('pilgrim');
               setPromptBanner(null);
             }}
-            className={`flex-1 flex items-center justify-center gap-2 py-2 sm:py-2.5 px-3 rounded-full text-xs sm:text-sm font-semibold transition-all duration-200 cursor-pointer ${
+            className={`flex-1 flex items-center justify-center gap-1.5 py-2 sm:py-2.5 px-2.5 rounded-full text-xs sm:text-sm font-semibold transition-all duration-200 cursor-pointer ${
               activePortal === 'pilgrim'
                 ? 'bg-[#ea580c] text-white shadow-sm'
                 : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
             }`}
           >
-            <Footprints className={`w-4 h-4 ${activePortal === 'pilgrim' ? 'text-white' : 'text-orange-500'}`} />
+            <Footprints className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${activePortal === 'pilgrim' ? 'text-white' : 'text-orange-500'}`} />
             <span>{t.pilgrimTitle}</span>
+          </button>
+
+          {/* Volunteer Tab */}
+          <button
+            id="tab-btn-volunteer"
+            type="button"
+            onClick={() => {
+              onPortalChange('volunteer');
+              setPromptBanner(null);
+            }}
+            className={`flex-1 flex items-center justify-center gap-1.5 py-2 sm:py-2.5 px-2.5 rounded-full text-xs sm:text-sm font-semibold transition-all duration-200 cursor-pointer ${
+              activePortal === 'volunteer'
+                ? 'bg-[#16a34a] text-white shadow-sm'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+            }`}
+          >
+            <svg viewBox="0 0 24 24" className={`w-3.5 h-3.5 sm:w-4 sm:h-4 fill-none stroke-current ${activePortal === 'volunteer' ? 'text-white' : 'text-emerald-600'}`} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+              <circle cx="9" cy="7" r="4" />
+              <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+              <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+            </svg>
+            <span>{t.volunteerTitle}</span>
           </button>
 
           {/* Admin Tab */}
@@ -381,13 +525,13 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
               onPortalChange('admin');
               setPromptBanner(null);
             }}
-            className={`flex-1 flex items-center justify-center gap-2 py-2 sm:py-2.5 px-3 rounded-full text-xs sm:text-sm font-semibold transition-all duration-200 cursor-pointer ${
+            className={`flex-1 flex items-center justify-center gap-1.5 py-2 sm:py-2.5 px-2.5 rounded-full text-xs sm:text-sm font-semibold transition-all duration-200 cursor-pointer ${
               activePortal === 'admin'
                 ? 'bg-[#1e293b] text-white shadow-sm'
                 : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
             }`}
           >
-            <Shield className={`w-4 h-4 ${activePortal === 'admin' ? 'text-white' : 'text-slate-700'}`} />
+            <Shield className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${activePortal === 'admin' ? 'text-white' : 'text-slate-700'}`} />
             <span>{t.adminTitle}</span>
           </button>
         </div>
@@ -401,15 +545,25 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
           <div className="flex flex-col items-center text-center space-y-1.5 mb-5">
             {activePortal === 'pilgrim' ? (
               <PilgrimBadgeIcon size="md" className="mb-1" />
+            ) : activePortal === 'volunteer' ? (
+              <VolunteerBadgeIcon size="md" className="mb-1" />
             ) : (
               <AdminBadgeIcon size="md" className="mb-1" />
             )}
 
             <h2 className="text-lg sm:text-xl font-bold text-slate-800">
-              {activePortal === 'pilgrim' ? t.pilgrimSignInTitle : t.adminSignInTitle}
+              {activePortal === 'pilgrim'
+                ? t.pilgrimSignInTitle
+                : activePortal === 'volunteer'
+                ? t.volunteerSignInTitle
+                : t.adminSignInTitle}
             </h2>
             <p className="text-xs sm:text-sm text-slate-500">
-              {activePortal === 'pilgrim' ? t.pilgrimWelcome : t.adminWelcome}
+              {activePortal === 'pilgrim'
+                ? t.pilgrimWelcome
+                : activePortal === 'volunteer'
+                ? t.volunteerWelcome
+                : t.adminWelcome}
             </p>
           </div>
 
@@ -422,6 +576,8 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
                   ? 'bg-amber-50 border-amber-300 text-amber-900'
                   : promptBanner.type === 'role_mismatch_admin'
                   ? 'bg-blue-50 border-blue-300 text-blue-900'
+                  : promptBanner.type === 'role_mismatch_volunteer'
+                  ? 'bg-emerald-50 border-emerald-300 text-emerald-900'
                   : promptBanner.type === 'role_mismatch_pilgrim'
                   ? 'bg-orange-50 border-orange-300 text-orange-900'
                   : 'bg-rose-50 border-rose-200 text-rose-800'
@@ -432,6 +588,8 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
                   <UserPlus className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
                 ) : promptBanner.type === 'role_mismatch_admin' ? (
                   <Shield className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
+                ) : promptBanner.type === 'role_mismatch_volunteer' ? (
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
                 ) : promptBanner.type === 'role_mismatch_pilgrim' ? (
                   <Footprints className="w-4 h-4 text-orange-600 shrink-0 mt-0.5" />
                 ) : (
@@ -449,7 +607,11 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
                     >
                       <UserPlus className="w-3.5 h-3.5" />
                       <span>
-                        {activePortal === 'pilgrim' ? t.registerWithNumber : t.requestWithEmail}
+                        {activePortal === 'pilgrim'
+                          ? t.registerWithNumber
+                          : activePortal === 'volunteer'
+                          ? t.registerAsVolunteer
+                          : t.requestWithEmail}
                       </span>
                     </button>
                   )}
@@ -466,6 +628,22 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
                     >
                       <Shield className="w-3.5 h-3.5 text-blue-400" />
                       <span>{t.switchToAdminPortal}</span>
+                      <ArrowRight className="w-3 h-3" />
+                    </button>
+                  )}
+
+                  {promptBanner.type === 'role_mismatch_volunteer' && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        onPortalChange('volunteer');
+                        setVolunteerIdentifier(promptBanner.identifier || '');
+                        setPromptBanner(null);
+                      }}
+                      className="mt-2.5 inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold rounded-lg text-xs shadow-xs cursor-pointer transition-colors"
+                    >
+                      <CheckCircle2 className="w-3.5 h-3.5 text-white" />
+                      <span>{t.switchToVolunteerPortal}</span>
                       <ArrowRight className="w-3 h-3" />
                     </button>
                   )}
@@ -498,13 +676,84 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
             </div>
           )}
 
-          {/* Sign In Form */}
-          <form onSubmit={handleSignIn} className="space-y-4">
-            {/* Input 1: Mobile Number for Pilgrim OR Email ID for Admin */}
-            <div>
-              <label className="text-[11px] font-bold text-slate-600 uppercase tracking-wide mb-1.5 block">
-                {activePortal === 'pilgrim' ? t.mobileNumberLabel : t.emailLabel}
-              </label>
+          {/* Live Volunteer Approval Radar Card */}
+          {pendingVolunteer ? (
+            <div className="p-5 bg-gradient-to-br from-slate-900 via-slate-800 to-emerald-950 text-white rounded-3xl border border-emerald-500/40 shadow-xl space-y-4 text-center animate-in fade-in zoom-in-95">
+              {/* Animated Radar Pulse */}
+              <div className="relative w-16 h-16 mx-auto flex items-center justify-center">
+                <div className="absolute inset-0 rounded-full bg-emerald-500/30 animate-ping" />
+                <div className="w-14 h-14 rounded-full bg-emerald-500/20 border-2 border-emerald-400 flex items-center justify-center text-emerald-300">
+                  <Radio className="w-7 h-7 animate-pulse" />
+                </div>
+              </div>
+
+              <div>
+                <span className="px-3 py-1 rounded-full bg-amber-500/20 border border-amber-400/40 text-amber-300 text-[11px] font-extrabold uppercase tracking-wider">
+                  ⏳ Awaiting Admin Confirmation
+                </span>
+                <h3 className="text-base font-bold text-white mt-2">
+                  Volunteer Access Request Transmitted
+                </h3>
+                <p className="text-xs text-slate-300 max-w-sm mx-auto mt-1">
+                  Central Command is reviewing your Sevekar request. As soon as the Admin confirms, this screen will automatically open with full administrative command privileges.
+                </p>
+              </div>
+
+              {/* Request Card Telemetry */}
+              <div className="p-3.5 bg-white/10 rounded-2xl border border-white/10 text-xs space-y-2 text-left">
+                <div className="flex justify-between">
+                  <span className="text-slate-400">Applicant:</span>
+                  <span className="font-bold text-white">{pendingVolunteer.name}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-400">Credential:</span>
+                  <span className="font-mono text-emerald-300">{pendingVolunteer.identifier}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-400">Squad Department:</span>
+                  <span className="font-semibold text-white">{pendingVolunteer.department}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-400">Live Status:</span>
+                  <span className="font-bold text-amber-400 flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping" />
+                    <span>Polling Central Command (3s)</span>
+                  </span>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="pt-2 flex flex-col gap-2">
+                <button
+                  type="button"
+                  onClick={handleSimulateAdminApproval}
+                  className="w-full py-2.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-[0.99]"
+                >
+                  <Sparkles className="w-4 h-4 text-amber-300" />
+                  <span>⚡ Simulate Instant Admin Confirmation</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setPendingVolunteer(null)}
+                  className="text-xs text-slate-400 hover:text-white underline py-1 cursor-pointer"
+                >
+                  Cancel & Return to Form
+                </button>
+              </div>
+            </div>
+          ) : (
+            /* Sign In Form */
+            <form onSubmit={handleSignIn} className="space-y-4">
+              {/* Input 1: Mobile Number for Pilgrim OR Identifier for Volunteer OR Email ID for Admin */}
+              <div>
+                <label className="text-[11px] font-bold text-slate-600 uppercase tracking-wide mb-1.5 block">
+                  {activePortal === 'pilgrim'
+                    ? t.mobileNumberLabel
+                    : activePortal === 'volunteer'
+                    ? t.volunteerIdLabel
+                    : t.emailLabel}
+                </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
                   {activePortal === 'pilgrim' ? (
@@ -512,6 +761,8 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
                       <Phone className="w-3.5 h-3.5 text-slate-500" />
                       +91
                     </span>
+                  ) : activePortal === 'volunteer' ? (
+                    <Phone className="w-4 h-4 text-emerald-600" />
                   ) : (
                     <Mail className="w-4 h-4 text-slate-500" />
                   )}
@@ -529,6 +780,19 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
                     maxLength={14}
                     required
                     className="w-full pl-16 pr-4 py-3 bg-[#f8f9fa] border border-slate-200 rounded-xl text-sm font-medium text-slate-800 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all"
+                  />
+                ) : activePortal === 'volunteer' ? (
+                  <input
+                    id="input-volunteer-identifier"
+                    type="text"
+                    value={volunteerIdentifier}
+                    onChange={(e) => {
+                      setVolunteerIdentifier(e.target.value);
+                      if (promptBanner) setPromptBanner(null);
+                    }}
+                    placeholder="9823114455 or volunteer@varimitra.org"
+                    required
+                    className="w-full pl-10 pr-4 py-3 bg-[#f8f9fa] border border-slate-200 rounded-xl text-sm font-medium text-slate-800 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all"
                   />
                 ) : (
                   <input
@@ -569,6 +833,8 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
                   className={`w-full pl-10 pr-11 py-3 bg-[#f8f9fa] border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:bg-white focus:outline-none transition-all ${
                     activePortal === 'pilgrim'
                       ? 'focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500'
+                      : activePortal === 'volunteer'
+                      ? 'focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500'
                       : 'focus:ring-2 focus:ring-slate-700/20 focus:border-slate-700'
                   }`}
                 />
@@ -588,13 +854,21 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
                   type="button"
                   id="btn-forgot-password"
                   onClick={() => {
-                    setForgotIdentifier(activePortal === 'pilgrim' ? mobileNumber : emailId);
+                    setForgotIdentifier(
+                      activePortal === 'pilgrim'
+                        ? mobileNumber
+                        : activePortal === 'volunteer'
+                        ? volunteerIdentifier
+                        : emailId
+                    );
                     setForgotStep('request');
                     setShowForgotModal(true);
                   }}
                   className={`text-xs font-semibold hover:underline cursor-pointer transition-colors ${
                     activePortal === 'pilgrim'
                       ? 'text-[#ea580c] hover:text-[#c2410c]'
+                      : activePortal === 'volunteer'
+                      ? 'text-[#16a34a] hover:text-[#15803d]'
                       : 'text-[#1e293b] hover:text-slate-900'
                   }`}
                 >
@@ -605,12 +879,20 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
 
             {/* Primary Submit Button */}
             <button
-              id={activePortal === 'pilgrim' ? 'btn-submit-pilgrim' : 'btn-submit-admin'}
+              id={
+                activePortal === 'pilgrim'
+                  ? 'btn-submit-pilgrim'
+                  : activePortal === 'volunteer'
+                  ? 'btn-submit-volunteer'
+                  : 'btn-submit-admin'
+              }
               type="submit"
               disabled={isSubmitting}
               className={`w-full py-3 px-4 rounded-xl text-sm font-bold text-white shadow-sm hover:shadow transition-all duration-200 cursor-pointer active:scale-[0.99] disabled:opacity-75 flex items-center justify-center gap-2 ${
                 activePortal === 'pilgrim'
                   ? 'bg-[#ea580c] hover:bg-[#d94806]'
+                  : activePortal === 'volunteer'
+                  ? 'bg-[#16a34a] hover:bg-[#15803d]'
                   : 'bg-[#1e293b] hover:bg-[#0f172a]'
               }`}
             >
@@ -621,35 +903,14 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
                 </>
               ) : activePortal === 'pilgrim' ? (
                 t.signInPilgrimBtn
+              ) : activePortal === 'volunteer' ? (
+                t.signInVolunteerBtn
               ) : (
                 t.signInAdminBtn
               )}
             </button>
           </form>
-
-          {/* Quick Demo Credentials Autofill Pill */}
-          <div className="mt-3.5 pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
-            <span className="font-medium text-slate-400">Testing Demo:</span>
-            {activePortal === 'pilgrim' ? (
-              <button
-                type="button"
-                id="btn-quick-pilgrim-demo"
-                onClick={handleFillDemoPilgrim}
-                className="font-bold text-orange-600 hover:text-orange-700 bg-orange-50 hover:bg-orange-100/80 px-2.5 py-1 rounded-full cursor-pointer transition-colors border border-orange-200/60 flex items-center gap-1"
-              >
-                <span>⚡ Fill Demo Warkari (9876543210)</span>
-              </button>
-            ) : (
-              <button
-                type="button"
-                id="btn-quick-admin-demo"
-                onClick={handleFillDemoAdmin}
-                className="font-bold text-slate-700 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 px-2.5 py-1 rounded-full cursor-pointer transition-colors border border-slate-300/60 flex items-center gap-1"
-              >
-                <span>⚡ Fill Demo Admin (admin@varimitra.org)</span>
-              </button>
-            )}
-          </div>
+          )}
 
           {/* Divider */}
           <div className="relative my-4 flex items-center justify-center">
@@ -685,6 +946,18 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
                   {t.createPilgrimAccount}
                 </button>
               </span>
+            ) : activePortal === 'volunteer' ? (
+              <span>
+                {t.needVolunteerAccount}{' '}
+                <button
+                  type="button"
+                  id="btn-create-volunteer-account"
+                  onClick={() => openRegisterModalWithIdentifier(volunteerIdentifier)}
+                  className="font-bold text-[#16a34a] hover:underline cursor-pointer"
+                >
+                  {t.createVolunteerAccount}
+                </button>
+              </span>
             ) : (
               <span>
                 {t.needAdminAccount}{' '}
@@ -710,42 +983,58 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
             <div className="w-10 h-10 rounded-full bg-slate-200/90 text-slate-700 flex items-center justify-center flex-shrink-0 shadow-xs">
               <Bot className="w-5 h-5 text-slate-700" />
             </div>
-            <div className="space-y-0.5">
-              <h4 className="text-xs sm:text-sm font-bold text-slate-800">{t.aiAssistantTitle}</h4>
-              <p className="text-[11px] sm:text-xs text-slate-600 leading-snug">{t.aiAssistantDesc}</p>
+            <div>
+              <h4 className="text-xs sm:text-sm font-bold text-slate-800">
+                {t.aiAssistantTitle}
+              </h4>
+              <p className="text-[11px] sm:text-xs text-slate-600 leading-snug">
+                {t.aiAssistantDesc}
+              </p>
             </div>
           </div>
 
           {/* Feature 2: Live Location */}
           <div id="feature-live-location" className="flex items-start gap-3.5">
-            <div className="w-10 h-10 rounded-full bg-[#dcfce7] text-[#16a34a] flex items-center justify-center flex-shrink-0 shadow-xs">
-              <MapPin className="w-5 h-5" />
+            <div className="w-10 h-10 rounded-full bg-slate-200/90 text-slate-700 flex items-center justify-center flex-shrink-0 shadow-xs">
+              <MapPin className="w-5 h-5 text-slate-700" />
             </div>
-            <div className="space-y-0.5">
-              <h4 className="text-xs sm:text-sm font-bold text-slate-800">{t.liveLocationTitle}</h4>
-              <p className="text-[11px] sm:text-xs text-slate-600 leading-snug">{t.liveLocationDesc}</p>
+            <div>
+              <h4 className="text-xs sm:text-sm font-bold text-slate-800">
+                {t.liveLocationTitle}
+              </h4>
+              <p className="text-[11px] sm:text-xs text-slate-600 leading-snug">
+                {t.liveLocationDesc}
+              </p>
             </div>
           </div>
 
           {/* Feature 3: Emergency SOS */}
           <div id="feature-emergency-sos" className="flex items-start gap-3.5">
-            <div className="w-10 h-10 rounded-full bg-[#ffe4e6] text-[#e11d48] flex items-center justify-center flex-shrink-0 shadow-xs font-bold text-lg">
-              <span className="leading-none text-rose-600 font-extrabold">*</span>
+            <div className="w-10 h-10 rounded-full bg-slate-200/90 text-slate-700 flex items-center justify-center flex-shrink-0 shadow-xs">
+              <AlertTriangle className="w-5 h-5 text-slate-700" />
             </div>
-            <div className="space-y-0.5">
-              <h4 className="text-xs sm:text-sm font-bold text-slate-800">{t.emergencySosTitle}</h4>
-              <p className="text-[11px] sm:text-xs text-slate-600 leading-snug">{t.emergencySosDesc}</p>
+            <div>
+              <h4 className="text-xs sm:text-sm font-bold text-slate-800">
+                {t.emergencySosTitle}
+              </h4>
+              <p className="text-[11px] sm:text-xs text-slate-600 leading-snug">
+                {t.emergencySosDesc}
+              </p>
             </div>
           </div>
 
           {/* Feature 4: Smart Alerts */}
           <div id="feature-smart-alerts" className="flex items-start gap-3.5">
-            <div className="w-10 h-10 rounded-full bg-[#fef3c7] text-[#d97706] flex items-center justify-center flex-shrink-0 shadow-xs">
-              <BellRing className="w-5 h-5" />
+            <div className="w-10 h-10 rounded-full bg-slate-200/90 text-slate-700 flex items-center justify-center flex-shrink-0 shadow-xs">
+              <Bell className="w-5 h-5 text-slate-700" />
             </div>
-            <div className="space-y-0.5">
-              <h4 className="text-xs sm:text-sm font-bold text-slate-800">{t.smartAlertsTitle}</h4>
-              <p className="text-[11px] sm:text-xs text-slate-600 leading-snug">{t.smartAlertsDesc}</p>
+            <div>
+              <h4 className="text-xs sm:text-sm font-bold text-slate-800">
+                {t.smartAlertsTitle}
+              </h4>
+              <p className="text-[11px] sm:text-xs text-slate-600 leading-snug">
+                {t.smartAlertsDesc}
+              </p>
             </div>
           </div>
         </div>
@@ -772,13 +1061,19 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
             {forgotStep === 'request' ? (
               <form onSubmit={handleForgotRequest} className="space-y-3">
                 <p className="text-xs text-slate-500">
-                  Enter your registered {activePortal === 'pilgrim' ? 'mobile number' : 'official email ID'} to receive an OTP reset code.
+                  Enter your registered {activePortal === 'pilgrim' ? 'mobile number' : 'official email or phone'} to receive an OTP reset code.
                 </p>
                 <input
-                  type={activePortal === 'pilgrim' ? 'tel' : 'email'}
+                  type={activePortal === 'pilgrim' ? 'tel' : 'text'}
                   value={forgotIdentifier}
                   onChange={(e) => setForgotIdentifier(e.target.value)}
-                  placeholder={activePortal === 'pilgrim' ? '9876543210' : 'admin@varimitra.org'}
+                  placeholder={
+                    activePortal === 'pilgrim'
+                      ? '9876543210'
+                      : activePortal === 'volunteer'
+                      ? '9823114455 or volunteer@varimitra.org'
+                      : 'admin@varimitra.org'
+                  }
                   required
                   className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-orange-500/20"
                 />
@@ -786,7 +1081,11 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
                   type="submit"
                   disabled={isForgotSubmitting}
                   className={`w-full py-2.5 rounded-xl text-sm font-bold text-white shadow-sm cursor-pointer ${
-                    activePortal === 'pilgrim' ? 'bg-[#ea580c] hover:bg-[#d94806]' : 'bg-[#1e293b] hover:bg-[#0f172a]'
+                    activePortal === 'pilgrim'
+                      ? 'bg-[#ea580c] hover:bg-[#d94806]'
+                      : activePortal === 'volunteer'
+                      ? 'bg-[#16a34a] hover:bg-[#15803d]'
+                      : 'bg-[#1e293b] hover:bg-[#0f172a]'
                   }`}
                 >
                   {isForgotSubmitting ? 'Sending OTP...' : 'Send Reset Code'}
@@ -818,7 +1117,11 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
                   type="submit"
                   disabled={isForgotSubmitting}
                   className={`w-full py-2.5 rounded-xl text-sm font-bold text-white shadow-sm cursor-pointer ${
-                    activePortal === 'pilgrim' ? 'bg-[#ea580c] hover:bg-[#d94806]' : 'bg-[#1e293b] hover:bg-[#0f172a]'
+                    activePortal === 'pilgrim'
+                      ? 'bg-[#ea580c] hover:bg-[#d94806]'
+                      : activePortal === 'volunteer'
+                      ? 'bg-[#16a34a] hover:bg-[#15803d]'
+                      : 'bg-[#1e293b] hover:bg-[#0f172a]'
                   }`}
                 >
                   {isForgotSubmitting ? 'Updating Password...' : 'Save New Password & Sign In'}
@@ -832,7 +1135,7 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
       {/* Register / Request Access Modal */}
       {showRegisterModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs p-4 animate-in fade-in">
-          <div className="bg-white rounded-3xl p-6 sm:p-7 max-w-md w-full shadow-2xl border border-slate-200 relative">
+          <div className="bg-white rounded-3xl p-6 sm:p-7 max-w-md w-full shadow-2xl border border-slate-200 relative max-h-[90vh] overflow-y-auto">
             <button
               onClick={() => setShowRegisterModal(false)}
               className="absolute top-4 right-4 text-slate-400 hover:text-slate-700 cursor-pointer"
@@ -845,6 +1148,11 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
                   <Footprints className="w-5 h-5 text-orange-600" />
                   <span>Create Warkari Account</span>
                 </>
+              ) : activePortal === 'volunteer' ? (
+                <>
+                  <VolunteerBadgeIcon size="sm" />
+                  <span>Register as Field Volunteer / Sevekar</span>
+                </>
               ) : (
                 <>
                   <Shield className="w-5 h-5 text-slate-800" />
@@ -855,6 +1163,8 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
             <p className="text-xs text-slate-500 mb-4">
               {activePortal === 'pilgrim'
                 ? 'Join thousands of Warkaris for real-time tracking, group chat, medical aid, and seva spots.'
+                : activePortal === 'volunteer'
+                ? 'Join emergency response, medical aid, food distribution, or crowd assistance seva squads along the Wari route.'
                 : 'Submit your volunteer or seva team organization credentials for admin access.'}
             </p>
             <form onSubmit={handleRegisterSubmit} className="space-y-3 mb-4">
@@ -864,7 +1174,7 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
                   type="text"
                   value={regName}
                   onChange={(e) => setRegName(e.target.value)}
-                  placeholder="Full Name (e.g. Tukaram Maharaj)"
+                  placeholder="Full Name (e.g. Rameshwar Shinde)"
                   required
                   className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-orange-500/20"
                 />
@@ -872,27 +1182,76 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
 
               <div>
                 <label className="text-[11px] font-bold text-slate-600 uppercase mb-1 block">
-                  {activePortal === 'pilgrim' ? 'Mobile Number (10 digits) *' : 'Work Email *'}
+                  {activePortal === 'pilgrim'
+                    ? 'Mobile Number (10 digits) *'
+                    : activePortal === 'volunteer'
+                    ? 'Mobile Number or Email *'
+                    : 'Work Email *'}
                 </label>
                 <input
-                  type={activePortal === 'pilgrim' ? 'tel' : 'email'}
+                  type={activePortal === 'pilgrim' ? 'tel' : 'text'}
                   value={regIdentifier}
                   onChange={(e) => setRegIdentifier(e.target.value)}
-                  placeholder={activePortal === 'pilgrim' ? '9876543210' : 'officer@varimitra.org'}
+                  placeholder={
+                    activePortal === 'pilgrim'
+                      ? '9876543210'
+                      : activePortal === 'volunteer'
+                      ? '9823114455 or sevekar@varimitra.org'
+                      : 'officer@varimitra.org'
+                  }
                   required
                   className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-orange-500/20"
                 />
               </div>
 
+              {/* Department selector for Field Volunteers */}
+              {activePortal === 'volunteer' && (
+                <div>
+                  <label className="text-[11px] font-bold text-slate-600 uppercase mb-1 block">
+                    Seva Squad Department *
+                  </label>
+                  <select
+                    value={regDepartment}
+                    onChange={(e) => {
+                      setRegDepartment(e.target.value);
+                      if (e.target.value.includes('Food')) setRegSquadId('SQD-FOOD-101');
+                      else if (e.target.value.includes('Medical')) setRegSquadId('SQD-MED-402');
+                      else if (e.target.value.includes('Water')) setRegSquadId('SQD-WATR-305');
+                      else if (e.target.value.includes('Shelter')) setRegSquadId('SQD-SHLT-204');
+                      else if (e.target.value.includes('Sanitation')) setRegSquadId('SQD-SANI-508');
+                      else setRegSquadId('SQD-CROWD-601');
+                    }}
+                    className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 text-slate-700 font-medium"
+                  >
+                    <option value="Food & Annachatra Seva">🍲 Annachatra & Food Distribution (SQD-FOOD-101)</option>
+                    <option value="First-Aid & Medical Response">🚑 First-Aid & Medical Emergency (SQD-MED-402)</option>
+                    <option value="Clean Drinking Water Fleet">💧 Clean Drinking Water Supply (SQD-WATR-305)</option>
+                    <option value="Night Shelter & Tentage">⛺ Night Shelter & Rest Areas (SQD-SHLT-204)</option>
+                    <option value="Eco-Sanitation & Swachh Wari">🧹 Eco-Sanitation & Swachh Wari (SQD-SANI-508)</option>
+                    <option value="Crowd & Traffic Marshals">🚦 Crowd Flow & Route Marshal (SQD-CROWD-601)</option>
+                  </select>
+                </div>
+              )}
+
               <div>
                 <label className="text-[11px] font-bold text-slate-600 uppercase mb-1 block">
-                  {activePortal === 'pilgrim' ? 'Dindi / Mandal Name (Optional)' : 'Organization / Unit *'}
+                  {activePortal === 'pilgrim'
+                    ? 'Dindi / Mandal Name (Optional)'
+                    : activePortal === 'volunteer'
+                    ? 'Seva Mandal / NGO / Volunteer Group'
+                    : 'Organization / Unit *'}
                 </label>
                 <input
                   type="text"
                   value={regOrg}
                   onChange={(e) => setRegOrg(e.target.value)}
-                  placeholder={activePortal === 'pilgrim' ? 'Alandi Dindi No. 4 / Pune' : 'Pandharpur Seva / Police / Medical'}
+                  placeholder={
+                    activePortal === 'pilgrim'
+                      ? 'Alandi Dindi No. 4 / Pune'
+                      : activePortal === 'volunteer'
+                      ? 'Pandharpur Wari Seva Samiti / Pune Youth Seva'
+                      : 'Pandharpur Seva / Police / Medical'
+                  }
                   className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-orange-500/20"
                 />
               </div>
@@ -914,7 +1273,11 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
                 type="submit"
                 disabled={isRegistering}
                 className={`w-full mt-2 py-3 rounded-xl text-sm font-bold text-white shadow-sm cursor-pointer flex items-center justify-center gap-2 ${
-                  activePortal === 'pilgrim' ? 'bg-[#ea580c] hover:bg-[#d94806]' : 'bg-[#1e293b] hover:bg-[#0f172a]'
+                  activePortal === 'pilgrim'
+                    ? 'bg-[#ea580c] hover:bg-[#d94806]'
+                    : activePortal === 'volunteer'
+                    ? 'bg-[#16a34a] hover:bg-[#15803d]'
+                    : 'bg-[#1e293b] hover:bg-[#0f172a]'
                 }`}
               >
                 {isRegistering ? (
@@ -924,6 +1287,8 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
                   </>
                 ) : activePortal === 'pilgrim' ? (
                   'Create Warkari Account & Sign In'
+                ) : activePortal === 'volunteer' ? (
+                  'Register as Sevekar & Sign In'
                 ) : (
                   'Submit Access Request & Sign In'
                 )}

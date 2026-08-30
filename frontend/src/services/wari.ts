@@ -88,4 +88,40 @@ export const wariService = {
       user_name: userName || '',
     });
   },
+
+  // 7. Garbage & Dustbin Management (Swachh Wari)
+  async getDustbins(params?: { status?: string; category?: string }): Promise<{
+    dustbins: any[];
+    summary: any;
+  }> {
+    let query = '';
+    if (params) {
+      const searchParams = new URLSearchParams();
+      if (params.status) searchParams.append('status', params.status);
+      if (params.category) searchParams.append('category', params.category);
+      const qs = searchParams.toString();
+      if (qs) query = `?${qs}`;
+    }
+    return api.get(`/garbage/dustbins/${query}`);
+  },
+
+  async createDustbin(data: any): Promise<{ message: string; dustbin: any }> {
+    return api.post('/garbage/dustbins/', data);
+  },
+
+  async updateDustbin(id: number, data: any): Promise<{ message: string; dustbin: any }> {
+    return api.patch(`/garbage/dustbins/${id}/`, data);
+  },
+
+  async emptyDustbin(id: number): Promise<{ message: string; dustbin: any }> {
+    return api.post(`/garbage/dustbins/${id}/empty/`, {});
+  },
+
+  async reportOverflowDustbin(id: number): Promise<{ message: string; dustbin: any }> {
+    return api.post(`/garbage/dustbins/${id}/report-overflow/`, {});
+  },
+
+  async deleteDustbin(id: number): Promise<{ message: string }> {
+    return api.delete(`/garbage/dustbins/${id}/`);
+  },
 };

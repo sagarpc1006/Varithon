@@ -222,7 +222,53 @@ export const authService = {
     throw new Error('Failed to update profile.');
   },
 
-  // 9. Logout (Clears both Firebase Auth & Django Session)
+  // 9. Volunteer Access Request & Approval Workflow
+  async requestVolunteerAccess(
+    name: string,
+    identifier: string,
+    password: string,
+    organization?: string,
+    department?: string,
+    squad_id?: string
+  ): Promise<{ message: string; status: string; request: any }> {
+    return api.post('/auth/volunteer-request/', {
+      name,
+      identifier,
+      password,
+      organization: organization || 'Pandharpur Wari Seva Mandal',
+      department: department || 'Food & Annachatra Seva',
+      squad_id: squad_id || 'SQD-FOOD-101',
+    });
+  },
+
+  async checkVolunteerStatus(identifier: string): Promise<{
+    exists: boolean;
+    is_approved: boolean;
+    approval_status: string;
+    session?: UserSession;
+    name?: string;
+    department?: string;
+  }> {
+    return api.get(`/auth/volunteer-status/?identifier=${encodeURIComponent(identifier)}`);
+  },
+
+  async getVolunteerRequests(): Promise<{
+    pending_count: number;
+    total_count: number;
+    requests: any[];
+  }> {
+    return api.get('/auth/admin/volunteer-requests/');
+  },
+
+  async approveVolunteerRequest(userId: number): Promise<{ message: string; approval_status: string; is_approved: boolean }> {
+    return api.post(`/auth/admin/volunteer-requests/${userId}/approve/`, {});
+  },
+
+  async rejectVolunteerRequest(userId: number): Promise<{ message: string; approval_status: string; is_approved: boolean }> {
+    return api.post(`/auth/admin/volunteer-requests/${userId}/reject/`, {});
+  },
+
+  // 10. Logout (Clears both Firebase Auth & Django Session)
   async logout(): Promise<void> {
     try {
       await firebaseSignOut(auth);

@@ -21,9 +21,15 @@ class UserProfileSerializer(serializers.ModelSerializer):
             'role',
             'mobile_number',
             'organization',
+            'department',
+            'squad_id',
             'dindi_number',
             'emergency_contact',
             'is_verified',
+            'approval_status',
+            'is_approved',
+            'requested_at',
+            'approved_at',
             'created_at'
         ]
 
@@ -32,29 +38,41 @@ class UserProfileSerializer(serializers.ModelSerializer):
         return full_name if full_name else obj.user.username
 
 
+class VolunteerRequestSerializer(serializers.Serializer):
+    name = serializers.CharField(required=True, max_length=150)
+    identifier = serializers.CharField(required=True, max_length=150)
+    password = serializers.CharField(required=True, min_length=4, write_only=True)
+    organization = serializers.CharField(required=False, allow_blank=True, default='')
+    department = serializers.CharField(required=False, allow_blank=True, default='Food & Annachatra Seva')
+    squad_id = serializers.CharField(required=False, allow_blank=True, default='SQD-FOOD-101')
+
+
+
 class LoginSerializer(serializers.Serializer):
     identifier = serializers.CharField(required=True)
     password = serializers.CharField(required=True, write_only=True)
-    role = serializers.ChoiceField(choices=['pilgrim', 'admin'], default='pilgrim')
+    role = serializers.ChoiceField(choices=['pilgrim', 'volunteer', 'admin'], default='pilgrim')
 
 
 class RegisterSerializer(serializers.Serializer):
     name = serializers.CharField(required=True, max_length=150)
     identifier = serializers.CharField(required=True, max_length=150) # mobile number or email
     password = serializers.CharField(required=True, min_length=4, write_only=True)
-    role = serializers.ChoiceField(choices=['pilgrim', 'admin'], default='pilgrim')
+    role = serializers.ChoiceField(choices=['pilgrim', 'volunteer', 'admin'], default='pilgrim')
     organization = serializers.CharField(required=False, allow_blank=True, default='')
+    department = serializers.CharField(required=False, allow_blank=True, default='')
+    squad_id = serializers.CharField(required=False, allow_blank=True, default='')
 
 
 class GoogleAuthSerializer(serializers.Serializer):
-    role = serializers.ChoiceField(choices=['pilgrim', 'admin'], default='pilgrim')
+    role = serializers.ChoiceField(choices=['pilgrim', 'volunteer', 'admin'], default='pilgrim')
     email = serializers.EmailField(required=False, default='google.user@varimitra.org')
     name = serializers.CharField(required=False, default='Google Devotee')
 
 
 class ForgotPasswordSerializer(serializers.Serializer):
     identifier = serializers.CharField(required=True)
-    role = serializers.ChoiceField(choices=['pilgrim', 'admin'], default='pilgrim')
+    role = serializers.ChoiceField(choices=['pilgrim', 'volunteer', 'admin'], default='pilgrim')
 
 
 class ResetPasswordSerializer(serializers.Serializer):
@@ -65,17 +83,19 @@ class ResetPasswordSerializer(serializers.Serializer):
 
 class CheckIdentifierSerializer(serializers.Serializer):
     identifier = serializers.CharField(required=True)
-    role = serializers.ChoiceField(choices=['pilgrim', 'admin'], default='pilgrim')
+    role = serializers.ChoiceField(choices=['pilgrim', 'volunteer', 'admin'], default='pilgrim')
 
 
 class FirebaseLoginSerializer(serializers.Serializer):
     email = serializers.EmailField(required=True)
     name = serializers.CharField(required=False, allow_blank=True, default='')
     uid = serializers.CharField(required=False, allow_blank=True, default='')
-    role = serializers.ChoiceField(choices=['pilgrim', 'admin'], default='pilgrim')
+    role = serializers.ChoiceField(choices=['pilgrim', 'volunteer', 'admin'], default='pilgrim')
     phone_number = serializers.CharField(required=False, allow_blank=True, default='')
     photo_url = serializers.CharField(required=False, allow_blank=True, default='')
     organization = serializers.CharField(required=False, allow_blank=True, default='')
+    department = serializers.CharField(required=False, allow_blank=True, default='')
+    squad_id = serializers.CharField(required=False, allow_blank=True, default='')
     id_token = serializers.CharField(required=False, allow_blank=True, default='')
 
 

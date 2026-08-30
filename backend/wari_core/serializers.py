@@ -11,6 +11,7 @@ from .models import (
     GroupMessage,
     MessageReport,
     NearbyResource,
+    GarbageDustbin,
 )
 
 class PalkhiLocationSerializer(serializers.ModelSerializer):
@@ -241,3 +242,14 @@ class NearbyResourceSerializer(serializers.ModelSerializer):
         model = NearbyResource
         fields = '__all__'
         read_only_fields = ['id', 'created_at']
+
+
+class GarbageDustbinSerializer(serializers.ModelSerializer):
+    category_display = serializers.CharField(source='get_category_display', read_only=True)
+    status_display = serializers.CharField(source='get_status_display', read_only=True)
+
+    class Meta:
+        model = GarbageDustbin
+        fields = '__all__'
+        read_only_fields = ['id', 'created_at', 'updated_at', 'reported_overflow_count']
+

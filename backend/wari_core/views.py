@@ -7,7 +7,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import AllowAny
 
-from .models import PalkhiLocation, EmergencyAlert, SevaResource, CrowdDensity, NearbyResource
+from .models import PalkhiLocation, EmergencyAlert, SevaResource, CrowdDensity, NearbyResource, GarbageDustbin
 from .serializers import (
     PalkhiLocationSerializer,
     EmergencyAlertSerializer,
@@ -15,6 +15,7 @@ from .serializers import (
     CrowdDensitySerializer,
     AIChatQuerySerializer,
     NearbyResourceSerializer,
+    GarbageDustbinSerializer,
 )
 
 
@@ -873,5 +874,199 @@ class WariWeatherView(APIView):
             'five_day_forecast': five_day,
             'last_updated': timezone.now().strftime('%I:%M %p')
         }, status=status.HTTP_200_OK)
+
+
+class GarbageDustbinListCreateView(APIView):
+    """List all garbage & dustbin points, or create a new dustbin point."""
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        # Auto-seed realistic initial dustbins if empty
+        if not GarbageDustbin.objects.exists():
+            seed_bins = [
+                {
+                    'name': 'Saswad Palkhi Ground Green Hub 01',
+                    'name_mr': 'सासवड पालखी मैदान हरित कचराकुंडी ०१',
+                    'category': 'ORGANIC_DRY',
+                    'location_name': 'Saswad Checkpoint Ground',
+                    'latitude': 18.3444,
+                    'longitude': 74.0305,
+                    'capacity_liters': 240,
+                    'fill_level_percent': 35,
+                    'status': 'OPERATIONAL',
+                    'assigned_squad': 'Swachh Wari Squad 01',
+                },
+                {
+                    'name': 'Dive Ghat Summit Plastic & Waste Point',
+                    'name_mr': 'दिवे घाट माथा प्लॅस्टिक व कचरा केंद्र',
+                    'category': 'PLASTIC_ONLY',
+                    'location_name': 'Dive Ghat Pavan Khind',
+                    'latitude': 18.3980,
+                    'longitude': 73.9870,
+                    'capacity_liters': 500,
+                    'fill_level_percent': 85,
+                    'status': 'NEEDS_EMPTYING',
+                    'assigned_squad': 'Ghat Swachhata Team Alpha',
+                },
+                {
+                    'name': 'Jejuri Temple Base Community Compactor',
+                    'name_mr': 'जेजुरी मंदिर पायथा कम्युनिटी कॉम्पॅक्टर',
+                    'category': 'COMMUNITY_COMPACTOR',
+                    'location_name': 'Jejuri Khandoba Foothills',
+                    'latitude': 18.2750,
+                    'longitude': 74.1580,
+                    'capacity_liters': 1000,
+                    'fill_level_percent': 95,
+                    'status': 'OVERFLOWING',
+                    'assigned_squad': 'Jejuri Municipal Seva Unit',
+                    'reported_overflow_count': 4,
+                },
+                {
+                    'name': 'Alandi Indrayani Ghat Eco-Bin Station',
+                    'name_mr': 'आळंदी इंद्रायणी घाट पर्यावरण कुंडी',
+                    'category': 'ORGANIC_DRY',
+                    'location_name': 'Alandi Indrayani River Bank',
+                    'latitude': 18.6775,
+                    'longitude': 73.8969,
+                    'capacity_liters': 240,
+                    'fill_level_percent': 10,
+                    'status': 'CLEANED',
+                    'assigned_squad': 'Indrayani Swachhata Dindi',
+                },
+                {
+                    'name': 'Hadapsar Gadital Transit Waste Hub',
+                    'name_mr': 'हडपसर गाडीतळ ट्रान्झिट संकलन केंद्र',
+                    'category': 'PLASTIC_ONLY',
+                    'location_name': 'Hadapsar Gadital Junction',
+                    'latitude': 18.5018,
+                    'longitude': 73.9298,
+                    'capacity_liters': 360,
+                    'fill_level_percent': 50,
+                    'status': 'OPERATIONAL',
+                    'assigned_squad': 'Pune Seva Dal 02',
+                },
+                {
+                    'name': 'Pandharpur Chandrabhaga Mega Bin 08',
+                    'name_mr': 'पंढरपूर चंद्रभागा घाट महा-कुंडी ०८',
+                    'category': 'COMMUNITY_COMPACTOR',
+                    'location_name': 'Pandharpur Chandrabhaga River Bank',
+                    'latitude': 17.6775,
+                    'longitude': 75.3280,
+                    'capacity_liters': 1000,
+                    'fill_level_percent': 40,
+                    'status': 'OPERATIONAL',
+                    'assigned_squad': 'Pandharpur Swachh Seva Mandal',
+                },
+            ]
+            for b in seed_bins:
+                GarbageDustbin.objects.create(**b)
+
+        dustbins = GarbageDustbin.objects.filter(is_active=True)
+        status_filter = request.query_params.get('status')
+        category_filter = request.query_params.get('category')
+        if status_filter:
+            dustbins = dustbins.filter(status=status_filter)
+        if category_filter:
+            dustbins = dustbins.filter(category=category_filter)
+
+        serializer = GarbageDustbinSerializer(dustbins, many=True)
+        
+        # Calculate summary metrics for dashboard
+        total_count = GarbageDustbin.objects.filter(is_active=True).count()
+        critical_count = GarbageDustbin.objects.filter(is_active=True, status__in=['NEEDS_EMPTYING', 'OVERFLOWING']).count()
+        operational_count = GarbageDustbin.objects.filter(is_active=True, status__in=['OPERATIONAL', 'CLEANED']).count()
+        avg_fill = 0
+        if total_count > 0:
+            avg_fill = round(sum(d.fill_level_percent for d in GarbageDustbin.objects.filter(is_active=True)) / total_count, 1)
+
+        return Response({
+            'dustbins': serializer.data,
+            'summary': {
+                'total_count': total_count,
+                'critical_count': critical_count,
+                'operational_count': operational_count,
+                'avg_fill_percent': avg_fill,
+                'active_squads_count': 6,
+            }
+        }, status=status.HTTP_200_OK)
+
+    def post(self, request):
+        serializer = GarbageDustbinSerializer(data=request.data)
+        if serializer.is_valid():
+            dustbin = serializer.save()
+            return Response({
+                'message': 'New Garbage / Dustbin point registered successfully!',
+                'dustbin': GarbageDustbinSerializer(dustbin).data
+            }, status=status.HTTP_201_CREATED)
+        return Response({'error': 'Invalid data', 'details': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class GarbageDustbinDetailView(APIView):
+    """Retrieve, update, or remove a dustbin point."""
+    permission_classes = [AllowAny]
+
+    def patch(self, request, pk):
+        try:
+            dustbin = GarbageDustbin.objects.get(pk=pk)
+        except GarbageDustbin.DoesNotExist:
+            return Response({'error': 'Dustbin not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = GarbageDustbinSerializer(dustbin, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({
+                'message': 'Dustbin updated successfully.',
+                'dustbin': serializer.data
+            }, status=status.HTTP_200_OK)
+        return Response({'error': 'Invalid update data', 'details': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk):
+        try:
+            dustbin = GarbageDustbin.objects.get(pk=pk)
+            dustbin.is_active = False
+            dustbin.save()
+            return Response({'message': 'Dustbin point deactivated.'}, status=status.HTTP_200_OK)
+        except GarbageDustbin.DoesNotExist:
+            return Response({'error': 'Dustbin not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+
+class GarbageDustbinEmptyActionView(APIView):
+    """Admin / Volunteer marks a dustbin as emptied & cleaned."""
+    permission_classes = [AllowAny]
+
+    def post(self, request, pk):
+        try:
+            dustbin = GarbageDustbin.objects.get(pk=pk)
+            dustbin.fill_level_percent = 0
+            dustbin.status = 'CLEANED'
+            dustbin.reported_overflow_count = 0
+            dustbin.last_cleaned_at = timezone.now()
+            dustbin.save()
+            return Response({
+                'message': f'Dustbin "{dustbin.name}" marked as emptied & cleaned! Fill level reset to 0%.',
+                'dustbin': GarbageDustbinSerializer(dustbin).data
+            }, status=status.HTTP_200_OK)
+        except GarbageDustbin.DoesNotExist:
+            return Response({'error': 'Dustbin not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+
+class GarbageDustbinReportOverflowView(APIView):
+    """Pilgrim / Devotee reports a full or overflowing dustbin with 1 click."""
+    permission_classes = [AllowAny]
+
+    def post(self, request, pk):
+        try:
+            dustbin = GarbageDustbin.objects.get(pk=pk)
+            dustbin.reported_overflow_count += 1
+            dustbin.fill_level_percent = min(100, max(dustbin.fill_level_percent, 90))
+            dustbin.status = 'OVERFLOWING'
+            dustbin.save()
+            return Response({
+                'message': f'Thank you! Report submitted for "{dustbin.name}". Sanitation Squad dispatched.',
+                'dustbin': GarbageDustbinSerializer(dustbin).data
+            }, status=status.HTTP_200_OK)
+        except GarbageDustbin.DoesNotExist:
+            return Response({'error': 'Dustbin not found.'}, status=status.HTTP_404_NOT_FOUND)
+
 
 
