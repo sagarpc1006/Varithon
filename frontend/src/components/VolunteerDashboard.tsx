@@ -36,6 +36,7 @@ import { VariMitraLogo } from './VariMitraLogo';
 import { LanguageDropdown } from './LanguageDropdown';
 import { VolunteerBadgeIcon } from './PortalIcons';
 import { AdminGarbageManagement } from './admin/AdminGarbageManagement';
+import { QRCodeSVG } from './QRCodeSVG';
 import { api } from '../services/api';
 
 interface VolunteerDashboardProps {
@@ -1036,11 +1037,9 @@ export const VolunteerDashboard: React.FC<VolunteerDashboardProps> = ({
                   <p className="text-xs text-slate-500 mt-0.5">{session.department || 'Annachatra & Food Seva'}</p>
                 </div>
 
-                {/* QR Code Demo */}
-                <div className="p-3 bg-slate-50 rounded-2xl border border-slate-200/90 inline-block">
-                  <div className="w-32 h-32 bg-slate-900 rounded-xl flex items-center justify-center text-white font-mono text-[10px] p-2 text-center">
-                    <span>[QR CODE: SVA-VOL-402-2026-VERIFIED]</span>
-                  </div>
+                {/* Official Vector QR Code Pass */}
+                <div className="py-2 inline-block">
+                  <QRCodeSVG value="SVA-VOL-402-2026-VERIFIED" size={135} subText="SCAN TO VERIFY FIELD PASS" />
                 </div>
 
                 <div className="space-y-1 text-xs text-slate-600 font-medium">
