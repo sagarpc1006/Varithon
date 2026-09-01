@@ -87,15 +87,11 @@ class CheckIdentifierSerializer(serializers.Serializer):
 
 
 class FirebaseLoginSerializer(serializers.Serializer):
-    email = serializers.EmailField(required=True)
-    name = serializers.CharField(required=False, allow_blank=True, default='')
-    uid = serializers.CharField(required=False, allow_blank=True, default='')
+    # Identity fields are derived from the verified Firebase token.
     role = serializers.ChoiceField(choices=['pilgrim', 'volunteer', 'admin'], default='pilgrim')
-    phone_number = serializers.CharField(required=False, allow_blank=True, default='')
-    photo_url = serializers.CharField(required=False, allow_blank=True, default='')
     organization = serializers.CharField(required=False, allow_blank=True, default='')
     department = serializers.CharField(required=False, allow_blank=True, default='')
     squad_id = serializers.CharField(required=False, allow_blank=True, default='')
-    id_token = serializers.CharField(required=False, allow_blank=True, default='')
+    id_token = serializers.CharField(required=True, allow_blank=False, trim_whitespace=True)
 
 

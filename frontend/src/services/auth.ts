@@ -31,6 +31,10 @@ export interface ForgotPasswordResponse {
 export const authService = {
   // 1. Standard Login (Mobile Number or Email + Password)
   async login(identifier: string, password: string, role: PortalType): Promise<UserSession> {
+    // Firebase owns email/password accounts; phone-based accounts remain Django-authenticated.
+    if (identifier.includes('@')) {
+      return this.firebaseEmailLogin(identifier, password, role);
+    }
     const res = await api.post<LoginResponse>('/auth/login/', {
       identifier,
       password,
@@ -102,8 +106,8 @@ export const authService = {
       const errCode = error?.code || '';
       const errMsg = error?.message || '';
 
-      // If Firebase Auth provider is not enabled in Firebase Console (auth/configuration-not-found or auth/operation-not-allowed)
-      // or domain not whitelisted yet (auth/unauthorized-domain), gracefully authenticate via backend Google provider
+      // Do not silently fall back to the legacy Django Google endpoint. It
+      // bypasses Firebase account selection and conceals configuration errors.
       if (
         errCode === 'auth/configuration-not-found' ||
         errCode === 'auth/operation-not-allowed' ||
@@ -111,19 +115,10 @@ export const authService = {
         errMsg.includes('configuration-not-found') ||
         errMsg.includes('operation-not-allowed')
       ) {
-        console.warn(
-          `[Firebase Auth Notice] ${errCode || errMsg}. Falling back to backend authentication.`
+        throw new Error(
+          `Firebase Google sign-in is unavailable (${errCode || errMsg}). ` +
+          'Enable the Google provider and authorize this domain in Firebase Console.'
         );
-
-        const fallbackRes = await api.post<LoginResponse>('/auth/google/', {
-          role,
-          email: email || (role === 'pilgrim' ? 'google.warkari@varimitra.org' : 'google.admin@varimitra.org'),
-          name: name || (role === 'pilgrim' ? 'Google Devotee (Pilgrim)' : 'Google Admin (Seva)'),
-        });
-        if (fallbackRes && fallbackRes.session) {
-          this.saveSession(fallbackRes.session);
-          return fallbackRes.session;
-        }
       }
 
       if (errCode === 'auth/popup-closed-by-user' || errCode === 'auth/cancelled-popup-request') {
@@ -168,8 +163,9 @@ export const authService = {
       }
       throw new Error('Authentication failed.');
     } catch (err: any) {
-      // Fallback to backend login directly
-      return this.login(email, password, role);
+      // Do not fall back to legacy credentials: Firebase is the authority for
+      // email/password accounts and role approval must be enforced server-side.
+      throw err;
     }
   },
 

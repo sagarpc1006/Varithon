@@ -49,6 +49,14 @@ Install dependencies:
 pip install -r requirements.txt
 ```
 
+### Firebase server authentication
+
+Set the variables in `backend/.env.example` in your shell or deployment. Download
+a Firebase service-account JSON from **Firebase Console → Project settings →
+Service accounts**, keep it outside this repository, and set
+`GOOGLE_APPLICATION_CREDENTIALS` to its absolute path.
+Use `FIREBASE_PROJECT_ID=ruralmed-6cf34-16241`.
+
 Run migrations:
 ```powershell
 python manage.py migrate
@@ -79,6 +87,10 @@ Open a **new terminal**, then:
 cd frontend
 npm install
 ```
+
+Copy `frontend/.env.example` to `frontend/.env`. In Firebase Authentication,
+enable **Google** and **Email/Password** providers and add deployed frontend
+domains to **Authorized domains**.
 
 Start the frontend dev server:
 ```powershell
