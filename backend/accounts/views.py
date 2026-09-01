@@ -118,93 +118,54 @@ class LoginView(APIView):
 
         user = find_user_by_identifier(identifier)
         if not user:
-            # Auto-create on-demand
-            clean_id = clean_phone if clean_phone else (identifier.replace('@', '_').replace('.', '_') if '@' in identifier else identifier)
-            uname = f"{portal_role}_{clean_id}_{int(request.META.get('REMOTE_PORT', 100))}"
+            return Response({
+                'error': f'No account found with identifier "{identifier}". Please register first.',
+                'code': 'USER_NOT_FOUND',
+                'identifier': identifier,
+                'role': portal_role
+            }, status=status.HTTP_404_NOT_FOUND)
+
+        # Ensure user profile exists
+        profile, _ = UserProfile.objects.get_or_create(
+            user=user,
+            defaults={'role': portal_role, 'mobile_number': clean_phone if clean_phone else None}
+        )
+
+        # STRICT ROLE ENFORCEMENT: Check portal role matching
+        if profile.role != portal_role:
+            role_titles = {
+                'admin': 'Admin / Seva Team',
+                'volunteer': 'Volunteer / Sevekar',
+                'pilgrim': 'Pilgrim / Warkari',
+            }
+            curr_title = role_titles.get(profile.role, profile.role.title())
+            target_title = role_titles.get(portal_role, portal_role.title())
             
-            # Default approval: Volunteers start pending unless seeded demo
-            is_demo = (identifier in ['volunteer@varimitra.org', '9823114455', '9922334455'])
-            appr_status = 'approved' if portal_role != 'volunteer' or is_demo else 'pending'
-            is_appr = (appr_status == 'approved')
+            code_map = {
+                'admin': 'ROLE_MISMATCH_ADMIN',
+                'volunteer': 'ROLE_MISMATCH_VOLUNTEER',
+                'pilgrim': 'ROLE_MISMATCH_PILGRIM',
+            }
 
-            if portal_role == 'pilgrim':
-                first_name = 'Warkari'
-                last_name = 'Devotee'
-                dept = None
-                squad = None
-                org = 'Alandi Dindi No. 1'
-            elif portal_role == 'volunteer':
-                first_name = 'Rameshwar'
-                last_name = 'Shinde (Sevekar)'
-                dept = 'Food & Annachatra Seva'
-                squad = 'SQD-FOOD-101'
-                org = 'Pandharpur Wari Seva Mandal'
+            return Response({
+                'error': f'This account is registered as a {curr_title} account. Please switch to the {curr_title} Portal to sign in.',
+                'code': code_map.get(profile.role, 'ROLE_MISMATCH'),
+                'correct_role': profile.role,
+                'name': user.get_full_name() or user.username
+            }, status=status.HTTP_403_FORBIDDEN)
+
+        # Authenticate password
+        if not user.check_password(password):
+            # Safe recovery for demo testing / seed credentials
+            common_dev_passwords = ['password', 'admin123', 'volunteer123', 'wari2026', '123456', '12345678', 'admin', 'volunteer', 'warkari']
+            if password in common_dev_passwords or identifier in ['9876543210', '9822001122', '9823114455', '9922334455', 'volunteer@varimitra.org', 'admin@varimitra.org', 'seva.admin@varimitra.org']:
+                user.set_password(password)
+                user.save()
             else:
-                first_name = 'Seva'
-                last_name = 'Officer (Admin)'
-                dept = None
-                squad = None
-                org = 'Pandharpur Wari Seva Mandal'
-
-            user = User.objects.create_user(
-                username=uname,
-                email=identifier if '@' in identifier else f"{clean_id}@varimitra.org",
-                password=password,
-                first_name=first_name,
-                last_name=last_name
-            )
-            profile = UserProfile.objects.create(
-                user=user,
-                role=portal_role,
-                mobile_number=clean_phone if clean_phone else None,
-                organization=org,
-                department=dept,
-                squad_id=squad,
-                approval_status=appr_status,
-                is_approved=is_appr
-            )
-        else:
-            # Ensure user profile exists
-            profile, _ = UserProfile.objects.get_or_create(
-                user=user,
-                defaults={'role': portal_role, 'mobile_number': clean_phone if clean_phone else None}
-            )
-
-            # STRICT ROLE ENFORCEMENT: Check portal role matching
-            if profile.role != portal_role:
-                role_titles = {
-                    'admin': 'Admin / Seva Team',
-                    'volunteer': 'Volunteer / Sevekar',
-                    'pilgrim': 'Pilgrim / Warkari',
-                }
-                curr_title = role_titles.get(profile.role, profile.role.title())
-                target_title = role_titles.get(portal_role, portal_role.title())
-                
-                code_map = {
-                    'admin': 'ROLE_MISMATCH_ADMIN',
-                    'volunteer': 'ROLE_MISMATCH_VOLUNTEER',
-                    'pilgrim': 'ROLE_MISMATCH_PILGRIM',
-                }
-
                 return Response({
-                    'error': f'This account is registered as a {curr_title} account. Please switch to the {curr_title} Portal to sign in.',
-                    'code': code_map.get(profile.role, 'ROLE_MISMATCH'),
-                    'correct_role': profile.role,
-                    'name': user.get_full_name() or user.username
-                }, status=status.HTTP_403_FORBIDDEN)
-
-            # Authenticate password
-            if not user.check_password(password):
-                # Safe recovery for demo testing / seed credentials
-                common_dev_passwords = ['password', 'admin123', 'volunteer123', 'wari2026', '123456', '12345678', 'admin', 'volunteer', 'warkari']
-                if password in common_dev_passwords or identifier in ['9876543210', '9822001122', '9823114455', '9922334455', 'volunteer@varimitra.org', 'admin@varimitra.org', 'seva.admin@varimitra.org']:
-                    user.set_password(password)
-                    user.save()
-                else:
-                    return Response({
-                        'error': 'Invalid credentials. Please verify your password.',
-                        'code': 'INVALID_CREDENTIALS'
-                    }, status=status.HTTP_401_UNAUTHORIZED)
+                    'error': 'Invalid credentials. Please verify your password.',
+                    'code': 'INVALID_CREDENTIALS'
+                }, status=status.HTTP_401_UNAUTHORIZED)
 
         # CHECK VOLUNTEER APPROVAL STATUS
         if profile.role == 'volunteer':

@@ -269,7 +269,7 @@ export const VolunteerDashboard: React.FC<VolunteerDashboardProps> = ({
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-3">
           {/* Left: Brand & Volunteer Portal Badge */}
           <div className="flex items-center gap-3">
-            <VariMitraLogo variant="light" showText={true} />
+            <VariMitraLogo variant="light" />
             <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 border border-emerald-200/80 text-emerald-800 text-xs font-bold">
               <VolunteerBadgeIcon size="sm" />
               <span>Sevekar Portal</span>

@@ -55,7 +55,7 @@ Set the variables in `backend/.env.example` in your shell or deployment. Downloa
 a Firebase service-account JSON from **Firebase Console → Project settings →
 Service accounts**, keep it outside this repository, and set
 `GOOGLE_APPLICATION_CREDENTIALS` to its absolute path.
-Use `FIREBASE_PROJECT_ID=ruralmed-6cf34-16241`.
+Use `FIREBASE_PROJECT_ID=varimitra-2e93d`.
 
 Run migrations:
 ```powershell
