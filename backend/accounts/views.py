@@ -1,6 +1,7 @@
 import random
 import re
 import secrets
+import logging
 from django.utils import timezone
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
@@ -22,6 +23,9 @@ from .serializers import (
     FirebaseLoginSerializer,
     VolunteerRequestSerializer,
 )
+from .firebase_auth import FirebaseConfigurationError, verify_id_token
+
+logger = logging.getLogger(__name__)
 
 
 def normalize_mobile(identifier: str) -> str:
@@ -403,16 +407,38 @@ class FirebaseLoginView(APIView):
         if not serializer.is_valid():
             return Response({'error': 'Invalid Firebase auth data', 'details': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
-        email = serializer.validated_data['email'].strip().lower()
-        name = serializer.validated_data.get('name', '').strip()
-        uid = serializer.validated_data.get('uid', '').strip()
+        try:
+            claims = verify_id_token(serializer.validated_data['id_token'])
+        except FirebaseConfigurationError:
+            return Response({'error': 'Firebase authentication is not configured on the server.'}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
+        except ValueError as exc:
+            return Response({'error': str(exc)}, status=status.HTTP_401_UNAUTHORIZED)
+        except Exception as exc:
+            # Keep Firebase verification details out of the API response, but
+            # log the reason locally so configuration problems are diagnosable.
+            logger.warning('Firebase ID token verification failed: %s', exc)
+            return Response({'error': 'Firebase ID token is invalid or expired.'}, status=status.HTTP_401_UNAUTHORIZED)
+
+        email = (claims.get('email') or '').strip().lower()
+        uid = (claims.get('uid') or claims.get('sub') or '').strip()
+        name = (claims.get('name') or '').strip()
+        if not email or not uid or not claims.get('email_verified', False):
+            return Response({'error': 'The Firebase account must provide a verified email address.'}, status=status.HTTP_400_BAD_REQUEST)
+
         portal_role = serializer.validated_data.get('role', 'pilgrim')
-        phone_number = serializer.validated_data.get('phone_number', '').strip()
+        phone_number = (claims.get('phone_number') or '').strip()
         organization = serializer.validated_data.get('organization', '').strip()
 
         # Find existing user by email
         user = User.objects.filter(email__iexact=email).first()
         if not user:
+            # Firebase proves identity, not application authorization. Admin
+            # accounts must be provisioned by an existing administrator first.
+            if portal_role == 'admin':
+                return Response({
+                    'error': 'Admin accounts must be provisioned before Firebase sign-in.',
+                    'code': 'ADMIN_PROVISIONING_REQUIRED',
+                }, status=status.HTTP_403_FORBIDDEN)
             name_parts = (name or email.split('@')[0]).split(' ', 1)
             first_name = name_parts[0]
             last_name = name_parts[1] if len(name_parts) > 1 else ''
@@ -428,15 +454,27 @@ class FirebaseLoginView(APIView):
             )
             profile = UserProfile.objects.create(
                 user=user,
+                firebase_uid=uid,
                 role=portal_role,
                 mobile_number=phone_number if phone_number else None,
-                organization=organization or ('Pandharpur Wari Seva Mandal' if portal_role == 'admin' else 'Warkari Devotee')
+                organization=organization or (
+                    'Pandharpur Wari Seva Mandal' if portal_role == 'volunteer' else 'Warkari Devotee'
+                ),
+                department='General Field Seva' if portal_role == 'volunteer' else None,
+                squad_id='PENDING-ASSIGNMENT' if portal_role == 'volunteer' else None,
+                approval_status='pending' if portal_role == 'volunteer' else 'approved',
+                is_approved=portal_role != 'volunteer',
             )
         else:
             profile, _ = UserProfile.objects.get_or_create(
                 user=user,
-                defaults={'role': portal_role, 'mobile_number': phone_number if phone_number else None}
+                defaults={'role': portal_role, 'mobile_number': phone_number if phone_number else None, 'firebase_uid': uid}
             )
+            if profile.firebase_uid and profile.firebase_uid != uid:
+                return Response({'error': 'This account is already linked to a different Firebase account.'}, status=status.HTTP_403_FORBIDDEN)
+            if not profile.firebase_uid:
+                profile.firebase_uid = uid
+                profile.save(update_fields=['firebase_uid'])
             # Enforce strict role match
             if profile.role != portal_role:
                 role_titles = {
@@ -463,6 +501,18 @@ class FirebaseLoginView(APIView):
                 user.first_name = name_parts[0]
                 user.last_name = name_parts[1] if len(name_parts) > 1 else ''
                 user.save()
+
+        # Google/Firebase verifies the person, but an administrator must approve
+        # every volunteer before granting access to the field dashboard.
+        if portal_role == 'volunteer' and (
+            not profile.is_approved or profile.approval_status != 'approved'
+        ):
+            return Response({
+                'error': 'Your volunteer request is pending administrator approval.',
+                'code': 'VOLUNTEER_PENDING_APPROVAL',
+                'approval_status': profile.approval_status,
+                'name': profile_data['name'] if 'profile_data' in locals() else user.get_full_name() or user.username,
+            }, status=status.HTTP_403_FORBIDDEN)
 
         login(request, user)
         profile_data = UserProfileSerializer(profile).data

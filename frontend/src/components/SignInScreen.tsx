@@ -290,6 +290,10 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
       showToast(`Google authenticated for ${session.name}`);
       onLoginSuccess(session);
     } catch (err: any) {
+      if (err?.code === 'VOLUNTEER_PENDING_APPROVAL') {
+        showToast('Volunteer request received. Please wait for Admin approval.', 'info');
+        return;
+      }
       showToast(err.message || 'Google authentication failed', 'error');
     } finally {
       setIsSubmitting(false);

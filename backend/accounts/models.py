@@ -10,6 +10,7 @@ class UserProfile(models.Model):
     )
 
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
+    firebase_uid = models.CharField(max_length=128, blank=True, null=True, unique=True)
     role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='pilgrim')
     mobile_number = models.CharField(max_length=20, blank=True, null=True, unique=True)
     organization = models.CharField(max_length=150, blank=True, null=True)

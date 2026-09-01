@@ -12,16 +12,22 @@ import {
   type User as FirebaseUser,
 } from "firebase/auth";
 
-// Web app's Firebase configuration provided by user
+// Vite exposes only VITE_* settings to browser code. Firebase web config is
+// public by design; API-key restrictions belong in Google Cloud Console.
 export const firebaseConfig = {
-  apiKey: "AIzaSyBT4VGOqZRzHKFqngFbmmQYSa2UlbCMcuk",
-  authDomain: "ruralmed-6cf34.firebaseapp.com",
-  projectId: "ruralmed-6cf34",
-  storageBucket: "ruralmed-6cf34.firebasestorage.app",
-  messagingSenderId: "1015295738723",
-  appId: "1:1015295738723:web:8a3aa287157cf6f327c956",
-  measurementId: "G-CH8S3HXNH7"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
 };
+
+const requiredConfig = ['apiKey', 'authDomain', 'projectId', 'appId'] as const;
+if (requiredConfig.some((key) => !firebaseConfig[key])) {
+  throw new Error('Firebase is not configured. Add VITE_FIREBASE_* values to frontend/.env.');
+}
 
 // Initialize Firebase safely (avoid multiple initializations)
 export const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);

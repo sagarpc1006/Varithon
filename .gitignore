@@ -19,3 +19,7 @@ frontend/dist/
 
 # Backups
 backup_untracked/
+.env
+.env.*
+!.env.example
+*.firebase-adminsdk-*.json
