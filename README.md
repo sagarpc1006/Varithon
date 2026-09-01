@@ -20,6 +20,8 @@
   - [D. Supporting Ecosystem Features](#d-supporting-ecosystem-features)
 - [4. Technology Stack](#4-technology-stack)
 - [5. System Architecture](#5-system-architecture)
+  - [System Architecture Blueprint](#-system-architecture-blueprint)
+  - [End-to-End Workflow Diagram](#-end-to-end-workflow-diagram)
 - [6. Application Screenshots](#6-application-screenshots)
   - [👨‍💼 Admin Command Center](#-admin-command-center)
   - [🙋‍♂️ Volunteer (Sevekar) Portal](#️-volunteer-sevekar-portal)
@@ -31,23 +33,25 @@
 
 ## 1. Problem Statement
 
-The **Pandharpur Wari** is one of India's oldest and largest annual pilgrimages, attracting millions (*lakhs*) of Warkaris who walk over **200 kilometers** across Maharashtra to seek the blessings of Lord Vitthal. 
+The **Pandharpur Wari** is one of India's oldest and largest annual pilgrimages, attracting millions (*lakhs*) of Warkaris who travel on foot across **200+ kilometers** from Alandi and Dehu to the holy shrine of Lord Vitthal in Pandharpur.
 
-Beyond severe communication and safety vulnerabilities in remote terrains, the pilgrimage experiences:
-- **Unregulated Crowd Influx & Severe Chokepoints:** Narrow road stretches, river ghats, and bridges encounter uncontrolled density spikes, risking crowd surges and stampedes.
-- **Supply & Resource Imbalances:** Lack of dynamic tracking creates acute shortages of drinking water, medical kits, and sanitation in high-density sectors while surplus stock sits underutilized in other camps.
-- **Uncoordinated Logistics & Traffic Gridlocks:** Essential service vehicles (water tankers, ambulances, mobile clinics) get trapped in dense pedestrian columns due to unmanaged route sharing.
-- **Fragmented Infrastructure Monitoring:** Manual, static oversight fails to detect overfilled waste bins, damaged amenities, or water pipeline outages in real time.
+Beyond severe communication and medical safety vulnerabilities across rural stretches, the pilgrimage faces major systemic challenges:
+- **Unregulated Crowd Influx & Critical Chokepoints:** Narrow road corridors, ghat sections, and river bridges encounter sudden surges in pedestrian density, creating dangerous stampede risks.
+- **Resource Imbalance & Inefficient Logistics:** Without live consumption data, severe shortages of potable drinking water, food (*Annachatra*), medical supplies, and mobile sanitation occur in high-density sectors, while other camps have surplus stock.
+- **Uncoordinated Transport & Emergency Access Blockages:** Vital support vehicles (water tankers, ambulances, mobile clinics, police escorts) frequently get trapped in pedestrian columns, delaying life-saving emergency responses.
+- **Fragmented Infrastructure Monitoring:** Manual oversight fails to identify overflowing waste bins, damaged public amenities, or water pipeline leakages along the route in real time.
 
-As participation expands every year, traditional manual crowd policing and reactive incident response are no longer sufficient. There is an urgent need for an **intelligent, data-driven system** that proactively regulates crowd movement, optimizes mobility corridors, and balances resource distribution across the 200+ km corridor while honoring the spiritual sanctity of the Yatra.
+As participation expands exponentially each year, traditional manual policing and reactive incident handling are insufficient. There is an urgent need for an **integrated, intelligent, and data-driven platform** that proactively regulates crowd flow, optimizes mobility corridors, and balances resource distribution across the entire pilgrimage while preserving its sacred spiritual heritage.
 
 ---
 
 ## 2. Our Solution
 
-We present **Smart Wari (VariMitra)** — an integrated, cloud-native platform specifically engineered for the **Crowd, Mobility & Resource Management** track. 
+We propose **Smart Wari (VariMitra)** — an integrated digital platform purpose-built for the **Crowd, Mobility & Resource Management** track. 
 
-Smart Wari unites **Pilgrims (Warkaris)**, **Field Volunteers (Sevekars)**, **Emergency Logistics Teams**, and **Administrative Command Centers** into a single, synchronized operational ecosystem. Moving from *reactive monitoring* to *predictive, data-driven operational control*, the platform leverages real-time GPS telemetry, geofenced capacity algorithms, AI-powered foot-traffic load balancing, and rapid emergency dispatch to keep every pilgrim safe, informed, and supported.
+Smart Wari unites **Pilgrims (Warkaris)**, **Field Volunteers (Sevekars)**, **Emergency Logistics & Transport Teams**, and **Administrative Command Centers** into a single, synchronized operational ecosystem.
+
+Moving from *reactive monitoring* to *predictive, data-driven operational control*, the platform combines a mobile-first responsive web application, cloud-based asynchronous backend, AI-powered crowd & route analytics, GPS telemetry, and a central command dashboard to actively govern crowd flow, maintain open emergency corridors, and balance resources in real time.
 
 ```
 ┌─────────────────┐       ┌──────────────────────────────┐       ┌─────────────────┐
@@ -66,46 +70,33 @@ Smart Wari unites **Pilgrims (Warkaris)**, **Field Volunteers (Sevekars)**, **Em
 ## 3. Core Feature Pillars
 
 ### A. Dynamic Crowd Flow & Route Optimization
-* **AI-Powered Route Load Balancing:** Continuously monitors foot-traffic density across all walking segments. When a sector approaches its safe threshold, the engine automatically calculates alternate bypass trails and pushes localized diversion advisories to approaching pilgrim groups (*Dindis*).
-* **Geofenced Capacity Zones:** Partitions the 200+ km route into virtual micro-zones with strictly defined maximum capacity limits. As a zone reaches 80%+ saturation, boundary throttles and alert notifications are dispatched to nearby field volunteers and police checkpoints.
-* **Digital Twin & Predictive Congestion Simulation:** Models historical procession velocity alongside live GPS pings to simulate walking dynamics and forecast bottlenecks **30–60 minutes before they physically manifest**.
-* **Time-Staggered Dindi Departure Advisories:** Sends targeted notifications to registered Dindi heads advising them to delay or advance camp departures by 10–15 minutes, successfully flattening peak crowd curves at critical junctions.
+* **AI-Based Route Load Balancing:** Actively monitors pedestrian density along route segments and pushes alternate path suggestions in real time when a stretch crosses safe density thresholds — similar to live traffic rerouting, applied to mass foot traffic.
+* **Geofenced Capacity Zones:** Partitions the 200+ km route into virtual zones with predefined maximum safe capacities. As a zone approaches capacity, the system triggers automated entry-throttling advisories for volunteers and police at boundary checkpoints.
+* **Digital Twin & Predictive Simulation:** Simulates the entire route using historical progression velocity and real-time GPS telemetry, predicting congestion bottlenecks **30–60 minutes before they physically form**.
+* **Time-Staggered Entry Advisories:** Sends targeted notifications advising pilgrim groups (*Dindis*) to adjust departure times by 10–15 minutes from camps to flatten crowd peaks at bottleneck junctions.
 
 ---
 
 ### B. Resource & Logistics Management
-* **Dynamic Resource Heatmap:** Real-time administrative dashboard mapping stock consumption rates for potable water, Annachatra food, medical essentials, and mobile toilets across every transit camp.
-* **Smart Supply Routing for Replenishment:** Dynamically calculates detour and service-lane navigation for supply trucks, preventing heavy logistics vehicles from conflicting with dense pedestrian processions.
-* **Mobile Resource Unit (MRU) Telemetry:** Live GPS tagging for water tankers, mobile medical vans, and tractor-mounted sanitation units, making critical mobile assets discoverable by pilgrims and dispatchable by administrators.
-* **AI Predictive Restocking:** Analyzes historical consumption curves and real-time crowd velocity to automatically trigger restock orders before camps run out of vital supplies.
+* **Dynamic Resource Heatmap:** A live dashboard displaying real-time consumption and remaining stock of drinking water, food, medical kits, and sanitation facilities per camp, enabling proactive reallocation before shortages occur.
+* **Smart Supply Delivery Routing:** Calculates optimal delivery-vehicle routes using real-time foot-traffic data, ensuring supply trucks avoid pedestrian-heavy columns and utilize designated service lanes.
+* **Mobile Resource Unit (MRU) GPS Tracking:** GPS-tags water tankers, mobile medical vans, and portable toilet units so both administrators and pilgrims can track their live locations on interactive maps.
+* **AI-Based Predictive Restocking:** Combines past consumption patterns with real-time crowd velocity to forecast when a camp will run low on essentials, triggering pre-emptive dispatches instead of reactive deliveries.
 
 ---
 
 ### C. Transport & Infrastructure Efficiency
-* **Smart Support Vehicle & Parking Coordination:** Real-time parking slot discovery and reservation for Dindi support vehicles, emergency ambulances, and government escorts near checkpoints, eliminating roadway blockages.
-* **Virtual Green Emergency Corridors:** Real-time routing engine that establishes dynamically clear corridors for ambulances and quick-response teams, broadcasting immediate path-clearing instructions to nearby volunteers.
-* **Infrastructure Load & Sanitation Monitoring:** Live reporting for sanitation facility utilization, structural strain at bridge crossings, and digital waste bin overflow tracking (`/api/garbage/dustbins/`) with one-click cleanup dispatch.
+* **Smart Support Vehicle & Parking Coordination:** Slot-booking and live parking-availability tracking for support vehicles, ambulances, and volunteer transports near key checkpoints, preventing road jams that block emergency lanes.
+* **Dedicated Emergency Green Corridors:** App-guided, dynamically shifting virtual green corridors that ensure ambulances and relief vehicles always maintain an unobstructed path, broadcasting clearing instructions to nearby field volunteers.
+* **Infrastructure Load & Sanitation Monitoring:** Tracks usage and wear indicators (sanitation frequency, bridge/narrow-point crossing counts) and provides digital waste bin overflow reporting (`/api/garbage/dustbins/`) with one-click cleanup dispatch.
 
 ---
 
 ### D. Supporting Ecosystem Features
-* **Pilgrim Portal (Warkari App):** 
-  - Real-time Palkhi location telemetry and ETA countdowns.
-  - Interactive OpenStreetMap with 2 km radius filtering for food, water, medical camps, and toilets.
-  - Multi-language support (English, Marathi, Hindi).
-  - Dindi group formation, internal messaging, and offline emergency contacts.
-* **Admin Command Center:**
-  - Bird's-eye live operational map with crowd density heatmaps.
-  - Emergency SOS triaging inbox with automated geospatial nearest-responder mapping.
-  - Broadcast center for emergency weather, route changes, and general advisories.
-  - Volunteer approval, squad management, and task delegation dashboard.
-* **Volunteer (Sevekar) Portal:**
-  - Secure role-based onboarding with central administrator verification.
-  - Immediate duty status toggle (`On Duty` / `Off Duty`).
-  - Automated dispatch to verified medical emergencies and nearby crowd bottlenecks.
-* **Multi-Tier Emergency SOS Engine:**
-  - Instant one-tap emergency triggers (`Medical`, `Lost Person`, `Missing Item`, `Sanitation`, `General Issue`).
-  - Dual-channel broadcast delivering simultaneous push alerts to verified administrators and active field volunteers within a 2 km radius.
+* **Pilgrim Portal (Warkari App):** Live Palkhi telemetry, 2 km nearby facility finder (food, water, medical, toilets), one-tap emergency SOS, Dindi community chat, and multi-language support (Marathi, Hindi, English).
+* **Admin Command Center:** Real-time crowd heatmaps, centralized SOS triage inbox with automated geospatial nearest-responder mapping, broadcast announcement center, and volunteer approval management.
+* **Volunteer Portal (Sevekar App):** Centralized onboarding with administrator verification, duty status switcher (`On Duty` / `Off Duty`), squad management, and real-time task dispatches.
+* **Multi-Tier SOS & Notification Engine:** One-tap emergency dispatches categorized by type (`Medical`, `Lost Person`, `Missing Item`, `Sanitation`, `General Issue`) with dual-channel simultaneous alerts to nearby admins and active volunteers within a 2 km radius.
 
 ---
 
@@ -113,19 +104,26 @@ Smart Wari unites **Pilgrims (Warkaris)**, **Field Volunteers (Sevekars)**, **Em
 
 | Layer | Technologies Used | Description |
 | :--- | :--- | :--- |
-| **Frontend UI** | **React 19, TypeScript, Vite** | Responsive, modern Single Page Application (SPA) / PWA with micro-interactions |
-| **Styling & Design** | **Tailwind CSS, Lucide Icons** | Custom spiritual aesthetic with bronze/gold palettes, glassmorphic HUDs, and dark mode support |
-| **Backend API** | **Django 5, Django REST Framework (DRF)** | High-throughput asynchronous REST API with modular apps (`accounts`, `sos`, `wari_core`, `alerts`, `crowdflow`) |
-| **Realtime Engine** | **Django Channels, Daphne, WebSockets** | Bi-directional communication for live telemetry, chat, and instant push dispatches |
-| **Database** | **PostgreSQL / SQLite** | Relational spatial storage indexing GPS points, Dindi groups, user profiles, and resource states |
-| **Authentication** | **Firebase Auth & JWT / Django Session** | Hybrid authentication supporting Google OAuth 2.0, Firebase Email/Password, and OTP Mobile verification |
-| **Mapping & GIS** | **Leaflet, OpenStreetMap, GeoJSON** | Real-time map rendering, custom sacred route layers, Haversine distance calculations, and geofencing |
+| **Frontend UI** | **React 19, TypeScript, Vite** | Fast, responsive Single Page Application (SPA) with native PWA support |
+| **Styling & Design** | **Tailwind CSS, Lucide Icons** | Sacred aesthetic with gold/amber hues, glassmorphic UI cards, and dark/light modes |
+| **Backend API** | **Django 5, Django REST Framework (DRF)** | High-throughput asynchronous REST API (`accounts`, `sos`, `wari_core`, `alerts`, `crowdflow`) |
+| **Realtime Engine** | **Django Channels, Daphne, WebSockets** | Real-time bi-directional telemetry, Dindi group chat, and instant push dispatches |
+| **Database** | **PostgreSQL / SQLite** | Relational spatial database indexing GPS coordinates, Dindis, user profiles, and resource states |
+| **Authentication** | **Firebase Authentication & JWT** | Hybrid authentication supporting Google OAuth 2.0, Firebase Email/Password, and OTP Mobile verification |
+| **Mapping & GIS** | **Leaflet, OpenStreetMap, GeoJSON** | Interactive map layers, custom sacred Palkhi route overlays, Haversine geospatial calculations, and geofencing |
 
 ---
 
 ## 5. System Architecture
 
-The following architecture diagram illustrates the end-to-end telemetry flow, role isolation, and automated dispatch pathways across the **Smart Wari (VariMitra)** ecosystem:
+### 📐 System Architecture Blueprint
+The diagram below outlines the core architectural structure connecting the client portals, asynchronous Django backend, GIS geospatial engine, resource tracking modules, and multi-tier notification dispatcher:
+
+![Smart Wari System Architecture](docs/architecture/smart_wari_system_architecture.png)
+
+---
+
+### 🔄 End-to-End Workflow Diagram
 
 ```mermaid
 flowchart TB
@@ -237,40 +235,40 @@ flowchart TB
 ## 6. Application Screenshots
 
 ### 👨‍💼 Admin Command Center
-The central command console gives festival administrators, police units, and medical coordinators full visibility over the pilgrimage.
+The central command console gives festival administrators, police units, and medical coordinators full operational visibility.
 
 | Live Real-time Overview | Emergency SOS Triage & Management |
 | :---: | :---: |
-| ![Admin Dashboard](docs/screenshots/admin/Screenshot%202026-09-01%20223045.png) | ![Admin SOS Management](docs/screenshots/admin/Screenshot%202026-09-01%20223107.png) |
+| ![Admin Dashboard](Admin/Screenshot%202026-09-01%20223045.png) | ![Admin SOS Management](Admin/Screenshot%202026-09-01%20223107.png) |
 
 | Volunteer Approvals & Squad Roster | Crowd Density & Foot-traffic Analytics |
 | :---: | :---: |
-| ![Volunteer Approvals](docs/screenshots/admin/Screenshot%202026-09-01%20223117.png) | ![Crowd Analytics](docs/screenshots/admin/Screenshot%202026-08-30%20105409.png) |
+| ![Volunteer Approvals](Admin/Screenshot%202026-09-01%20223117.png) | ![Crowd Analytics](Admin/Screenshot%202026-08-30%20105409.png) |
 
 | Emergency Broadcast Console | Infrastructure & Waste Management |
 | :---: | :---: |
-| ![Alert Broadcast](docs/screenshots/admin/Screenshot%202026-08-30%20105443.png) | ![Garbage & Sanitation Management](docs/screenshots/admin/Screenshot%202026-08-30%20105536.png) |
+| ![Alert Broadcast](Admin/Screenshot%202026-08-30%20105443.png) | ![Garbage & Sanitation Management](Admin/Screenshot%202026-08-30%20105536.png) |
 
 | Real-time Map & Resource Telemetry | Incident Resolution Modal |
 | :---: | :---: |
-| ![Admin Map View](docs/screenshots/admin/Screenshot%202026-09-01%20223125.png) | ![Admin Response Modal](docs/screenshots/admin/Screenshot%202026-09-01%20223134.png) |
+| ![Admin Map View](Admin/Screenshot%202026-09-01%20223125.png) | ![Admin Response Modal](Admin/Screenshot%202026-09-01%20223134.png) |
 
 ---
 
 ### 🙋‍♂️ Volunteer (Sevekar) Portal
-Built for ground volunteers with squad assignments, duty status switches, and instant emergency response tools.
+Tailored for on-ground volunteers featuring squad assignments, duty status switches, and rapid incident response tools.
 
 | Volunteer Onboarding & Duty Hub | Instant Incident Response & Tasks |
 | :---: | :---: |
-| ![Volunteer Hub](docs/screenshots/volunteer/Screenshot%202026-09-01%20222834.png) | ![Volunteer Incident Response](docs/screenshots/volunteer/Screenshot%202026-09-01%20222845.png) |
+| ![Volunteer Hub](Volunteer/Screenshot%202026-09-01%20222834.png) | ![Volunteer Incident Response](Volunteer/Screenshot%202026-09-01%20222845.png) |
 
 | Squad Coordination & Chat | Live Field Task Map |
 | :---: | :---: |
-| ![Volunteer Squad Chat](docs/screenshots/volunteer/Screenshot%202026-09-01%20222852.png) | ![Volunteer Field Map](docs/screenshots/volunteer/Screenshot%202026-09-01%20222904.png) |
+| ![Volunteer Squad Chat](Volunteer/Screenshot%202026-09-01%20222852.png) | ![Volunteer Field Map](Volunteer/Screenshot%202026-09-01%20222904.png) |
 
 | Emergency Dispatch Notifications | Profile & Verification Status |
 | :---: | :---: |
-| ![Volunteer Dispatch Alerts](docs/screenshots/volunteer/Screenshot%202026-09-01%20222924.png) | ![Volunteer Verification](docs/screenshots/volunteer/Screenshot%202026-09-01%20222937.png) |
+| ![Volunteer Dispatch Alerts](Volunteer/Screenshot%202026-09-01%20222924.png) | ![Volunteer Verification](Volunteer/Screenshot%202026-09-01%20222937.png) |
 
 ---
 
@@ -279,23 +277,23 @@ A lightweight, spiritually enriching interface offering essential safety, map gu
 
 | Landing & Sacred Welcome | Interactive Wari Map & Palkhi Route |
 | :---: | :---: |
-| ![Pilgrim Home](docs/screenshots/user/Screenshot%202026-08-30%20103212.png) | ![Wari Route Map](docs/screenshots/user/Screenshot%202026-08-30%20103235.png) |
+| ![Pilgrim Home](User/Screenshot%202026-08-30%20103212.png) | ![Wari Route Map](User/Screenshot%202026-08-30%20103235.png) |
 
 | 2 km Proximity Facility Finder | One-Tap Emergency SOS Dispatcher |
 | :---: | :---: |
-| ![Nearby Facilities](docs/screenshots/user/Screenshot%202026-08-30%20103518.png) | ![Emergency SOS Card](docs/screenshots/user/Screenshot%202026-08-30%20103817.png) |
+| ![Nearby Facilities](User/Screenshot%202026-08-30%20103518.png) | ![Emergency SOS Card](User/Screenshot%202026-08-30%20103817.png) |
 
 | Dindi Community Group & Messaging | Multi-Language Portal Selector |
 | :---: | :---: |
-| ![Dindi Group Chat](docs/screenshots/user/Screenshot%202026-08-30%20103838.png) | ![Portal Selector](docs/screenshots/user/Screenshot%202026-08-30%20103850.png) |
+| ![Dindi Group Chat](User/Screenshot%202026-08-30%20103838.png) | ![Portal Selector](User/Screenshot%202026-08-30%20103850.png) |
 
 | Live Weather & Environmental Alerts | User Profile & Devotee Card |
 | :---: | :---: |
-| ![Live Weather View](docs/screenshots/user/Screenshot%202026-08-30%20103904.png) | ![Devotee Profile Card](docs/screenshots/user/Screenshot%202026-08-30%20103940.png) |
+| ![Live Weather View](User/Screenshot%202026-08-30%20103904.png) | ![Devotee Profile Card](User/Screenshot%202026-08-30%20103940.png) |
 
-| Sanitation & Bin Reporting |
+| Sanitation & Dustbin Reporting |
 | :---: |
-| ![User Dustbin & Sanitation Reporting](docs/screenshots/user/Screenshot%202026-08-30%20103957.png) |
+| ![User Dustbin & Sanitation Reporting](User/Screenshot%202026-08-30%20103957.png) |
 
 ---
 
