@@ -1,0 +1,3998 @@
+[
+{
+  "model": "auth.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1500000$ACfqCKRmrF0zQh87Lx9aKo$3r3PGHzDCfIrsljzKPPEmCd+XzvxmyXPBd43a98XeyU=",
+    "last_login": "2026-09-01T16:46:35.795Z",
+    "is_superuser": false,
+    "username": "pilgrim_demo",
+    "first_name": "Dnyandev",
+    "last_name": "Tukaram",
+    "email": "warkari@varimitra.org",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-08-30T01:16:40.254Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1500000$X3ECaaIdhujdFNTP6QZOZT$OSCTBa+0oSSjnka3xUSksrK26fStta8KxcbVaL+zytI=",
+    "last_login": "2026-09-01T16:46:36.695Z",
+    "is_superuser": true,
+    "username": "admin_demo",
+    "first_name": "Seva Admin",
+    "last_name": "Officer",
+    "email": "seva.admin@varimitra.org",
+    "is_staff": true,
+    "is_active": true,
+    "date_joined": "2026-08-30T01:16:40.863Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1500000$b5LEdCmu7wXueArr86wXNo$pgdh0ELgaCcMnd74nhexjz3lwZddwOlNthTqDvy78dI=",
+    "last_login": "2026-09-01T16:46:24.334Z",
+    "is_superuser": true,
+    "username": "admin_yashraj",
+    "first_name": "Yashraj",
+    "last_name": "Gadlikar",
+    "email": "admin@varimitra.org",
+    "is_staff": true,
+    "is_active": true,
+    "date_joined": "2026-08-30T01:16:42.276Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1500000$3UJtvTJCfrgPv1NXC4PQE4$vrCGKRmpUWtOM3ik9OEUWsDRvFfjsLbOF/l0TUZWkcg=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "pilgrim_yashraj",
+    "first_name": "Yashraj",
+    "last_name": "Warkari",
+    "email": "yashraj@varimitra.org",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-08-30T01:16:42.887Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1500000$IGXDRXSyo7JsFn3OEydeZO$nWt7MHc9c1/wglqDhvhnkIQiYOK6PIecWlWWdNXGE+s=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "rahul_k",
+    "first_name": "Rahul",
+    "last_name": "Kulkarni",
+    "email": "rahul_k@varimitra.org",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-08-30T01:16:43.460Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1500000$u6hNoJERpWSyCHDlWRZFpo$y6h+MPhuE+nmDUu++ocvvrr8J3nx8+6qlPg9kX7czpY=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "priya_p",
+    "first_name": "Priya",
+    "last_name": "Patil",
+    "email": "priya_p@varimitra.org",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-08-30T01:16:44.020Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1500000$sBchMoPvM8PESa5XqRMfbE$j+NwVNUYiE6iN/sJ4U6CbWoqXvJA45YWUEXpbD2vNI4=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "ramesh_s",
+    "first_name": "Ramesh",
+    "last_name": "Shinde",
+    "email": "ramesh_s@varimitra.org",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-08-30T01:16:44.590Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1500000$dFj30UTClpuC60AHmbw3N7$5nrtA9ur5BNMj4U1jxBdZVI+rzXrEMeNhkxcQf+I8Zg=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "sunil_j",
+    "first_name": "Sunil",
+    "last_name": "Jadhav",
+    "email": "sunil_j@varimitra.org",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-08-30T01:16:45.169Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1500000$N7D8UJh0n0RjBZlmlzdZF8$tCQvjQDOGIpegg/03fA5EgoQpakOwiaqDVlyOHkPrus=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "doctor_m",
+    "first_name": "Dr. Anand",
+    "last_name": "Deshmukh",
+    "email": "doctor_m@varimitra.org",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-08-30T01:16:45.731Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "fields": {
+    "password": "",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "devotee_1_0",
+    "first_name": "Warkari_1",
+    "last_name": "Mandal",
+    "email": "devotee_1_0@wari.org",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-08-30T01:16:46.332Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "fields": {
+    "password": "",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "devotee_1_1",
+    "first_name": "Warkari_2",
+    "last_name": "Mandal",
+    "email": "devotee_1_1@wari.org",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-08-30T01:16:46.344Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "fields": {
+    "password": "",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "devotee_1_2",
+    "first_name": "Warkari_3",
+    "last_name": "Mandal",
+    "email": "devotee_1_2@wari.org",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-08-30T01:16:46.350Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "fields": {
+    "password": "",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "devotee_1_3",
+    "first_name": "Warkari_4",
+    "last_name": "Mandal",
+    "email": "devotee_1_3@wari.org",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-08-30T01:16:46.357Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "fields": {
+    "password": "",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "devotee_1_4",
+    "first_name": "Warkari_5",
+    "last_name": "Mandal",
+    "email": "devotee_1_4@wari.org",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-08-30T01:16:46.363Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "fields": {
+    "password": "",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "devotee_1_5",
+    "first_name": "Warkari_6",
+    "last_name": "Mandal",
+    "email": "devotee_1_5@wari.org",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-08-30T01:16:46.369Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "fields": {
+    "password": "",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "devotee_1_6",
+    "first_name": "Warkari_7",
+    "last_name": "Mandal",
+    "email": "devotee_1_6@wari.org",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-08-30T01:16:46.375Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "fields": {
+    "password": "",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "devotee_1_7",
+    "first_name": "Warkari_8",
+    "last_name": "Mandal",
+    "email": "devotee_1_7@wari.org",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-08-30T01:16:46.381Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "fields": {
+    "password": "",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "devotee_1_8",
+    "first_name": "Warkari_9",
+    "last_name": "Mandal",
+    "email": "devotee_1_8@wari.org",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-08-30T01:16:46.387Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "fields": {
+    "password": "",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "devotee_1_9",
+    "first_name": "Warkari_10",
+    "last_name": "Mandal",
+    "email": "devotee_1_9@wari.org",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-08-30T01:16:46.393Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "fields": {
+    "password": "",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "devotee_2_0",
+    "first_name": "Warkari_1",
+    "last_name": "Mandal",
+    "email": "devotee_2_0@wari.org",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-08-30T01:16:46.445Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "fields": {
+    "password": "",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "devotee_2_1",
+    "first_name": "Warkari_2",
+    "last_name": "Mandal",
+    "email": "devotee_2_1@wari.org",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-08-30T01:16:46.451Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "fields": {
+    "password": "",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "devotee_2_2",
+    "first_name": "Warkari_3",
+    "last_name": "Mandal",
+    "email": "devotee_2_2@wari.org",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-08-30T01:16:46.457Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "fields": {
+    "password": "",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "devotee_2_3",
+    "first_name": "Warkari_4",
+    "last_name": "Mandal",
+    "email": "devotee_2_3@wari.org",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-08-30T01:16:46.464Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "fields": {
+    "password": "",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "devotee_2_4",
+    "first_name": "Warkari_5",
+    "last_name": "Mandal",
+    "email": "devotee_2_4@wari.org",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-08-30T01:16:46.470Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "fields": {
+    "password": "",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "devotee_2_5",
+    "first_name": "Warkari_6",
+    "last_name": "Mandal",
+    "email": "devotee_2_5@wari.org",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-08-30T01:16:46.476Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "fields": {
+    "password": "",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "devotee_2_6",
+    "first_name": "Warkari_7",
+    "last_name": "Mandal",
+    "email": "devotee_2_6@wari.org",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-08-30T01:16:46.482Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "fields": {
+    "password": "",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "devotee_2_7",
+    "first_name": "Warkari_8",
+    "last_name": "Mandal",
+    "email": "devotee_2_7@wari.org",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-08-30T01:16:46.488Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "fields": {
+    "password": "",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "devotee_2_8",
+    "first_name": "Warkari_9",
+    "last_name": "Mandal",
+    "email": "devotee_2_8@wari.org",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-08-30T01:16:46.495Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "fields": {
+    "password": "",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "devotee_2_9",
+    "first_name": "Warkari_10",
+    "last_name": "Mandal",
+    "email": "devotee_2_9@wari.org",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-08-30T01:16:46.502Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "fields": {
+    "password": "",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "devotee_3_0",
+    "first_name": "Warkari_1",
+    "last_name": "Mandal",
+    "email": "devotee_3_0@wari.org",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-08-30T01:16:46.542Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "fields": {
+    "password": "",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "devotee_3_1",
+    "first_name": "Warkari_2",
+    "last_name": "Mandal",
+    "email": "devotee_3_1@wari.org",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-08-30T01:16:46.549Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "fields": {
+    "password": "",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "devotee_3_2",
+    "first_name": "Warkari_3",
+    "last_name": "Mandal",
+    "email": "devotee_3_2@wari.org",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-08-30T01:16:46.556Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "fields": {
+    "password": "",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "devotee_3_3",
+    "first_name": "Warkari_4",
+    "last_name": "Mandal",
+    "email": "devotee_3_3@wari.org",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-08-30T01:16:46.563Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "fields": {
+    "password": "",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "devotee_3_4",
+    "first_name": "Warkari_5",
+    "last_name": "Mandal",
+    "email": "devotee_3_4@wari.org",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-08-30T01:16:46.570Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "fields": {
+    "password": "",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "devotee_3_5",
+    "first_name": "Warkari_6",
+    "last_name": "Mandal",
+    "email": "devotee_3_5@wari.org",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-08-30T01:16:46.576Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "fields": {
+    "password": "",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "devotee_3_6",
+    "first_name": "Warkari_7",
+    "last_name": "Mandal",
+    "email": "devotee_3_6@wari.org",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-08-30T01:16:46.583Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "fields": {
+    "password": "",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "devotee_3_7",
+    "first_name": "Warkari_8",
+    "last_name": "Mandal",
+    "email": "devotee_3_7@wari.org",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-08-30T01:16:46.589Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "fields": {
+    "password": "",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "devotee_3_8",
+    "first_name": "Warkari_9",
+    "last_name": "Mandal",
+    "email": "devotee_3_8@wari.org",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-08-30T01:16:46.596Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "fields": {
+    "password": "",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "devotee_3_9",
+    "first_name": "Warkari_10",
+    "last_name": "Mandal",
+    "email": "devotee_3_9@wari.org",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-08-30T01:16:46.602Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "fields": {
+    "password": "",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "devotee_4_0",
+    "first_name": "Warkari_1",
+    "last_name": "Mandal",
+    "email": "devotee_4_0@wari.org",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-08-30T01:16:46.639Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "fields": {
+    "password": "",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "devotee_4_1",
+    "first_name": "Warkari_2",
+    "last_name": "Mandal",
+    "email": "devotee_4_1@wari.org",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-08-30T01:16:46.644Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "fields": {
+    "password": "",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "devotee_4_2",
+    "first_name": "Warkari_3",
+    "last_name": "Mandal",
+    "email": "devotee_4_2@wari.org",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-08-30T01:16:46.649Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "fields": {
+    "password": "",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "devotee_4_3",
+    "first_name": "Warkari_4",
+    "last_name": "Mandal",
+    "email": "devotee_4_3@wari.org",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-08-30T01:16:46.655Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "fields": {
+    "password": "",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "devotee_4_4",
+    "first_name": "Warkari_5",
+    "last_name": "Mandal",
+    "email": "devotee_4_4@wari.org",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-08-30T01:16:46.661Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "fields": {
+    "password": "",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "devotee_4_5",
+    "first_name": "Warkari_6",
+    "last_name": "Mandal",
+    "email": "devotee_4_5@wari.org",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-08-30T01:16:46.667Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "fields": {
+    "password": "",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "devotee_4_6",
+    "first_name": "Warkari_7",
+    "last_name": "Mandal",
+    "email": "devotee_4_6@wari.org",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-08-30T01:16:46.673Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "fields": {
+    "password": "",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "devotee_4_7",
+    "first_name": "Warkari_8",
+    "last_name": "Mandal",
+    "email": "devotee_4_7@wari.org",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-08-30T01:16:46.679Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "fields": {
+    "password": "",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "devotee_4_8",
+    "first_name": "Warkari_9",
+    "last_name": "Mandal",
+    "email": "devotee_4_8@wari.org",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-08-30T01:16:46.687Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "fields": {
+    "password": "",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "devotee_4_9",
+    "first_name": "Warkari_10",
+    "last_name": "Mandal",
+    "email": "devotee_4_9@wari.org",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-08-30T01:16:46.693Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1500000$rlzqGD84wecPPNuNOv1Z7H$p8ictcwmHj2Cg1t7WHJTgo5k99z50hK9Q/BVq4PUCMA=",
+    "last_login": "2026-09-04T08:04:13.541Z",
+    "is_superuser": false,
+    "username": "pilgrim_9175262910_830",
+    "first_name": "Sagar",
+    "last_name": "Santosh Yadav",
+    "email": "9175262910@varimitra.org",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-08-30T01:37:19.860Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1500000$MK0ER9UJ28C4sCcIcAU9uS$ZG77RIvZVSUR7dTChP7b4XSuu/bVOxdhjdgE0JD3vJY=",
+    "last_login": "2026-09-04T08:03:40.742Z",
+    "is_superuser": false,
+    "username": "admin_sagarpc1006_gmail_com_400",
+    "first_name": "Admin",
+    "last_name": "",
+    "email": "sagarpc1006@gmail.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-08-30T01:38:21.271Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1500000$t21ak0eyyXGJpA005o1BHn$YXPBywT/WAvqKlhpKQdMbAOH8nSH10bgY+u6F+bpXbA=",
+    "last_login": "2026-08-30T02:28:40.617Z",
+    "is_superuser": false,
+    "username": "volunteer_volunteer_varimitra_org",
+    "first_name": "Rameshwar",
+    "last_name": "Shinde",
+    "email": "volunteer@varimitra.org",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-08-30T02:15:59.530Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1500000$H3IEmyFYH69bEp6FtEiNdG$Lvy1Cf7PdkqLP1u1ex8QdvwMrppb4HrDr184RmNBPJI=",
+    "last_login": "2026-08-30T02:19:15.088Z",
+    "is_superuser": false,
+    "username": "volunteer_9922334455_216",
+    "first_name": "Dattatray",
+    "last_name": "Gaikwad",
+    "email": "9922334455@varimitra.org",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-08-30T02:18:50.628Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1500000$7WoEFRMgnCEm4DXS9wor82$Q4B0K17ViuoA4YkobCYiYQBRv5YZ//swAGCfl+GvOM8=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "volunteer_demo",
+    "first_name": "Rameshwar",
+    "last_name": "Shinde (Sevekar)",
+    "email": "volunteer@varimitra.org",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-08-30T02:25:26.754Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1500000$sW3HudTXbSg99YkmZU3Stb$dnmYGMDsOR8NsAV24G+FlTHkIIx+JJDkiqHqy9zcWAw=",
+    "last_login": "2026-08-30T02:28:41.786Z",
+    "is_superuser": false,
+    "username": "pilgrim_9822334455_54738",
+    "first_name": "Warkari",
+    "last_name": "Devotee",
+    "email": "9822334455@varimitra.org",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-08-30T02:28:41.204Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1500000$4chm1mbgh5N1p9JGshLR3G$dwfOh3+xY0IH9sa8+T6YnDhCqwTTisBsAgwrgWVYqow=",
+    "last_login": "2026-09-01T16:58:19.709Z",
+    "is_superuser": false,
+    "username": "volunteer_9112202910_54698",
+    "first_name": "Rameshwar",
+    "last_name": "Shinde (Sevekar)",
+    "email": "9112202910@varimitra.org",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-08-30T02:35:15.473Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1500000$shs2YuZwR3ntojmuOuSvxK$TsQJ/jcvoSxR2qzDGbF6oLq3aZlKmmPMl3a5WFzt780=",
+    "last_login": "2026-08-30T03:06:43.923Z",
+    "is_superuser": false,
+    "username": "volunteer_9822998877_c893",
+    "first_name": "Ramesh",
+    "last_name": "Gaikwad",
+    "email": "9822998877@varimitra.org",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-08-30T02:58:03.497Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1500000$SSO0QfDerLiTy0qD2dT02t$Vg3Ddco+RRYEBVPW3X1oWZMdOxa3qkBT30HnJpoSn20=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "volunteer_1234567896_014c",
+    "first_name": "Chinmay",
+    "last_name": "",
+    "email": "1234567896@varimitra.org",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-08-30T03:10:18.092Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1500000$u2q7nBIvg7zNcxoUAyxaSH$zdanwloSkMbJcOR/FEDCNq4+sA31DgmhXkYbRY6rRuQ=",
+    "last_login": "2026-08-30T03:13:02.555Z",
+    "is_superuser": false,
+    "username": "volunteer_heello@gmail.com_9b9c",
+    "first_name": "Chinmay",
+    "last_name": "",
+    "email": "heello@gmail.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-08-30T03:11:39.572Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1500000$ZcRh64et91nwURKIZLCN6y$I4AiCJpikVLy2aghUHrqIHJFb+EQgRsHdHW9xlRAJHI=",
+    "last_login": "2026-08-30T03:23:26.941Z",
+    "is_superuser": false,
+    "username": "google_google.warkari_500",
+    "first_name": "Google",
+    "last_name": "Devotee (Pilgrim)",
+    "email": "google.warkari@varimitra.org",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-08-30T03:21:58.363Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1500000$QmGpRHG8sRM3BhtkOgTo5e$0twdTdGNmLJ8xVqP+J+VKihst2AkUZDtVro3Pux2f5M=",
+    "last_login": "2026-08-30T03:23:01.895Z",
+    "is_superuser": false,
+    "username": "google_google.admin_187",
+    "first_name": "Google",
+    "last_name": "Admin (Seva)",
+    "email": "google.admin@varimitra.org",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-08-30T03:22:59.565Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1500000$vl5WRrUeRCS9lRpz667ARj$60xJ3I1HAk5VWzlYIb1LTOyE6Zs+Uy5WTlk0zfWN1vc=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "volunteer_56789876789_54527",
+    "first_name": "Rameshwar",
+    "last_name": "Shinde (Sevekar)",
+    "email": "56789876789@varimitra.org",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-08-30T06:16:19.000Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1500000$x5OzK7QUpeQ1aLmkvB9FxW$Qs4Cy5QqyvQ5gysAqwgOuwfcQ2wxpgM+5hr5y5aaqgI=",
+    "last_login": "2026-09-01T16:41:30.148Z",
+    "is_superuser": false,
+    "username": "pilgrim_9988776655_267",
+    "first_name": "Namdev",
+    "last_name": "Maharaj",
+    "email": "9988776655@varimitra.org",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-09-01T16:41:28.528Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "1ob5cutspul68iwp15aa3tji3ivnrram",
+  "fields": {
+    "session_data": ".eJxVjEEOwiAQRe_C2pDC4BRduvcMZGAGqRpISrsy3l2bdKHb_977LxVoXUpYu8xhYnVWoA6_W6T0kLoBvlO9NZ1aXeYp6k3RO-362liel939OyjUy7f24MHlzAOgMKM_2WEUAWciWpeFkheLMh69YEoixjmKiDFlB2hyJPX-AOztOKE:1x1Rcu:V4Q0kMnVG-68udhXC1bOxUEHpOsnwgxWXEkpaZosQic",
+    "expire_date": "2026-09-15T16:46:24.339Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "1y57oa7iqkix2uyiljasrqbhrvqxcxgl",
+  "fields": {
+    "session_data": ".eJxVjEsOwjAMBe-SNYpqNyQNS_Y9Q2XHDimgVOpnhbg7VOoCtm9m3ssMtK1l2Badh1HMxaA5_W5M6aF1B3Kneptsmuo6j2x3xR50sf0k-rwe7t9BoaV8a1BlVABwfAbWjD6AD6mNrQfsHPguoTToWELLhNk3IaqgqjiKyWXz_gDQvTfF:1x1Rd6:LZrs0PRtsPjSfSicMv0iTTGD_7EpLSfiYx3ujbb2uog",
+    "expire_date": "2026-09-15T16:46:36.723Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "3lgndacyu9t9smqq03dmqdanbtazeski",
+  "fields": {
+    "session_data": ".eJxVjEEOwiAQRe_C2pDC4BRduvcMZGAGqRpISrsy3l2bdKHb_977LxVoXUpYu8xhYnVWoA6_W6T0kLoBvlO9NZ1aXeYp6k3RO-362liel939OyjUy7f24MHlzAOgMKM_2WEUAWciWpeFkheLMh69YEoixjmKiDFlB2hyJPX-AOztOKE:1x1RbG:qs3RiL_pcUUav440Xl9B-XillpmPGTWOK7ixZFi8pug",
+    "expire_date": "2026-09-15T16:44:42.083Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "65eawtqsmikcq9hjqdab8hom62v45kg4",
+  "fields": {
+    "session_data": ".eJxVjMsOwiAQRf-FtSFAeQwu3fsNZBhAqgaS0q6M_65NutDtPefcFwu4rTVsIy9hTuzMJDv9bhHpkdsO0h3brXPqbV3myHeFH3Twa0_5eTncv4OKo35rY7TUZfIJPKEj6azWyqlMMHlnATEJAOV8oRQFxCgjGBKTFMUayqDY-wPFMDdU:1x0VF0:g4Ihsp6edcL5pMGYXlWlGj3naiPxnB47-O65hUlWd1c",
+    "expire_date": "2026-09-13T02:25:50.831Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "6l8ux3d6gfhemtlshbs2vn0lar094wkf",
+  "fields": {
+    "session_data": ".eJxVjEEOwiAQRe_C2pAyAwVcuvcMBIZBqoYmpV0Z765NutDtf-_9lwhxW2vYOi9hyuIsjBWn3zFFenDbSb7HdpslzW1dpiR3RR60y-uc-Xk53L-DGnv91mCVQgCdDCnCwgaMApu0RzdY1FB0zp4TeTuicr4MjEU5GDURsY5JvD_bajd4:1x0VsZ:wNi7jEehl5tq_T302VCDzymavo3Lc2XrTdGgvHD-zCY",
+    "expire_date": "2026-09-13T03:06:43.932Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "6rushztqdi7zwep8gx2buotkl2yhobjb",
+  "fields": {
+    "session_data": ".eJxVjEEOwiAQRe_C2hDoQKEu3XsGMsyAVA0kpV0Z765NutDtf-_9lwi4rSVsPS1hZnEWI4jT7xiRHqnuhO9Yb01Sq-syR7kr8qBdXhun5-Vw_w4K9vKtFYB3SHkcbNYjDtm7iSmDZiTlPZiocMpAbDXa7BQDDUZ5jpyidQbF-wMPnDiO:1x1RW7:oZ9OfIL1BvvOsWN55IOpE4TyLbO-5Kq3OUrIOFoAxgA",
+    "expire_date": "2026-09-15T16:39:23.827Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "7hs2gzvi8q27ejnsn80xqd9hdoy0peb6",
+  "fields": {
+    "session_data": ".eJxVjDkOwjAUBe_iGlleEi-U9JzB-ptJACVSnFSIu0OkFNC-mXkvVWBbh7I1WcrI6qx6r06_IwI9ZNoJ32G6zZrmaV1G1LuiD9r0dWZ5Xg7372CANnzr2EPoYnXorLEVKSHnxIEokTXZUC-dk1C944g5C1pGiDZ5S4GNUFXvDxUUOMU:1x0V8F:G9ME1le8Vj_rAdAXnCbWjKcNXWdRcj5UfkYJTNfZy2U",
+    "expire_date": "2026-09-13T02:18:51.199Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "cpc8mzryysafxqzrpjx4zea3u9abyuzk",
+  "fields": {
+    "session_data": ".eJxVjEsOwjAMBe-SNYpqNyQNS_Y9Q2XHDimgVOpnhbg7VOoCtm9m3ssMtK1l2Badh1HMxaA5_W5M6aF1B3Kneptsmuo6j2x3xR50sf0k-rwe7t9BoaV8a1BlVABwfAbWjD6AD6mNrQfsHPguoTToWELLhNk3IaqgqjiKyWXz_gDQvTfF:1x1RYE:s6mBLogOSm24WER5S2NAfYgh-duWJ3LRTnUDAKE6mmc",
+    "expire_date": "2026-09-15T16:41:34.718Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "d2nmk4stdml6h3d5qbr2b36xyx835tm2",
+  "fields": {
+    "session_data": ".eJxVjMsOwiAQRf-FtSEwI4-6dN9vIANMpWogKe3K-O_apAvd3nPOfYlA21rC1nkJcxYXYZw4_Y6R0oPrTvKd6q3J1Oq6zFHuijxol2PL_Lwe7t9BoV6-dWSXBk8xWtROA54n9NlRtgykB28AEfJkMEICYKUMaWIFVrGyHhDE-wMHhDdb:1x0VkC:nlfLb8Wb8E_-iM5v_gv42mpPqd5VdJ8sh-xd03ja3Wk",
+    "expire_date": "2026-09-13T02:58:04.107Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "eqfemavocqzoeoyo1b3k462gsgif2vma",
+  "fields": {
+    "session_data": ".eJxVjEEOwiAQRe_C2pDC4BRduvcMZGAGqRpISrsy3l2bdKHb_977LxVoXUpYu8xhYnVWoA6_W6T0kLoBvlO9NZ1aXeYp6k3RO-362liel939OyjUy7f24MHlzAOgMKM_2WEUAWciWpeFkheLMh69YEoixjmKiDFlB2hyJPX-AOztOKE:1x0VHl:M8JTtpf5H6TJ_3XNmqwLXSZo5egnxIDpbO7i9YoFHiQ",
+    "expire_date": "2026-09-13T02:28:41.195Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "i0fj87rytb91bal0hxdswvzpszav176y",
+  "fields": {
+    "session_data": ".eJxVjDkOwjAUBe_iGlle44SSnjNYfzMOoESKkwpxd4iUAto3M--lMmxrzVuTJY-szipGdfodEegh0074DtNt1jRP6zKi3hV90KavM8vzcrh_BxVa_dY2ssQeOnQELhUSw76gMEjAgcmW3qPxxQEMRopPiYQ7iaFEshwsqvcHTpc53A:1x0VHl:MbgV_p_8TiKvV-Iv_VvL1pe8HHJZm_jThrSwvBneOgs",
+    "expire_date": "2026-09-13T02:28:41.791Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "khn60txui5mz0vfdov6rekxj3vhi2tp8",
+  "fields": {
+    "session_data": ".eJxVjMsOwiAQRf-FtSFAeQwu3fsNZBhAqgaS0q6M_65NutDtPefcFwu4rTVsIy9hTuzMJDv9bhHpkdsO0h3brXPqbV3myHeFH3Twa0_5eTncv4OKo35rY7TUZfIJPKEj6azWyqlMMHlnATEJAOV8oRQFxCgjGBKTFMUayqDY-wPFMDdU:1x0VHk:hYDlo7Pcjk8Ejwj7-8KJm4QUFrdZV_1QYdWBkx3m50o",
+    "expire_date": "2026-09-13T02:28:40.029Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "kl1cj6c2wl9w7qb2k5ipx4pe81wsoki2",
+  "fields": {
+    "session_data": ".eJxVjEsOAiEQBe_C2pCWPy7dewbS0CCjBpJhZmW8uyGZhW5fVb03C7hvNewjr2EhdmFasNPvGDE9c5uEHtjunafetnWJfCr8oIPfOuXX9XD_DiqOOmsjFaCS1qD12qhCEqJ3JQJJ5R0IARYLCpEcyHLWzgOYRBqlURSzYp8v49Y3Pg:1x0VF1:QfFAlt_7AbOAuJeVF8SFeo0okGiF9l3YWRcBwn7Z7Fs",
+    "expire_date": "2026-09-13T02:25:51.406Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "l58mp12gct3j84vxl3gcfksytc3ewqz1",
+  "fields": {
+    "session_data": ".eJxVjEEOwiAQRe_C2pABCrQu3XsGwsCMVA0kpV0Z765NutDtf-_9lwhxW0vYOi1hzuIsLIjT74gxPajuJN9jvTWZWl2XGeWuyIN2eW2ZnpfD_TsosZdvDdFoZY1BgokYFTinLNhMbNnjoGDE5N3gnfOJCXRkSlopyqNHzxOK9wf4oTgt:1x2OuD:K_gtydJHPGBkOIsz-jvCvVijLBoRZBeBGAfgMUcX4cY",
+    "expire_date": "2026-09-18T08:04:13.557Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "n3neqbf41s53n9olc5rh5qo66w9e95ll",
+  "fields": {
+    "session_data": ".eJxVjEEOwiAQRe_C2pDC4BRduvcMZGAGqRpISrsy3l2bdKHb_977LxVoXUpYu8xhYnVWoA6_W6T0kLoBvlO9NZ1aXeYp6k3RO-362liel939OyjUy7f24MHlzAOgMKM_2WEUAWciWpeFkheLMh69YEoixjmKiDFlB2hyJPX-AOztOKE:1x0VF1:vS4z-xihrL_xaSuJVc07yGNnShOZlNd-2m4sMpac1m4",
+    "expire_date": "2026-09-13T02:25:51.987Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "rk81zqvmts9qrk1dukd2kusre1117yif",
+  "fields": {
+    "session_data": ".eJxVjDkOwjAUBe_iGlleEi-U9JzB-ptJACVSnFSIu0OkFNC-mXkvVWBbh7I1WcrI6qx6r06_IwI9ZNoJ32G6zZrmaV1G1LuiD9r0dWZ5Xg7372CANnzr2EPoYnXorLEVKSHnxIEokTXZUC-dk1C944g5C1pGiDZ5S4GNUFXvDxUUOMU:1x0V8d:9wIOJFsY5usouKyNnu9aRt1NYbs6ZUAKFq1YKwtw6Uo",
+    "expire_date": "2026-09-13T02:19:15.094Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "rp0ffj754ef36bmmu357j0aswwsbvyqa",
+  "fields": {
+    "session_data": ".eJxVjEsOAiEQBe_C2pCWPy7dewbS0CCjBpJhZmW8uyGZhW5fVb03C7hvNewjr2EhdmFasNPvGDE9c5uEHtjunafetnWJfCr8oIPfOuXX9XD_DiqOOmsjFaCS1qD12qhCEqJ3JQJJ5R0IARYLCpEcyHLWzgOYRBqlURSzYp8v49Y3Pg:1x0VHk:CpiO3p_rcXFP4DrqAlX-TFNPDUeIVTFXYdlOKjuzx9g",
+    "expire_date": "2026-09-13T02:28:40.623Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "satx9q2tqo687tcoryffss3q2qdzdgnc",
+  "fields": {
+    "session_data": ".eJxVjEsOAiEQBe_C2pCWPy7dewbS0CCjBpJhZmW8uyGZhW5fVb03C7hvNewjr2EhdmFasNPvGDE9c5uEHtjunafetnWJfCr8oIPfOuXX9XD_DiqOOmsjFaCS1qD12qhCEqJ3JQJJ5R0IARYLCpEcyHLWzgOYRBqlURSzYp8v49Y3Pg:1x0V5h:t-3yDiqpNpwF9VWq0idxdj0Qzpz07pvqg8giRaKQYXM",
+    "expire_date": "2026-09-13T02:16:13.122Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "vx3pdet4pslzqkuphl4f5l00fuu4hwyk",
+  "fields": {
+    "session_data": ".eJxVjEsOAiEQBe_C2pCWPy7dewbS0CCjBpJhZmW8uyGZhW5fVb03C7hvNewjr2EhdmFasNPvGDE9c5uEHtjunafetnWJfCr8oIPfOuXX9XD_DiqOOmsjFaCS1qD12qhCEqJ3JQJJ5R0IARYLCpEcyHLWzgOYRBqlURSzYp8v49Y3Pg:1x0V5U:N-QZ1JahT6JuBmbjUmiuqXAMALsthM6lY3GQJXT6s6U",
+    "expire_date": "2026-09-13T02:16:00.647Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "wgmwqkej0rz9dlyiy9zte6ev9h5ybned",
+  "fields": {
+    "session_data": ".eJxVjEEOwiAQRe_C2pDB6QC6dO8ZmoEBqRpISrsy3l2bdKHb_977LzXyupRx7WkeJ1FnRU4dfsfA8ZHqRuTO9dZ0bHWZp6A3Re-062uT9Lzs7t9B4V6-NRoZckJAA2xMDs5SBm8RJQlTTGwJkRlpQAcIIVtz8uEIEYxzXki9P_u3N1w:1x0VkR:OT90JnmGO1SfwLU3Q29Wa8oZ5RiOMMz2n7alFK0H8_c",
+    "expire_date": "2026-09-13T02:58:19.475Z"
+  }
+},
+{
+  "model": "accounts.userprofile",
+  "pk": 1,
+  "fields": {
+    "user": [
+      "pilgrim_demo"
+    ],
+    "firebase_uid": null,
+    "role": "pilgrim",
+    "mobile_number": "9876543210",
+    "organization": "Alandi Dindi No. 1",
+    "department": null,
+    "squad_id": null,
+    "dindi_number": null,
+    "emergency_contact": null,
+    "is_verified": true,
+    "reset_otp": "685954",
+    "reset_otp_created_at": "2026-09-01T16:46:35.203Z",
+    "approval_status": "approved",
+    "is_approved": true,
+    "requested_at": "2026-08-30T02:38:10.935Z",
+    "approved_by": null,
+    "approved_at": null,
+    "created_at": "2026-08-30T01:16:40.860Z",
+    "updated_at": "2026-09-01T16:46:35.203Z"
+  }
+},
+{
+  "model": "accounts.userprofile",
+  "pk": 2,
+  "fields": {
+    "user": [
+      "admin_demo"
+    ],
+    "firebase_uid": null,
+    "role": "admin",
+    "mobile_number": "9822001122",
+    "organization": "Pandharpur Wari Seva Mandal Control Room",
+    "department": null,
+    "squad_id": null,
+    "dindi_number": null,
+    "emergency_contact": null,
+    "is_verified": true,
+    "reset_otp": null,
+    "reset_otp_created_at": null,
+    "approval_status": "approved",
+    "is_approved": true,
+    "requested_at": "2026-08-30T02:38:10.935Z",
+    "approved_by": null,
+    "approved_at": null,
+    "created_at": "2026-08-30T01:16:41.438Z",
+    "updated_at": "2026-08-30T01:16:41.438Z"
+  }
+},
+{
+  "model": "accounts.userprofile",
+  "pk": 3,
+  "fields": {
+    "user": [
+      "admin_yashraj"
+    ],
+    "firebase_uid": null,
+    "role": "admin",
+    "mobile_number": "9876500001",
+    "organization": "Pandharpur Wari Seva Mandal",
+    "department": null,
+    "squad_id": null,
+    "dindi_number": null,
+    "emergency_contact": null,
+    "is_verified": true,
+    "reset_otp": null,
+    "reset_otp_created_at": null,
+    "approval_status": "approved",
+    "is_approved": true,
+    "requested_at": "2026-08-30T02:38:10.935Z",
+    "approved_by": null,
+    "approved_at": null,
+    "created_at": "2026-08-30T01:16:42.883Z",
+    "updated_at": "2026-08-30T02:25:26.750Z"
+  }
+},
+{
+  "model": "accounts.userprofile",
+  "pk": 4,
+  "fields": {
+    "user": [
+      "pilgrim_yashraj"
+    ],
+    "firebase_uid": null,
+    "role": "pilgrim",
+    "mobile_number": "9876577915",
+    "organization": "Alandi Dindi No. 1",
+    "department": null,
+    "squad_id": null,
+    "dindi_number": null,
+    "emergency_contact": null,
+    "is_verified": true,
+    "reset_otp": null,
+    "reset_otp_created_at": null,
+    "approval_status": "approved",
+    "is_approved": true,
+    "requested_at": "2026-08-30T02:38:10.935Z",
+    "approved_by": null,
+    "approved_at": null,
+    "created_at": "2026-08-30T01:16:43.454Z",
+    "updated_at": "2026-08-30T01:16:43.454Z"
+  }
+},
+{
+  "model": "accounts.userprofile",
+  "pk": 5,
+  "fields": {
+    "user": [
+      "rahul_k"
+    ],
+    "firebase_uid": null,
+    "role": "pilgrim",
+    "mobile_number": "9876500002",
+    "organization": null,
+    "department": null,
+    "squad_id": null,
+    "dindi_number": null,
+    "emergency_contact": null,
+    "is_verified": true,
+    "reset_otp": null,
+    "reset_otp_created_at": null,
+    "approval_status": "approved",
+    "is_approved": true,
+    "requested_at": "2026-08-30T02:38:10.935Z",
+    "approved_by": null,
+    "approved_at": null,
+    "created_at": "2026-08-30T01:16:44.016Z",
+    "updated_at": "2026-08-30T01:16:44.016Z"
+  }
+},
+{
+  "model": "accounts.userprofile",
+  "pk": 6,
+  "fields": {
+    "user": [
+      "priya_p"
+    ],
+    "firebase_uid": null,
+    "role": "pilgrim",
+    "mobile_number": "9876500003",
+    "organization": null,
+    "department": null,
+    "squad_id": null,
+    "dindi_number": null,
+    "emergency_contact": null,
+    "is_verified": true,
+    "reset_otp": null,
+    "reset_otp_created_at": null,
+    "approval_status": "approved",
+    "is_approved": true,
+    "requested_at": "2026-08-30T02:38:10.935Z",
+    "approved_by": null,
+    "approved_at": null,
+    "created_at": "2026-08-30T01:16:44.586Z",
+    "updated_at": "2026-08-30T01:16:44.586Z"
+  }
+},
+{
+  "model": "accounts.userprofile",
+  "pk": 7,
+  "fields": {
+    "user": [
+      "ramesh_s"
+    ],
+    "firebase_uid": null,
+    "role": "pilgrim",
+    "mobile_number": "9876500004",
+    "organization": null,
+    "department": null,
+    "squad_id": null,
+    "dindi_number": null,
+    "emergency_contact": null,
+    "is_verified": true,
+    "reset_otp": null,
+    "reset_otp_created_at": null,
+    "approval_status": "approved",
+    "is_approved": true,
+    "requested_at": "2026-08-30T02:38:10.935Z",
+    "approved_by": null,
+    "approved_at": null,
+    "created_at": "2026-08-30T01:16:45.165Z",
+    "updated_at": "2026-08-30T01:16:45.165Z"
+  }
+},
+{
+  "model": "accounts.userprofile",
+  "pk": 8,
+  "fields": {
+    "user": [
+      "sunil_j"
+    ],
+    "firebase_uid": null,
+    "role": "pilgrim",
+    "mobile_number": "9876500005",
+    "organization": null,
+    "department": null,
+    "squad_id": null,
+    "dindi_number": null,
+    "emergency_contact": null,
+    "is_verified": true,
+    "reset_otp": null,
+    "reset_otp_created_at": null,
+    "approval_status": "approved",
+    "is_approved": true,
+    "requested_at": "2026-08-30T02:38:10.935Z",
+    "approved_by": null,
+    "approved_at": null,
+    "created_at": "2026-08-30T01:16:45.728Z",
+    "updated_at": "2026-08-30T01:16:45.728Z"
+  }
+},
+{
+  "model": "accounts.userprofile",
+  "pk": 9,
+  "fields": {
+    "user": [
+      "doctor_m"
+    ],
+    "firebase_uid": null,
+    "role": "admin",
+    "mobile_number": "9876500006",
+    "organization": null,
+    "department": null,
+    "squad_id": null,
+    "dindi_number": null,
+    "emergency_contact": null,
+    "is_verified": true,
+    "reset_otp": null,
+    "reset_otp_created_at": null,
+    "approval_status": "approved",
+    "is_approved": true,
+    "requested_at": "2026-08-30T02:38:10.935Z",
+    "approved_by": null,
+    "approved_at": null,
+    "created_at": "2026-08-30T01:16:46.301Z",
+    "updated_at": "2026-08-30T01:16:46.301Z"
+  }
+},
+{
+  "model": "accounts.userprofile",
+  "pk": 10,
+  "fields": {
+    "user": [
+      "pilgrim_9175262910_830"
+    ],
+    "firebase_uid": null,
+    "role": "pilgrim",
+    "mobile_number": "9175262910",
+    "organization": "Alandi Dindi No. 1",
+    "department": null,
+    "squad_id": null,
+    "dindi_number": null,
+    "emergency_contact": null,
+    "is_verified": true,
+    "reset_otp": null,
+    "reset_otp_created_at": null,
+    "approval_status": "approved",
+    "is_approved": true,
+    "requested_at": "2026-08-30T02:38:10.935Z",
+    "approved_by": null,
+    "approved_at": null,
+    "created_at": "2026-08-30T01:37:22.564Z",
+    "updated_at": "2026-08-30T01:37:22.564Z"
+  }
+},
+{
+  "model": "accounts.userprofile",
+  "pk": 11,
+  "fields": {
+    "user": [
+      "admin_sagarpc1006_gmail_com_400"
+    ],
+    "firebase_uid": null,
+    "role": "admin",
+    "mobile_number": null,
+    "organization": "Pandharpur Wari Seva Mandal",
+    "department": null,
+    "squad_id": null,
+    "dindi_number": null,
+    "emergency_contact": null,
+    "is_verified": true,
+    "reset_otp": null,
+    "reset_otp_created_at": null,
+    "approval_status": "approved",
+    "is_approved": true,
+    "requested_at": "2026-08-30T02:38:10.935Z",
+    "approved_by": null,
+    "approved_at": null,
+    "created_at": "2026-08-30T01:38:23.037Z",
+    "updated_at": "2026-08-30T01:38:23.037Z"
+  }
+},
+{
+  "model": "accounts.userprofile",
+  "pk": 12,
+  "fields": {
+    "user": [
+      "volunteer_volunteer_varimitra_org"
+    ],
+    "firebase_uid": null,
+    "role": "volunteer",
+    "mobile_number": null,
+    "organization": "Pandharpur Wari Seva Mandal",
+    "department": "Food & Annachatra Seva",
+    "squad_id": "SQD-FOOD-101",
+    "dindi_number": null,
+    "emergency_contact": null,
+    "is_verified": true,
+    "reset_otp": null,
+    "reset_otp_created_at": null,
+    "approval_status": "approved",
+    "is_approved": true,
+    "requested_at": "2026-08-30T02:38:10.935Z",
+    "approved_by": null,
+    "approved_at": null,
+    "created_at": "2026-08-30T02:16:00.083Z",
+    "updated_at": "2026-08-30T02:16:00.083Z"
+  }
+},
+{
+  "model": "accounts.userprofile",
+  "pk": 13,
+  "fields": {
+    "user": [
+      "volunteer_9922334455_216"
+    ],
+    "firebase_uid": null,
+    "role": "volunteer",
+    "mobile_number": "9922334455",
+    "organization": "Alandi Seva Dal",
+    "department": "Night Shelter & Tentage",
+    "squad_id": "SQD-SHLT-204",
+    "dindi_number": null,
+    "emergency_contact": null,
+    "is_verified": true,
+    "reset_otp": null,
+    "reset_otp_created_at": null,
+    "approval_status": "approved",
+    "is_approved": true,
+    "requested_at": "2026-08-30T02:38:10.935Z",
+    "approved_by": null,
+    "approved_at": null,
+    "created_at": "2026-08-30T02:18:51.186Z",
+    "updated_at": "2026-08-30T02:18:51.186Z"
+  }
+},
+{
+  "model": "accounts.userprofile",
+  "pk": 14,
+  "fields": {
+    "user": [
+      "volunteer_demo"
+    ],
+    "firebase_uid": null,
+    "role": "volunteer",
+    "mobile_number": "9823114455",
+    "organization": "Pandharpur Wari Seva Mandal",
+    "department": "Food & Annachatra Seva",
+    "squad_id": "SQD-FOOD-101",
+    "dindi_number": null,
+    "emergency_contact": null,
+    "is_verified": true,
+    "reset_otp": null,
+    "reset_otp_created_at": null,
+    "approval_status": "approved",
+    "is_approved": true,
+    "requested_at": "2026-08-30T02:38:10.935Z",
+    "approved_by": null,
+    "approved_at": null,
+    "created_at": "2026-08-30T02:25:27.310Z",
+    "updated_at": "2026-08-30T02:25:27.313Z"
+  }
+},
+{
+  "model": "accounts.userprofile",
+  "pk": 15,
+  "fields": {
+    "user": [
+      "pilgrim_9822334455_54738"
+    ],
+    "firebase_uid": null,
+    "role": "pilgrim",
+    "mobile_number": "9822334455",
+    "organization": "Alandi Dindi No. 1",
+    "department": null,
+    "squad_id": null,
+    "dindi_number": null,
+    "emergency_contact": null,
+    "is_verified": true,
+    "reset_otp": null,
+    "reset_otp_created_at": null,
+    "approval_status": "approved",
+    "is_approved": true,
+    "requested_at": "2026-08-30T02:38:10.935Z",
+    "approved_by": null,
+    "approved_at": null,
+    "created_at": "2026-08-30T02:28:41.778Z",
+    "updated_at": "2026-08-30T02:28:41.778Z"
+  }
+},
+{
+  "model": "accounts.userprofile",
+  "pk": 16,
+  "fields": {
+    "user": [
+      "volunteer_9112202910_54698"
+    ],
+    "firebase_uid": null,
+    "role": "volunteer",
+    "mobile_number": "9112202910",
+    "organization": "Pandharpur Wari Seva Mandal",
+    "department": "Food & Annachatra Seva",
+    "squad_id": "SQD-FOOD-101",
+    "dindi_number": null,
+    "emergency_contact": null,
+    "is_verified": true,
+    "reset_otp": null,
+    "reset_otp_created_at": null,
+    "approval_status": "approved",
+    "is_approved": true,
+    "requested_at": "2026-08-30T02:38:10.935Z",
+    "approved_by": null,
+    "approved_at": null,
+    "created_at": "2026-08-30T02:35:17.103Z",
+    "updated_at": "2026-08-30T02:35:17.103Z"
+  }
+},
+{
+  "model": "accounts.userprofile",
+  "pk": 17,
+  "fields": {
+    "user": [
+      "volunteer_9822998877_c893"
+    ],
+    "firebase_uid": null,
+    "role": "volunteer",
+    "mobile_number": "9822998877",
+    "organization": "Pandharpur Wari Seva Mandal",
+    "department": "Food & Annachatra Seva",
+    "squad_id": "SQD-FOOD-101",
+    "dindi_number": null,
+    "emergency_contact": null,
+    "is_verified": true,
+    "reset_otp": null,
+    "reset_otp_created_at": null,
+    "approval_status": "approved",
+    "is_approved": true,
+    "requested_at": "2026-08-30T03:06:43.902Z",
+    "approved_by": null,
+    "approved_at": "2026-08-30T03:06:43.913Z",
+    "created_at": "2026-08-30T02:58:04.074Z",
+    "updated_at": "2026-08-30T03:06:43.913Z"
+  }
+},
+{
+  "model": "accounts.userprofile",
+  "pk": 18,
+  "fields": {
+    "user": [
+      "volunteer_1234567896_014c"
+    ],
+    "firebase_uid": null,
+    "role": "volunteer",
+    "mobile_number": "1234567896",
+    "organization": "Pandharpur Wari Seva Mandal",
+    "department": "Food & Annachatra Seva",
+    "squad_id": "SQD-FOOD-101",
+    "dindi_number": null,
+    "emergency_contact": null,
+    "is_verified": true,
+    "reset_otp": null,
+    "reset_otp_created_at": null,
+    "approval_status": "approved",
+    "is_approved": true,
+    "requested_at": "2026-08-30T03:10:19.894Z",
+    "approved_by": [
+      "admin_sagarpc1006_gmail_com_400"
+    ],
+    "approved_at": "2026-08-30T03:10:47.886Z",
+    "created_at": "2026-08-30T03:10:19.895Z",
+    "updated_at": "2026-08-30T03:10:47.886Z"
+  }
+},
+{
+  "model": "accounts.userprofile",
+  "pk": 19,
+  "fields": {
+    "user": [
+      "volunteer_heello@gmail.com_9b9c"
+    ],
+    "firebase_uid": null,
+    "role": "volunteer",
+    "mobile_number": "heello@gmail.com",
+    "organization": "Pandharpur Wari Seva Mandal",
+    "department": "Food & Annachatra Seva",
+    "squad_id": "SQD-FOOD-101",
+    "dindi_number": null,
+    "emergency_contact": null,
+    "is_verified": true,
+    "reset_otp": null,
+    "reset_otp_created_at": null,
+    "approval_status": "approved",
+    "is_approved": true,
+    "requested_at": "2026-08-30T03:11:41.365Z",
+    "approved_by": [
+      "admin_sagarpc1006_gmail_com_400"
+    ],
+    "approved_at": "2026-08-30T03:11:59.668Z",
+    "created_at": "2026-08-30T03:11:41.365Z",
+    "updated_at": "2026-08-30T03:11:59.668Z"
+  }
+},
+{
+  "model": "accounts.userprofile",
+  "pk": 20,
+  "fields": {
+    "user": [
+      "google_google.warkari_500"
+    ],
+    "firebase_uid": null,
+    "role": "pilgrim",
+    "mobile_number": null,
+    "organization": "Google Authenticated Warkari",
+    "department": null,
+    "squad_id": null,
+    "dindi_number": null,
+    "emergency_contact": null,
+    "is_verified": true,
+    "reset_otp": null,
+    "reset_otp_created_at": null,
+    "approval_status": "approved",
+    "is_approved": true,
+    "requested_at": "2026-08-30T03:22:00.035Z",
+    "approved_by": null,
+    "approved_at": null,
+    "created_at": "2026-08-30T03:22:00.035Z",
+    "updated_at": "2026-08-30T03:22:00.035Z"
+  }
+},
+{
+  "model": "accounts.userprofile",
+  "pk": 21,
+  "fields": {
+    "user": [
+      "google_google.admin_187"
+    ],
+    "firebase_uid": null,
+    "role": "admin",
+    "mobile_number": null,
+    "organization": "Google Authenticated Warkari",
+    "department": null,
+    "squad_id": null,
+    "dindi_number": null,
+    "emergency_contact": null,
+    "is_verified": true,
+    "reset_otp": null,
+    "reset_otp_created_at": null,
+    "approval_status": "approved",
+    "is_approved": true,
+    "requested_at": "2026-08-30T03:23:01.867Z",
+    "approved_by": null,
+    "approved_at": null,
+    "created_at": "2026-08-30T03:23:01.867Z",
+    "updated_at": "2026-08-30T03:23:01.867Z"
+  }
+},
+{
+  "model": "accounts.userprofile",
+  "pk": 22,
+  "fields": {
+    "user": [
+      "volunteer_56789876789_54527"
+    ],
+    "firebase_uid": null,
+    "role": "volunteer",
+    "mobile_number": "56789876789",
+    "organization": "Pandharpur Wari Seva Mandal",
+    "department": "Food & Annachatra Seva",
+    "squad_id": "SQD-FOOD-101",
+    "dindi_number": null,
+    "emergency_contact": null,
+    "is_verified": true,
+    "reset_otp": null,
+    "reset_otp_created_at": null,
+    "approval_status": "approved",
+    "is_approved": true,
+    "requested_at": "2026-08-30T06:16:20.722Z",
+    "approved_by": [
+      "admin_sagarpc1006_gmail_com_400"
+    ],
+    "approved_at": "2026-08-30T06:16:42.292Z",
+    "created_at": "2026-08-30T06:16:20.722Z",
+    "updated_at": "2026-08-30T06:16:42.293Z"
+  }
+},
+{
+  "model": "accounts.userprofile",
+  "pk": 24,
+  "fields": {
+    "user": [
+      "pilgrim_9988776655_267"
+    ],
+    "firebase_uid": null,
+    "role": "pilgrim",
+    "mobile_number": "9988776655",
+    "organization": "Pandharpur Dindi No. 12",
+    "department": null,
+    "squad_id": null,
+    "dindi_number": null,
+    "emergency_contact": null,
+    "is_verified": true,
+    "reset_otp": null,
+    "reset_otp_created_at": null,
+    "approval_status": "approved",
+    "is_approved": true,
+    "requested_at": "2026-09-01T16:41:30.126Z",
+    "approved_by": null,
+    "approved_at": null,
+    "created_at": "2026-09-01T16:41:30.126Z",
+    "updated_at": "2026-09-01T16:41:30.126Z"
+  }
+},
+{
+  "model": "wari_core.palkhilocation",
+  "pk": 1,
+  "fields": {
+    "palkhi_name": "Shri Sant Dnyaneshwar Maharaj Palkhi",
+    "palkhi_name_mr": "श्री संत ज्ञानेश्वर महाराज पालखी सोहळा",
+    "current_stop": "Saswad Checkpoint (सासवड)",
+    "current_stop_mr": "सासवड चेकपॉईंट",
+    "next_stop": "Jejuri Pavan Khind (जेजुरी)",
+    "next_stop_mr": "जेजुरी पावनखिंड",
+    "latitude": 18.3444,
+    "longitude": 74.0305,
+    "status": "LIVE",
+    "distance_covered_km": 68.5,
+    "total_distance_km": 245.0,
+    "eta_next_stop": "2 hrs 15 mins",
+    "schedule_status": "12.4 km ahead of schedule",
+    "is_active": true,
+    "updated_at": "2026-08-30T01:16:41.443Z"
+  }
+},
+{
+  "model": "wari_core.palkhilocation",
+  "pk": 2,
+  "fields": {
+    "palkhi_name": "Shri Sant Tukaram Maharaj Palkhi",
+    "palkhi_name_mr": "श्री संत तुकाराम महाराज पालखी सोहळा",
+    "current_stop": "Loni Kalbhor (लोणी काळभोर)",
+    "current_stop_mr": "लोणी काळभोर",
+    "next_stop": "Yawat (यवत)",
+    "next_stop_mr": "यवत",
+    "latitude": 18.49,
+    "longitude": 74.02,
+    "status": "LIVE",
+    "distance_covered_km": 54.2,
+    "total_distance_km": 240.0,
+    "eta_next_stop": "3 hrs 40 mins",
+    "schedule_status": "On Time",
+    "is_active": true,
+    "updated_at": "2026-08-30T01:16:41.446Z"
+  }
+},
+{
+  "model": "wari_core.emergencyalert",
+  "pk": 1,
+  "fields": {
+    "alert_type": "MEDICAL",
+    "caller_name": "Santosh Shinde",
+    "caller_phone": "9876543210",
+    "location_name": "Saswad Ghat Checkpoint #2",
+    "latitude": null,
+    "longitude": null,
+    "description": "Senior pilgrim feeling dehydrated, medical team needed",
+    "status": "DISPATCHED",
+    "priority": "HIGH",
+    "dispatched_unit": "Mobile Medical Quick Response Team #7 (Saswad Sector)",
+    "created_at": "2026-09-01T16:41:30.221Z",
+    "resolved_at": null
+  }
+},
+{
+  "model": "wari_core.emergencyalert",
+  "pk": 2,
+  "fields": {
+    "alert_type": "MEDICAL",
+    "caller_name": "Santosh Shinde",
+    "caller_phone": "9876543210",
+    "location_name": "Saswad Ghat Checkpoint #2",
+    "latitude": null,
+    "longitude": null,
+    "description": "Senior pilgrim feeling dehydrated, medical team needed",
+    "status": "DISPATCHED",
+    "priority": "HIGH",
+    "dispatched_unit": "Mobile Medical Quick Response Team #7 (Saswad Sector)",
+    "created_at": "2026-09-01T16:46:35.215Z",
+    "resolved_at": null
+  }
+},
+{
+  "model": "wari_core.sevaresource",
+  "pk": 1,
+  "fields": {
+    "name": "Mobile Ambulance Unit 4",
+    "name_mr": "फिरती रुग्णवाहिका पथक ४",
+    "category": "MEDICAL",
+    "location_name": "Saswad Bypass (400m ahead on Left)",
+    "distance_meters": 400,
+    "contact_number": "108",
+    "is_active": true,
+    "capacity_or_supplies": "Emergency Doctor, Oxygen & First Aid Available",
+    "latitude": null,
+    "longitude": null,
+    "created_at": "2026-08-30T01:16:41.450Z"
+  }
+},
+{
+  "model": "wari_core.sevaresource",
+  "pk": 2,
+  "fields": {
+    "name": "Clean Drinking Water Stall 12",
+    "name_mr": "स्वच्छ पिण्याच्या पाण्याची सोय क्र. १२",
+    "category": "WATER",
+    "location_name": "Bapdev Ghat Descent, Tent 3",
+    "distance_meters": 250,
+    "contact_number": "+91 9422001122",
+    "is_active": true,
+    "capacity_or_supplies": "5,000 Litres RO Cold Water",
+    "latitude": null,
+    "longitude": null,
+    "created_at": "2026-08-30T01:16:41.455Z"
+  }
+},
+{
+  "model": "wari_core.sevaresource",
+  "pk": 3,
+  "fields": {
+    "name": "Warkari Annachatra Mahaprasad",
+    "name_mr": "वारकरी अन्नछत्र महाप्रसाद",
+    "category": "FOOD",
+    "location_name": "Jejuri Entrance Toll Plaza",
+    "distance_meters": 1200,
+    "contact_number": "+91 9823114455",
+    "is_active": true,
+    "capacity_or_supplies": "24/7 Garam Khichdi, Tea & Poha",
+    "latitude": null,
+    "longitude": null,
+    "created_at": "2026-08-30T01:16:41.458Z"
+  }
+},
+{
+  "model": "wari_core.sevaresource",
+  "pk": 4,
+  "fields": {
+    "name": "Night Shelter Camp #8",
+    "name_mr": "रात्र मुक्काम तंबू केंद्र क्र. ८",
+    "category": "SHELTER",
+    "location_name": "Saswad Zilla Parishad School Ground",
+    "distance_meters": 800,
+    "contact_number": "+91 9922334455",
+    "is_active": true,
+    "capacity_or_supplies": "Capacity for 1,200 Devotees with Mats & Tarpaulins",
+    "latitude": null,
+    "longitude": null,
+    "created_at": "2026-08-30T01:16:41.460Z"
+  }
+},
+{
+  "model": "wari_core.sevaresource",
+  "pk": 5,
+  "fields": {
+    "name": "Sanitation Block #15",
+    "name_mr": "स्वच्छतागृह व मोबाईल टॉयलेट्स क्र. १५",
+    "category": "SANITATION",
+    "location_name": "Near Saswad ST Bus Stand",
+    "distance_meters": 600,
+    "contact_number": "+91 9876543210",
+    "is_active": true,
+    "capacity_or_supplies": "20 Mobile Toilets for Men & Women",
+    "latitude": null,
+    "longitude": null,
+    "created_at": "2026-08-30T01:16:41.462Z"
+  }
+},
+{
+  "model": "wari_core.crowddensity",
+  "pk": 1,
+  "fields": {
+    "location_name": "Ringan Ground (Saswad Sector)",
+    "density_level": "NORMAL",
+    "flow_speed": "Normal flow (3.8 km/h)",
+    "recommended_action": "Normal pilgrim flow. Keep left side clear for seva ambulances.",
+    "active_volunteers_count": 32,
+    "updated_at": "2026-08-30T01:16:41.467Z"
+  }
+},
+{
+  "model": "wari_core.crowddensity",
+  "pk": 2,
+  "fields": {
+    "location_name": "Diva Ghat Ascent (दिवा घाट)",
+    "density_level": "MODERATE",
+    "flow_speed": "Slow steady march (2.2 km/h)",
+    "recommended_action": "Dindi lines following single-file discipline. Water stalls active.",
+    "active_volunteers_count": 48,
+    "updated_at": "2026-08-30T01:16:41.470Z"
+  }
+},
+{
+  "model": "wari_core.group",
+  "pk": 1,
+  "fields": {
+    "name": "Saswad Warkari Group",
+    "description": "Official community communication and coordination for pilgrims in Saswad sector.",
+    "group_type": "PUBLIC",
+    "route_info": "Saswad Checkpoint -> Jejuri",
+    "icon_color": "orange",
+    "created_by": [
+      "admin_yashraj"
+    ],
+    "is_active": true,
+    "allow_member_posts": true,
+    "invite_code": null,
+    "created_at": "2026-08-30T01:16:46.303Z",
+    "updated_at": "2026-08-30T01:16:46.303Z"
+  }
+},
+{
+  "model": "wari_core.group",
+  "pk": 2,
+  "fields": {
+    "name": "Jejuri Route Group",
+    "description": "Real-time updates, ghat climbing tips and halting points for Jejuri Pavan Khind.",
+    "group_type": "PUBLIC",
+    "route_info": "Jejuri Pavan Khind Route Updates",
+    "icon_color": "purple",
+    "created_by": [
+      "admin_yashraj"
+    ],
+    "is_active": true,
+    "allow_member_posts": true,
+    "invite_code": null,
+    "created_at": "2026-08-30T01:16:46.418Z",
+    "updated_at": "2026-08-30T01:16:46.418Z"
+  }
+},
+{
+  "model": "wari_core.group",
+  "pk": 3,
+  "fields": {
+    "name": "Volunteer Help Group",
+    "description": "Coordination for seva volunteers, crowd assistance, and elderly pilgrim support.",
+    "group_type": "PUBLIC",
+    "route_info": "Seva, Help & Support",
+    "icon_color": "green",
+    "created_by": [
+      "admin_yashraj"
+    ],
+    "is_active": true,
+    "allow_member_posts": true,
+    "invite_code": null,
+    "created_at": "2026-08-30T01:16:46.515Z",
+    "updated_at": "2026-08-30T01:16:46.515Z"
+  }
+},
+{
+  "model": "wari_core.group",
+  "pk": 4,
+  "fields": {
+    "name": "Medical Assistance Group",
+    "description": "24/7 doctors, ambulances, first aid stalls and emergency helpline updates.",
+    "group_type": "PUBLIC",
+    "route_info": "Medical Camps & Assistance",
+    "icon_color": "rose",
+    "created_by": [
+      "admin_yashraj"
+    ],
+    "is_active": true,
+    "allow_member_posts": true,
+    "invite_code": null,
+    "created_at": "2026-08-30T01:16:46.614Z",
+    "updated_at": "2026-08-30T01:16:46.614Z"
+  }
+},
+{
+  "model": "wari_core.group",
+  "pk": 5,
+  "fields": {
+    "name": "Family & Friends Group",
+    "description": "Private group for family coordination and sharing live whereabouts.",
+    "group_type": "PRIVATE",
+    "route_info": "Private group for family & friends",
+    "icon_color": "blue",
+    "created_by": [
+      "admin_yashraj"
+    ],
+    "is_active": true,
+    "allow_member_posts": true,
+    "invite_code": null,
+    "created_at": "2026-08-30T01:16:46.702Z",
+    "updated_at": "2026-08-30T01:16:46.702Z"
+  }
+},
+{
+  "model": "wari_core.group",
+  "pk": 6,
+  "fields": {
+    "name": "Integration Test Group",
+    "description": "",
+    "group_type": "PUBLIC",
+    "route_info": "Test Route",
+    "icon_color": "orange",
+    "created_by": [
+      "pilgrim_demo"
+    ],
+    "is_active": true,
+    "allow_member_posts": true,
+    "invite_code": null,
+    "created_at": "2026-09-01T16:41:20.319Z",
+    "updated_at": "2026-09-01T16:41:20.319Z"
+  }
+},
+{
+  "model": "wari_core.groupmember",
+  "pk": 1,
+  "fields": {
+    "group": 1,
+    "user": [
+      "admin_yashraj"
+    ],
+    "role": "ADMIN",
+    "joined_at": "2026-08-30T01:16:46.307Z",
+    "last_read_at": null,
+    "is_muted": false
+  }
+},
+{
+  "model": "wari_core.groupmember",
+  "pk": 2,
+  "fields": {
+    "group": 1,
+    "user": [
+      "pilgrim_yashraj"
+    ],
+    "role": "MEMBER",
+    "joined_at": "2026-08-30T01:16:46.312Z",
+    "last_read_at": null,
+    "is_muted": false
+  }
+},
+{
+  "model": "wari_core.groupmember",
+  "pk": 3,
+  "fields": {
+    "group": 1,
+    "user": [
+      "rahul_k"
+    ],
+    "role": "MEMBER",
+    "joined_at": "2026-08-30T01:16:46.314Z",
+    "last_read_at": null,
+    "is_muted": false
+  }
+},
+{
+  "model": "wari_core.groupmember",
+  "pk": 4,
+  "fields": {
+    "group": 1,
+    "user": [
+      "priya_p"
+    ],
+    "role": "MEMBER",
+    "joined_at": "2026-08-30T01:16:46.318Z",
+    "last_read_at": null,
+    "is_muted": false
+  }
+},
+{
+  "model": "wari_core.groupmember",
+  "pk": 5,
+  "fields": {
+    "group": 1,
+    "user": [
+      "ramesh_s"
+    ],
+    "role": "MEMBER",
+    "joined_at": "2026-08-30T01:16:46.321Z",
+    "last_read_at": null,
+    "is_muted": false
+  }
+},
+{
+  "model": "wari_core.groupmember",
+  "pk": 6,
+  "fields": {
+    "group": 1,
+    "user": [
+      "sunil_j"
+    ],
+    "role": "MEMBER",
+    "joined_at": "2026-08-30T01:16:46.324Z",
+    "last_read_at": null,
+    "is_muted": false
+  }
+},
+{
+  "model": "wari_core.groupmember",
+  "pk": 7,
+  "fields": {
+    "group": 1,
+    "user": [
+      "doctor_m"
+    ],
+    "role": "MEMBER",
+    "joined_at": "2026-08-30T01:16:46.329Z",
+    "last_read_at": null,
+    "is_muted": false
+  }
+},
+{
+  "model": "wari_core.groupmember",
+  "pk": 8,
+  "fields": {
+    "group": 1,
+    "user": [
+      "devotee_1_0"
+    ],
+    "role": "MEMBER",
+    "joined_at": "2026-08-30T01:16:46.335Z",
+    "last_read_at": null,
+    "is_muted": false
+  }
+},
+{
+  "model": "wari_core.groupmember",
+  "pk": 9,
+  "fields": {
+    "group": 1,
+    "user": [
+      "devotee_1_1"
+    ],
+    "role": "MEMBER",
+    "joined_at": "2026-08-30T01:16:46.347Z",
+    "last_read_at": null,
+    "is_muted": false
+  }
+},
+{
+  "model": "wari_core.groupmember",
+  "pk": 10,
+  "fields": {
+    "group": 1,
+    "user": [
+      "devotee_1_2"
+    ],
+    "role": "MEMBER",
+    "joined_at": "2026-08-30T01:16:46.355Z",
+    "last_read_at": null,
+    "is_muted": false
+  }
+},
+{
+  "model": "wari_core.groupmember",
+  "pk": 11,
+  "fields": {
+    "group": 1,
+    "user": [
+      "devotee_1_3"
+    ],
+    "role": "MEMBER",
+    "joined_at": "2026-08-30T01:16:46.361Z",
+    "last_read_at": null,
+    "is_muted": false
+  }
+},
+{
+  "model": "wari_core.groupmember",
+  "pk": 12,
+  "fields": {
+    "group": 1,
+    "user": [
+      "devotee_1_4"
+    ],
+    "role": "MEMBER",
+    "joined_at": "2026-08-30T01:16:46.366Z",
+    "last_read_at": null,
+    "is_muted": false
+  }
+},
+{
+  "model": "wari_core.groupmember",
+  "pk": 13,
+  "fields": {
+    "group": 1,
+    "user": [
+      "devotee_1_5"
+    ],
+    "role": "MEMBER",
+    "joined_at": "2026-08-30T01:16:46.372Z",
+    "last_read_at": null,
+    "is_muted": false
+  }
+},
+{
+  "model": "wari_core.groupmember",
+  "pk": 14,
+  "fields": {
+    "group": 1,
+    "user": [
+      "devotee_1_6"
+    ],
+    "role": "MEMBER",
+    "joined_at": "2026-08-30T01:16:46.378Z",
+    "last_read_at": null,
+    "is_muted": false
+  }
+},
+{
+  "model": "wari_core.groupmember",
+  "pk": 15,
+  "fields": {
+    "group": 1,
+    "user": [
+      "devotee_1_7"
+    ],
+    "role": "MEMBER",
+    "joined_at": "2026-08-30T01:16:46.385Z",
+    "last_read_at": null,
+    "is_muted": false
+  }
+},
+{
+  "model": "wari_core.groupmember",
+  "pk": 16,
+  "fields": {
+    "group": 1,
+    "user": [
+      "devotee_1_8"
+    ],
+    "role": "MEMBER",
+    "joined_at": "2026-08-30T01:16:46.390Z",
+    "last_read_at": null,
+    "is_muted": false
+  }
+},
+{
+  "model": "wari_core.groupmember",
+  "pk": 17,
+  "fields": {
+    "group": 1,
+    "user": [
+      "devotee_1_9"
+    ],
+    "role": "MEMBER",
+    "joined_at": "2026-08-30T01:16:46.396Z",
+    "last_read_at": null,
+    "is_muted": false
+  }
+},
+{
+  "model": "wari_core.groupmember",
+  "pk": 18,
+  "fields": {
+    "group": 2,
+    "user": [
+      "admin_yashraj"
+    ],
+    "role": "ADMIN",
+    "joined_at": "2026-08-30T01:16:46.421Z",
+    "last_read_at": null,
+    "is_muted": false
+  }
+},
+{
+  "model": "wari_core.groupmember",
+  "pk": 19,
+  "fields": {
+    "group": 2,
+    "user": [
+      "pilgrim_yashraj"
+    ],
+    "role": "MEMBER",
+    "joined_at": "2026-08-30T01:16:46.424Z",
+    "last_read_at": null,
+    "is_muted": false
+  }
+},
+{
+  "model": "wari_core.groupmember",
+  "pk": 20,
+  "fields": {
+    "group": 2,
+    "user": [
+      "rahul_k"
+    ],
+    "role": "MEMBER",
+    "joined_at": "2026-08-30T01:16:46.427Z",
+    "last_read_at": null,
+    "is_muted": false
+  }
+},
+{
+  "model": "wari_core.groupmember",
+  "pk": 21,
+  "fields": {
+    "group": 2,
+    "user": [
+      "priya_p"
+    ],
+    "role": "MEMBER",
+    "joined_at": "2026-08-30T01:16:46.430Z",
+    "last_read_at": null,
+    "is_muted": false
+  }
+},
+{
+  "model": "wari_core.groupmember",
+  "pk": 22,
+  "fields": {
+    "group": 2,
+    "user": [
+      "ramesh_s"
+    ],
+    "role": "MEMBER",
+    "joined_at": "2026-08-30T01:16:46.434Z",
+    "last_read_at": null,
+    "is_muted": false
+  }
+},
+{
+  "model": "wari_core.groupmember",
+  "pk": 23,
+  "fields": {
+    "group": 2,
+    "user": [
+      "sunil_j"
+    ],
+    "role": "MEMBER",
+    "joined_at": "2026-08-30T01:16:46.437Z",
+    "last_read_at": null,
+    "is_muted": false
+  }
+},
+{
+  "model": "wari_core.groupmember",
+  "pk": 24,
+  "fields": {
+    "group": 2,
+    "user": [
+      "doctor_m"
+    ],
+    "role": "MEMBER",
+    "joined_at": "2026-08-30T01:16:46.441Z",
+    "last_read_at": null,
+    "is_muted": false
+  }
+},
+{
+  "model": "wari_core.groupmember",
+  "pk": 25,
+  "fields": {
+    "group": 2,
+    "user": [
+      "devotee_2_0"
+    ],
+    "role": "MEMBER",
+    "joined_at": "2026-08-30T01:16:46.448Z",
+    "last_read_at": null,
+    "is_muted": false
+  }
+},
+{
+  "model": "wari_core.groupmember",
+  "pk": 26,
+  "fields": {
+    "group": 2,
+    "user": [
+      "devotee_2_1"
+    ],
+    "role": "MEMBER",
+    "joined_at": "2026-08-30T01:16:46.454Z",
+    "last_read_at": null,
+    "is_muted": false
+  }
+},
+{
+  "model": "wari_core.groupmember",
+  "pk": 27,
+  "fields": {
+    "group": 2,
+    "user": [
+      "devotee_2_2"
+    ],
+    "role": "MEMBER",
+    "joined_at": "2026-08-30T01:16:46.460Z",
+    "last_read_at": null,
+    "is_muted": false
+  }
+},
+{
+  "model": "wari_core.groupmember",
+  "pk": 28,
+  "fields": {
+    "group": 2,
+    "user": [
+      "devotee_2_3"
+    ],
+    "role": "MEMBER",
+    "joined_at": "2026-08-30T01:16:46.467Z",
+    "last_read_at": null,
+    "is_muted": false
+  }
+},
+{
+  "model": "wari_core.groupmember",
+  "pk": 29,
+  "fields": {
+    "group": 2,
+    "user": [
+      "devotee_2_4"
+    ],
+    "role": "MEMBER",
+    "joined_at": "2026-08-30T01:16:46.473Z",
+    "last_read_at": null,
+    "is_muted": false
+  }
+},
+{
+  "model": "wari_core.groupmember",
+  "pk": 30,
+  "fields": {
+    "group": 2,
+    "user": [
+      "devotee_2_5"
+    ],
+    "role": "MEMBER",
+    "joined_at": "2026-08-30T01:16:46.479Z",
+    "last_read_at": null,
+    "is_muted": false
+  }
+},
+{
+  "model": "wari_core.groupmember",
+  "pk": 31,
+  "fields": {
+    "group": 2,
+    "user": [
+      "devotee_2_6"
+    ],
+    "role": "MEMBER",
+    "joined_at": "2026-08-30T01:16:46.485Z",
+    "last_read_at": null,
+    "is_muted": false
+  }
+},
+{
+  "model": "wari_core.groupmember",
+  "pk": 32,
+  "fields": {
+    "group": 2,
+    "user": [
+      "devotee_2_7"
+    ],
+    "role": "MEMBER",
+    "joined_at": "2026-08-30T01:16:46.492Z",
+    "last_read_at": null,
+    "is_muted": false
+  }
+},
+{
+  "model": "wari_core.groupmember",
+  "pk": 33,
+  "fields": {
+    "group": 2,
+    "user": [
+      "devotee_2_8"
+    ],
+    "role": "MEMBER",
+    "joined_at": "2026-08-30T01:16:46.499Z",
+    "last_read_at": null,
+    "is_muted": false
+  }
+},
+{
+  "model": "wari_core.groupmember",
+  "pk": 34,
+  "fields": {
+    "group": 2,
+    "user": [
+      "devotee_2_9"
+    ],
+    "role": "MEMBER",
+    "joined_at": "2026-08-30T01:16:46.505Z",
+    "last_read_at": null,
+    "is_muted": false
+  }
+},
+{
+  "model": "wari_core.groupmember",
+  "pk": 35,
+  "fields": {
+    "group": 3,
+    "user": [
+      "admin_yashraj"
+    ],
+    "role": "ADMIN",
+    "joined_at": "2026-08-30T01:16:46.518Z",
+    "last_read_at": null,
+    "is_muted": false
+  }
+},
+{
+  "model": "wari_core.groupmember",
+  "pk": 36,
+  "fields": {
+    "group": 3,
+    "user": [
+      "pilgrim_yashraj"
+    ],
+    "role": "MEMBER",
+    "joined_at": "2026-08-30T01:16:46.521Z",
+    "last_read_at": null,
+    "is_muted": false
+  }
+},
+{
+  "model": "wari_core.groupmember",
+  "pk": 37,
+  "fields": {
+    "group": 3,
+    "user": [
+      "rahul_k"
+    ],
+    "role": "MEMBER",
+    "joined_at": "2026-08-30T01:16:46.525Z",
+    "last_read_at": null,
+    "is_muted": false
+  }
+},
+{
+  "model": "wari_core.groupmember",
+  "pk": 38,
+  "fields": {
+    "group": 3,
+    "user": [
+      "priya_p"
+    ],
+    "role": "MEMBER",
+    "joined_at": "2026-08-30T01:16:46.528Z",
+    "last_read_at": null,
+    "is_muted": false
+  }
+},
+{
+  "model": "wari_core.groupmember",
+  "pk": 39,
+  "fields": {
+    "group": 3,
+    "user": [
+      "ramesh_s"
+    ],
+    "role": "MEMBER",
+    "joined_at": "2026-08-30T01:16:46.534Z",
+    "last_read_at": null,
+    "is_muted": false
+  }
+},
+{
+  "model": "wari_core.groupmember",
+  "pk": 40,
+  "fields": {
+    "group": 3,
+    "user": [
+      "sunil_j"
+    ],
+    "role": "MEMBER",
+    "joined_at": "2026-08-30T01:16:46.536Z",
+    "last_read_at": null,
+    "is_muted": false
+  }
+},
+{
+  "model": "wari_core.groupmember",
+  "pk": 41,
+  "fields": {
+    "group": 3,
+    "user": [
+      "doctor_m"
+    ],
+    "role": "MEMBER",
+    "joined_at": "2026-08-30T01:16:46.539Z",
+    "last_read_at": null,
+    "is_muted": false
+  }
+},
+{
+  "model": "wari_core.groupmember",
+  "pk": 42,
+  "fields": {
+    "group": 3,
+    "user": [
+      "devotee_3_0"
+    ],
+    "role": "MEMBER",
+    "joined_at": "2026-08-30T01:16:46.546Z",
+    "last_read_at": null,
+    "is_muted": false
+  }
+},
+{
+  "model": "wari_core.groupmember",
+  "pk": 43,
+  "fields": {
+    "group": 3,
+    "user": [
+      "devotee_3_1"
+    ],
+    "role": "MEMBER",
+    "joined_at": "2026-08-30T01:16:46.553Z",
+    "last_read_at": null,
+    "is_muted": false
+  }
+},
+{
+  "model": "wari_core.groupmember",
+  "pk": 44,
+  "fields": {
+    "group": 3,
+    "user": [
+      "devotee_3_2"
+    ],
+    "role": "MEMBER",
+    "joined_at": "2026-08-30T01:16:46.560Z",
+    "last_read_at": null,
+    "is_muted": false
+  }
+},
+{
+  "model": "wari_core.groupmember",
+  "pk": 45,
+  "fields": {
+    "group": 3,
+    "user": [
+      "devotee_3_3"
+    ],
+    "role": "MEMBER",
+    "joined_at": "2026-08-30T01:16:46.567Z",
+    "last_read_at": null,
+    "is_muted": false
+  }
+},
+{
+  "model": "wari_core.groupmember",
+  "pk": 46,
+  "fields": {
+    "group": 3,
+    "user": [
+      "devotee_3_4"
+    ],
+    "role": "MEMBER",
+    "joined_at": "2026-08-30T01:16:46.573Z",
+    "last_read_at": null,
+    "is_muted": false
+  }
+},
+{
+  "model": "wari_core.groupmember",
+  "pk": 47,
+  "fields": {
+    "group": 3,
+    "user": [
+      "devotee_3_5"
+    ],
+    "role": "MEMBER",
+    "joined_at": "2026-08-30T01:16:46.580Z",
+    "last_read_at": null,
+    "is_muted": false
+  }
+},
+{
+  "model": "wari_core.groupmember",
+  "pk": 48,
+  "fields": {
+    "group": 3,
+    "user": [
+      "devotee_3_6"
+    ],
+    "role": "MEMBER",
+    "joined_at": "2026-08-30T01:16:46.586Z",
+    "last_read_at": null,
+    "is_muted": false
+  }
+},
+{
+  "model": "wari_core.groupmember",
+  "pk": 49,
+  "fields": {
+    "group": 3,
+    "user": [
+      "devotee_3_7"
+    ],
+    "role": "MEMBER",
+    "joined_at": "2026-08-30T01:16:46.593Z",
+    "last_read_at": null,
+    "is_muted": false
+  }
+},
+{
+  "model": "wari_core.groupmember",
+  "pk": 50,
+  "fields": {
+    "group": 3,
+    "user": [
+      "devotee_3_8"
+    ],
+    "role": "MEMBER",
+    "joined_at": "2026-08-30T01:16:46.599Z",
+    "last_read_at": null,
+    "is_muted": false
+  }
+},
+{
+  "model": "wari_core.groupmember",
+  "pk": 51,
+  "fields": {
+    "group": 3,
+    "user": [
+      "devotee_3_9"
+    ],
+    "role": "MEMBER",
+    "joined_at": "2026-08-30T01:16:46.606Z",
+    "last_read_at": null,
+    "is_muted": false
+  }
+},
+{
+  "model": "wari_core.groupmember",
+  "pk": 52,
+  "fields": {
+    "group": 4,
+    "user": [
+      "admin_yashraj"
+    ],
+    "role": "ADMIN",
+    "joined_at": "2026-08-30T01:16:46.617Z",
+    "last_read_at": null,
+    "is_muted": false
+  }
+},
+{
+  "model": "wari_core.groupmember",
+  "pk": 53,
+  "fields": {
+    "group": 4,
+    "user": [
+      "pilgrim_yashraj"
+    ],
+    "role": "MEMBER",
+    "joined_at": "2026-08-30T01:16:46.620Z",
+    "last_read_at": null,
+    "is_muted": false
+  }
+},
+{
+  "model": "wari_core.groupmember",
+  "pk": 54,
+  "fields": {
+    "group": 4,
+    "user": [
+      "rahul_k"
+    ],
+    "role": "MEMBER",
+    "joined_at": "2026-08-30T01:16:46.623Z",
+    "last_read_at": null,
+    "is_muted": false
+  }
+},
+{
+  "model": "wari_core.groupmember",
+  "pk": 55,
+  "fields": {
+    "group": 4,
+    "user": [
+      "priya_p"
+    ],
+    "role": "MEMBER",
+    "joined_at": "2026-08-30T01:16:46.626Z",
+    "last_read_at": null,
+    "is_muted": false
+  }
+},
+{
+  "model": "wari_core.groupmember",
+  "pk": 56,
+  "fields": {
+    "group": 4,
+    "user": [
+      "ramesh_s"
+    ],
+    "role": "MEMBER",
+    "joined_at": "2026-08-30T01:16:46.629Z",
+    "last_read_at": null,
+    "is_muted": false
+  }
+},
+{
+  "model": "wari_core.groupmember",
+  "pk": 57,
+  "fields": {
+    "group": 4,
+    "user": [
+      "sunil_j"
+    ],
+    "role": "MEMBER",
+    "joined_at": "2026-08-30T01:16:46.632Z",
+    "last_read_at": null,
+    "is_muted": false
+  }
+},
+{
+  "model": "wari_core.groupmember",
+  "pk": 58,
+  "fields": {
+    "group": 4,
+    "user": [
+      "doctor_m"
+    ],
+    "role": "MEMBER",
+    "joined_at": "2026-08-30T01:16:46.635Z",
+    "last_read_at": null,
+    "is_muted": false
+  }
+},
+{
+  "model": "wari_core.groupmember",
+  "pk": 59,
+  "fields": {
+    "group": 4,
+    "user": [
+      "devotee_4_0"
+    ],
+    "role": "MEMBER",
+    "joined_at": "2026-08-30T01:16:46.641Z",
+    "last_read_at": null,
+    "is_muted": false
+  }
+},
+{
+  "model": "wari_core.groupmember",
+  "pk": 60,
+  "fields": {
+    "group": 4,
+    "user": [
+      "devotee_4_1"
+    ],
+    "role": "MEMBER",
+    "joined_at": "2026-08-30T01:16:46.647Z",
+    "last_read_at": null,
+    "is_muted": false
+  }
+},
+{
+  "model": "wari_core.groupmember",
+  "pk": 61,
+  "fields": {
+    "group": 4,
+    "user": [
+      "devotee_4_2"
+    ],
+    "role": "MEMBER",
+    "joined_at": "2026-08-30T01:16:46.652Z",
+    "last_read_at": null,
+    "is_muted": false
+  }
+},
+{
+  "model": "wari_core.groupmember",
+  "pk": 62,
+  "fields": {
+    "group": 4,
+    "user": [
+      "devotee_4_3"
+    ],
+    "role": "MEMBER",
+    "joined_at": "2026-08-30T01:16:46.658Z",
+    "last_read_at": null,
+    "is_muted": false
+  }
+},
+{
+  "model": "wari_core.groupmember",
+  "pk": 63,
+  "fields": {
+    "group": 4,
+    "user": [
+      "devotee_4_4"
+    ],
+    "role": "MEMBER",
+    "joined_at": "2026-08-30T01:16:46.664Z",
+    "last_read_at": null,
+    "is_muted": false
+  }
+},
+{
+  "model": "wari_core.groupmember",
+  "pk": 64,
+  "fields": {
+    "group": 4,
+    "user": [
+      "devotee_4_5"
+    ],
+    "role": "MEMBER",
+    "joined_at": "2026-08-30T01:16:46.670Z",
+    "last_read_at": null,
+    "is_muted": false
+  }
+},
+{
+  "model": "wari_core.groupmember",
+  "pk": 65,
+  "fields": {
+    "group": 4,
+    "user": [
+      "devotee_4_6"
+    ],
+    "role": "MEMBER",
+    "joined_at": "2026-08-30T01:16:46.677Z",
+    "last_read_at": null,
+    "is_muted": false
+  }
+},
+{
+  "model": "wari_core.groupmember",
+  "pk": 66,
+  "fields": {
+    "group": 4,
+    "user": [
+      "devotee_4_7"
+    ],
+    "role": "MEMBER",
+    "joined_at": "2026-08-30T01:16:46.684Z",
+    "last_read_at": null,
+    "is_muted": false
+  }
+},
+{
+  "model": "wari_core.groupmember",
+  "pk": 67,
+  "fields": {
+    "group": 4,
+    "user": [
+      "devotee_4_8"
+    ],
+    "role": "MEMBER",
+    "joined_at": "2026-08-30T01:16:46.690Z",
+    "last_read_at": null,
+    "is_muted": false
+  }
+},
+{
+  "model": "wari_core.groupmember",
+  "pk": 68,
+  "fields": {
+    "group": 4,
+    "user": [
+      "devotee_4_9"
+    ],
+    "role": "MEMBER",
+    "joined_at": "2026-08-30T01:16:46.696Z",
+    "last_read_at": null,
+    "is_muted": false
+  }
+},
+{
+  "model": "wari_core.groupmember",
+  "pk": 69,
+  "fields": {
+    "group": 5,
+    "user": [
+      "admin_yashraj"
+    ],
+    "role": "ADMIN",
+    "joined_at": "2026-08-30T01:16:46.705Z",
+    "last_read_at": null,
+    "is_muted": false
+  }
+},
+{
+  "model": "wari_core.groupmember",
+  "pk": 70,
+  "fields": {
+    "group": 5,
+    "user": [
+      "pilgrim_yashraj"
+    ],
+    "role": "MEMBER",
+    "joined_at": "2026-08-30T01:16:46.708Z",
+    "last_read_at": null,
+    "is_muted": false
+  }
+},
+{
+  "model": "wari_core.groupmember",
+  "pk": 71,
+  "fields": {
+    "group": 5,
+    "user": [
+      "rahul_k"
+    ],
+    "role": "MEMBER",
+    "joined_at": "2026-08-30T01:16:46.711Z",
+    "last_read_at": null,
+    "is_muted": false
+  }
+},
+{
+  "model": "wari_core.groupmember",
+  "pk": 72,
+  "fields": {
+    "group": 5,
+    "user": [
+      "priya_p"
+    ],
+    "role": "MEMBER",
+    "joined_at": "2026-08-30T01:16:46.715Z",
+    "last_read_at": null,
+    "is_muted": false
+  }
+},
+{
+  "model": "wari_core.groupmember",
+  "pk": 73,
+  "fields": {
+    "group": 5,
+    "user": [
+      "ramesh_s"
+    ],
+    "role": "MEMBER",
+    "joined_at": "2026-08-30T01:16:46.718Z",
+    "last_read_at": null,
+    "is_muted": false
+  }
+},
+{
+  "model": "wari_core.groupmember",
+  "pk": 74,
+  "fields": {
+    "group": 5,
+    "user": [
+      "sunil_j"
+    ],
+    "role": "MEMBER",
+    "joined_at": "2026-08-30T01:16:46.721Z",
+    "last_read_at": null,
+    "is_muted": false
+  }
+},
+{
+  "model": "wari_core.groupmember",
+  "pk": 75,
+  "fields": {
+    "group": 5,
+    "user": [
+      "doctor_m"
+    ],
+    "role": "MEMBER",
+    "joined_at": "2026-08-30T01:16:46.724Z",
+    "last_read_at": null,
+    "is_muted": false
+  }
+},
+{
+  "model": "wari_core.groupmember",
+  "pk": 76,
+  "fields": {
+    "group": 6,
+    "user": [
+      "pilgrim_demo"
+    ],
+    "role": "ADMIN",
+    "joined_at": "2026-09-01T16:41:20.327Z",
+    "last_read_at": null,
+    "is_muted": false
+  }
+},
+{
+  "model": "wari_core.groupmessage",
+  "pk": 1,
+  "fields": {
+    "group": 1,
+    "sender": [
+      "rahul_k"
+    ],
+    "sender_name": "Rahul",
+    "sender_role": "pilgrim",
+    "message_type": "TEXT",
+    "content": "Water station is 200m ahead.",
+    "is_pinned": false,
+    "is_deleted": false,
+    "created_at": "2026-08-30T01:16:46.399Z"
+  }
+},
+{
+  "model": "wari_core.groupmessage",
+  "pk": 2,
+  "fields": {
+    "group": 1,
+    "sender": [
+      "priya_p"
+    ],
+    "sender_name": "Priya",
+    "sender_role": "pilgrim",
+    "message_type": "TEXT",
+    "content": "Medical camp near the checkpoint.",
+    "is_pinned": false,
+    "is_deleted": false,
+    "created_at": "2026-08-30T01:16:46.403Z"
+  }
+},
+{
+  "model": "wari_core.groupmessage",
+  "pk": 3,
+  "fields": {
+    "group": 1,
+    "sender": [
+      "ramesh_s"
+    ],
+    "sender_name": "Ramesh",
+    "sender_role": "pilgrim",
+    "message_type": "TEXT",
+    "content": "Anyone need help? I am near the temple.",
+    "is_pinned": false,
+    "is_deleted": false,
+    "created_at": "2026-08-30T01:16:46.409Z"
+  }
+},
+{
+  "model": "wari_core.groupmessage",
+  "pk": 4,
+  "fields": {
+    "group": 1,
+    "sender": [
+      "admin_yashraj"
+    ],
+    "sender_name": "Admin",
+    "sender_role": "admin",
+    "message_type": "ANNOUNCEMENT",
+    "content": "⚠️ Route temporarily crowded. Please stay on the left side.",
+    "is_pinned": true,
+    "is_deleted": false,
+    "created_at": "2026-08-30T01:16:46.412Z"
+  }
+},
+{
+  "model": "wari_core.groupmessage",
+  "pk": 5,
+  "fields": {
+    "group": 1,
+    "sender": [
+      "sunil_j"
+    ],
+    "sender_name": "Sunil",
+    "sender_role": "pilgrim",
+    "message_type": "TEXT",
+    "content": "Thanks for the update!",
+    "is_pinned": false,
+    "is_deleted": false,
+    "created_at": "2026-08-30T01:16:46.414Z"
+  }
+},
+{
+  "model": "wari_core.groupmessage",
+  "pk": 6,
+  "fields": {
+    "group": 2,
+    "sender": [
+      "priya_p"
+    ],
+    "sender_name": "Priya",
+    "sender_role": "pilgrim",
+    "message_type": "TEXT",
+    "content": "Priya: Medical camp near Jejuri toll is open with full ORS stock.",
+    "is_pinned": false,
+    "is_deleted": false,
+    "created_at": "2026-08-30T01:16:46.508Z"
+  }
+},
+{
+  "model": "wari_core.groupmessage",
+  "pk": 7,
+  "fields": {
+    "group": 2,
+    "sender": [
+      "rahul_k"
+    ],
+    "sender_name": "Rahul",
+    "sender_role": "pilgrim",
+    "message_type": "TEXT",
+    "content": "Palkhi is entering Jejuri within 45 mins. Jai Hari Vitthal!",
+    "is_pinned": false,
+    "is_deleted": false,
+    "created_at": "2026-08-30T01:16:46.512Z"
+  }
+},
+{
+  "model": "wari_core.groupmessage",
+  "pk": 8,
+  "fields": {
+    "group": 3,
+    "sender": [
+      "ramesh_s"
+    ],
+    "sender_name": "Ramesh",
+    "sender_role": "pilgrim",
+    "message_type": "TEXT",
+    "content": "Ramesh: Need 2 volunteers at Annachatra Gate 3.",
+    "is_pinned": false,
+    "is_deleted": false,
+    "created_at": "2026-08-30T01:16:46.609Z"
+  }
+},
+{
+  "model": "wari_core.groupmessage",
+  "pk": 9,
+  "fields": {
+    "group": 3,
+    "sender": [
+      "admin_yashraj"
+    ],
+    "sender_name": "Admin",
+    "sender_role": "admin",
+    "message_type": "ANNOUNCEMENT",
+    "content": "📢 Evening Prasad distribution shift starts at 6:00 PM.",
+    "is_pinned": true,
+    "is_deleted": false,
+    "created_at": "2026-08-30T01:16:46.611Z"
+  }
+},
+{
+  "model": "wari_core.groupmessage",
+  "pk": 10,
+  "fields": {
+    "group": 4,
+    "sender": [
+      "doctor_m"
+    ],
+    "sender_name": "Dr. Anand",
+    "sender_role": "admin",
+    "message_type": "TEXT",
+    "content": "Doctor: Camp at checkpoint has orthopedic bandages and pain sprays.",
+    "is_pinned": false,
+    "is_deleted": false,
+    "created_at": "2026-08-30T01:16:46.699Z"
+  }
+},
+{
+  "model": "wari_core.groupmessage",
+  "pk": 11,
+  "fields": {
+    "group": 5,
+    "sender": [
+      "pilgrim_yashraj"
+    ],
+    "sender_name": "Yashraj",
+    "sender_role": "pilgrim",
+    "message_type": "TEXT",
+    "content": "Where are you now? We are near the banyan tree.",
+    "is_pinned": false,
+    "is_deleted": false,
+    "created_at": "2026-08-30T01:16:46.727Z"
+  }
+},
+{
+  "model": "wari_core.groupmessage",
+  "pk": 12,
+  "fields": {
+    "group": 5,
+    "sender": [
+      "pilgrim_9175262910_830"
+    ],
+    "sender_name": "Sagar Santosh Yadav",
+    "sender_role": "pilgrim",
+    "message_type": "TEXT",
+    "content": "hi",
+    "is_pinned": false,
+    "is_deleted": false,
+    "created_at": "2026-08-30T06:14:38.794Z"
+  }
+},
+{
+  "model": "wari_core.groupmessage",
+  "pk": 13,
+  "fields": {
+    "group": 6,
+    "sender": null,
+    "sender_name": "VariMitra System",
+    "sender_role": "admin",
+    "message_type": "SYSTEM",
+    "content": "Welcome to Integration Test Group! Wari route updates and assistance are live.",
+    "is_pinned": false,
+    "is_deleted": false,
+    "created_at": "2026-09-01T16:41:20.331Z"
+  }
+},
+{
+  "model": "wari_core.groupmessage",
+  "pk": 14,
+  "fields": {
+    "group": 6,
+    "sender": [
+      "pilgrim_demo"
+    ],
+    "sender_name": "Dnyandev Tukaram",
+    "sender_role": "pilgrim",
+    "message_type": "TEXT",
+    "content": "Hello from automated integration test!",
+    "is_pinned": true,
+    "is_deleted": false,
+    "created_at": "2026-09-01T16:41:20.347Z"
+  }
+},
+{
+  "model": "wari_core.groupmessage",
+  "pk": 15,
+  "fields": {
+    "group": 6,
+    "sender": [
+      "pilgrim_demo"
+    ],
+    "sender_name": "Admin / Seva Team",
+    "sender_role": "admin",
+    "message_type": "ANNOUNCEMENT",
+    "content": "Official Test Announcement ⚠️",
+    "is_pinned": true,
+    "is_deleted": false,
+    "created_at": "2026-09-01T16:41:20.355Z"
+  }
+},
+{
+  "model": "wari_core.messagereport",
+  "pk": 1,
+  "fields": {
+    "message": 11,
+    "reported_by": [
+      "pilgrim_yashraj"
+    ],
+    "reason": "Misleading checkpoint distance information",
+    "status": "PENDING",
+    "action_taken": "",
+    "created_at": "2026-08-30T01:16:46.732Z",
+    "resolved_at": null
+  }
+},
+{
+  "model": "wari_core.messagereport",
+  "pk": 2,
+  "fields": {
+    "message": 14,
+    "reported_by": [
+      "pilgrim_demo"
+    ],
+    "reason": "Test flag",
+    "status": "RESOLVED",
+    "action_taken": "Verified and cleared",
+    "created_at": "2026-09-01T16:41:20.366Z",
+    "resolved_at": "2026-09-01T16:41:20.374Z"
+  }
+},
+{
+  "model": "wari_core.nearbyresource",
+  "pk": 1,
+  "fields": {
+    "resource_type": "WATER",
+    "location_name": "Paithan (Nath Mandir)",
+    "latitude": 19.4795,
+    "longitude": 75.3789,
+    "label": "",
+    "is_active": true,
+    "created_at": "2026-08-30T03:05:25.758Z"
+  }
+},
+{
+  "model": "wari_core.nearbyresource",
+  "pk": 2,
+  "fields": {
+    "resource_type": "FOOD",
+    "location_name": "Paithan (Nath Mandir)",
+    "latitude": 19.4795,
+    "longitude": 75.3789,
+    "label": "",
+    "is_active": true,
+    "created_at": "2026-08-30T03:05:26.344Z"
+  }
+},
+{
+  "model": "wari_core.nearbyresource",
+  "pk": 3,
+  "fields": {
+    "resource_type": "DUSTBIN",
+    "location_name": "Ahilyanagar (Ahmednagar)",
+    "latitude": 19.0952,
+    "longitude": 74.748,
+    "label": "",
+    "is_active": true,
+    "created_at": "2026-08-30T05:04:16.364Z"
+  }
+},
+{
+  "model": "wari_core.nearbyresource",
+  "pk": 4,
+  "fields": {
+    "resource_type": "WATER",
+    "location_name": "Ahilyanagar (Ahmednagar)",
+    "latitude": 19.0952,
+    "longitude": 74.748,
+    "label": "",
+    "is_active": true,
+    "created_at": "2026-08-30T05:04:17.992Z"
+  }
+},
+{
+  "model": "wari_core.nearbyresource",
+  "pk": 5,
+  "fields": {
+    "resource_type": "TOILETS",
+    "location_name": "Ahilyanagar (Ahmednagar)",
+    "latitude": 19.0952,
+    "longitude": 74.748,
+    "label": "",
+    "is_active": true,
+    "created_at": "2026-08-30T05:04:20.899Z"
+  }
+},
+{
+  "model": "wari_core.nearbyresource",
+  "pk": 6,
+  "fields": {
+    "resource_type": "MEDICAL",
+    "location_name": "Sangamner",
+    "latitude": 19.57,
+    "longitude": 74.21,
+    "label": "",
+    "is_active": true,
+    "created_at": "2026-08-30T05:04:26.901Z"
+  }
+},
+{
+  "model": "wari_core.nearbyresource",
+  "pk": 7,
+  "fields": {
+    "resource_type": "TOILETS",
+    "location_name": "Sangamner",
+    "latitude": 19.57,
+    "longitude": 74.21,
+    "label": "",
+    "is_active": true,
+    "created_at": "2026-08-30T05:04:27.708Z"
+  }
+},
+{
+  "model": "wari_core.nearbyresource",
+  "pk": 8,
+  "fields": {
+    "resource_type": "WATER",
+    "location_name": "Shevgaon",
+    "latitude": 19.3444,
+    "longitude": 75.2215,
+    "label": "",
+    "is_active": true,
+    "created_at": "2026-08-30T05:04:36.964Z"
+  }
+},
+{
+  "model": "wari_core.nearbyresource",
+  "pk": 9,
+  "fields": {
+    "resource_type": "WATER",
+    "location_name": "Georai",
+    "latitude": 19.2612,
+    "longitude": 75.7533,
+    "label": "",
+    "is_active": true,
+    "created_at": "2026-08-30T06:13:10.092Z"
+  }
+},
+{
+  "model": "wari_core.nearbyresource",
+  "pk": 10,
+  "fields": {
+    "resource_type": "FOOD",
+    "location_name": "Georai",
+    "latitude": 19.2612,
+    "longitude": 75.7533,
+    "label": "",
+    "is_active": true,
+    "created_at": "2026-08-30T06:13:11.289Z"
+  }
+},
+{
+  "model": "wari_core.nearbyresource",
+  "pk": 11,
+  "fields": {
+    "resource_type": "MEDICAL",
+    "location_name": "Georai",
+    "latitude": 19.2612,
+    "longitude": 75.7533,
+    "label": "",
+    "is_active": true,
+    "created_at": "2026-08-30T06:13:12.429Z"
+  }
+},
+{
+  "model": "wari_core.nearbyresource",
+  "pk": 12,
+  "fields": {
+    "resource_type": "WATER",
+    "location_name": "Karjat",
+    "latitude": 18.55,
+    "longitude": 75.0,
+    "label": "",
+    "is_active": true,
+    "created_at": "2026-09-04T08:03:55.544Z"
+  }
+},
+{
+  "model": "wari_core.nearbyresource",
+  "pk": 13,
+  "fields": {
+    "resource_type": "FOOD",
+    "location_name": "Karjat",
+    "latitude": 18.55,
+    "longitude": 75.0,
+    "label": "",
+    "is_active": true,
+    "created_at": "2026-09-04T08:03:57.249Z"
+  }
+},
+{
+  "model": "wari_core.nearbyresource",
+  "pk": 14,
+  "fields": {
+    "resource_type": "RESTROOMS",
+    "location_name": "Karjat",
+    "latitude": 18.55,
+    "longitude": 75.0,
+    "label": "",
+    "is_active": true,
+    "created_at": "2026-09-04T08:03:58.732Z"
+  }
+},
+{
+  "model": "wari_core.garbagedustbin",
+  "pk": 1,
+  "fields": {
+    "name": "Saswad Palkhi Ground Green Hub 01",
+    "name_mr": "सासवड पालखी मैदान हरित कचराकुंडी ०१",
+    "category": "ORGANIC_DRY",
+    "location_name": "Saswad Checkpoint Ground",
+    "latitude": 18.3444,
+    "longitude": 74.0305,
+    "capacity_liters": 240,
+    "fill_level_percent": 35,
+    "status": "OPERATIONAL",
+    "assigned_squad": "Swachh Wari Squad 01",
+    "reported_overflow_count": 0,
+    "is_active": true,
+    "last_cleaned_at": "2026-08-30T03:46:09.528Z",
+    "created_at": "2026-08-30T03:46:09.528Z",
+    "updated_at": "2026-08-30T03:46:09.528Z"
+  }
+},
+{
+  "model": "wari_core.garbagedustbin",
+  "pk": 2,
+  "fields": {
+    "name": "Dive Ghat Summit Plastic & Waste Point",
+    "name_mr": "दिवे घाट माथा प्लॅस्टिक व कचरा केंद्र",
+    "category": "PLASTIC_ONLY",
+    "location_name": "Dive Ghat Pavan Khind",
+    "latitude": 18.398,
+    "longitude": 73.987,
+    "capacity_liters": 500,
+    "fill_level_percent": 85,
+    "status": "NEEDS_EMPTYING",
+    "assigned_squad": "Ghat Swachhata Team Alpha",
+    "reported_overflow_count": 0,
+    "is_active": true,
+    "last_cleaned_at": "2026-08-30T03:46:09.536Z",
+    "created_at": "2026-08-30T03:46:09.536Z",
+    "updated_at": "2026-08-30T03:46:09.536Z"
+  }
+},
+{
+  "model": "wari_core.garbagedustbin",
+  "pk": 3,
+  "fields": {
+    "name": "Jejuri Temple Base Community Compactor",
+    "name_mr": "जेजुरी मंदिर पायथा कम्युनिटी कॉम्पॅक्टर",
+    "category": "COMMUNITY_COMPACTOR",
+    "location_name": "Jejuri Khandoba Foothills",
+    "latitude": 18.275,
+    "longitude": 74.158,
+    "capacity_liters": 1000,
+    "fill_level_percent": 95,
+    "status": "OVERFLOWING",
+    "assigned_squad": "Jejuri Municipal Seva Unit",
+    "reported_overflow_count": 4,
+    "is_active": true,
+    "last_cleaned_at": "2026-08-30T03:46:09.540Z",
+    "created_at": "2026-08-30T03:46:09.540Z",
+    "updated_at": "2026-08-30T03:46:09.540Z"
+  }
+},
+{
+  "model": "wari_core.garbagedustbin",
+  "pk": 4,
+  "fields": {
+    "name": "Alandi Indrayani Ghat Eco-Bin Station",
+    "name_mr": "आळंदी इंद्रायणी घाट पर्यावरण कुंडी",
+    "category": "ORGANIC_DRY",
+    "location_name": "Alandi Indrayani River Bank",
+    "latitude": 18.6775,
+    "longitude": 73.8969,
+    "capacity_liters": 240,
+    "fill_level_percent": 10,
+    "status": "CLEANED",
+    "assigned_squad": "Indrayani Swachhata Dindi",
+    "reported_overflow_count": 0,
+    "is_active": true,
+    "last_cleaned_at": "2026-08-30T03:46:09.543Z",
+    "created_at": "2026-08-30T03:46:09.543Z",
+    "updated_at": "2026-08-30T03:46:09.543Z"
+  }
+},
+{
+  "model": "wari_core.garbagedustbin",
+  "pk": 5,
+  "fields": {
+    "name": "Hadapsar Gadital Transit Waste Hub",
+    "name_mr": "हडपसर गाडीतळ ट्रान्झिट संकलन केंद्र",
+    "category": "PLASTIC_ONLY",
+    "location_name": "Hadapsar Gadital Junction",
+    "latitude": 18.5018,
+    "longitude": 73.9298,
+    "capacity_liters": 360,
+    "fill_level_percent": 0,
+    "status": "CLEANED",
+    "assigned_squad": "Pune Seva Dal 02",
+    "reported_overflow_count": 0,
+    "is_active": true,
+    "last_cleaned_at": "2026-08-30T03:48:35.658Z",
+    "created_at": "2026-08-30T03:46:09.546Z",
+    "updated_at": "2026-08-30T03:48:35.658Z"
+  }
+},
+{
+  "model": "wari_core.garbagedustbin",
+  "pk": 6,
+  "fields": {
+    "name": "Pandharpur Chandrabhaga Mega Bin 08",
+    "name_mr": "पंढरपूर चंद्रभागा घाट महा-कुंडी ०८",
+    "category": "COMMUNITY_COMPACTOR",
+    "location_name": "Pandharpur Chandrabhaga River Bank",
+    "latitude": 17.6775,
+    "longitude": 75.328,
+    "capacity_liters": 1000,
+    "fill_level_percent": 40,
+    "status": "OPERATIONAL",
+    "assigned_squad": "Pandharpur Swachh Seva Mandal",
+    "reported_overflow_count": 0,
+    "is_active": true,
+    "last_cleaned_at": "2026-08-30T03:46:09.551Z",
+    "created_at": "2026-08-30T03:46:09.551Z",
+    "updated_at": "2026-08-30T03:46:09.551Z"
+  }
+},
+{
+  "model": "wari_core.garbagedustbin",
+  "pk": 7,
+  "fields": {
+    "name": "Saswad Test Palkhi Bin 99",
+    "name_mr": "सासवड टेस्ट पालखी कुंडी ९९",
+    "category": "ORGANIC_DRY",
+    "location_name": "Saswad Sector 4 Testing Camp",
+    "latitude": 18.3444,
+    "longitude": 74.0305,
+    "capacity_liters": 240,
+    "fill_level_percent": 0,
+    "status": "CLEANED",
+    "assigned_squad": "Test Swachh Squad 01",
+    "reported_overflow_count": 0,
+    "is_active": false,
+    "last_cleaned_at": "2026-08-30T03:46:58.959Z",
+    "created_at": "2026-08-30T03:46:58.943Z",
+    "updated_at": "2026-08-30T03:46:58.959Z"
+  }
+},
+{
+  "model": "wari_core.garbagedustbin",
+  "pk": 8,
+  "fields": {
+    "name": "Saswad Test Palkhi Bin 99",
+    "name_mr": "सासवड टेस्ट पालखी कुंडी ९९",
+    "category": "ORGANIC_DRY",
+    "location_name": "Saswad Sector 4 Testing Camp",
+    "latitude": 18.3444,
+    "longitude": 74.0305,
+    "capacity_liters": 240,
+    "fill_level_percent": 0,
+    "status": "CLEANED",
+    "assigned_squad": "Test Swachh Squad 01",
+    "reported_overflow_count": 0,
+    "is_active": false,
+    "last_cleaned_at": "2026-09-01T16:41:14.825Z",
+    "created_at": "2026-09-01T16:41:14.806Z",
+    "updated_at": "2026-09-01T16:41:14.825Z"
+  }
+},
+{
+  "model": "sos.sosreport",
+  "pk": 1,
+  "fields": {
+    "reporter": [
+      "pilgrim_9175262910_830"
+    ],
+    "admin": [
+      "admin_sagarpc1006_gmail_com_400"
+    ],
+    "type": "restroom",
+    "description": "Need restroom",
+    "lat": 18.5204,
+    "lng": 73.8567,
+    "status": "acknowledged",
+    "admin_reply": "Provided",
+    "created_at": "2026-08-30T01:39:20.900Z"
+  }
+},
+{
+  "model": "sos.sosreport",
+  "pk": 2,
+  "fields": {
+    "reporter": [
+      "pilgrim_9175262910_830"
+    ],
+    "admin": null,
+    "type": "medical",
+    "description": "",
+    "lat": 18.5204,
+    "lng": 73.8567,
+    "status": "resolved",
+    "admin_reply": null,
+    "created_at": "2026-08-30T06:15:14.917Z"
+  }
+},
+{
+  "model": "sos.sosreport",
+  "pk": 3,
+  "fields": {
+    "reporter": [
+      "pilgrim_9175262910_830"
+    ],
+    "admin": null,
+    "type": "medical",
+    "description": "",
+    "lat": 18.5204,
+    "lng": 73.8567,
+    "status": "open",
+    "admin_reply": null,
+    "created_at": "2026-08-31T03:10:31.121Z"
+  }
+},
+{
+  "model": "sos.sosreport",
+  "pk": 4,
+  "fields": {
+    "reporter": [
+      "pilgrim_demo"
+    ],
+    "admin": [
+      "admin_demo"
+    ],
+    "type": "medical",
+    "description": null,
+    "lat": 18.5204,
+    "lng": 73.8567,
+    "status": "acknowledged",
+    "admin_reply": "Help is on the way!",
+    "created_at": "2026-09-01T16:41:32.370Z"
+  }
+},
+{
+  "model": "sos.sosreport",
+  "pk": 5,
+  "fields": {
+    "reporter": [
+      "pilgrim_demo"
+    ],
+    "admin": [
+      "admin_demo"
+    ],
+    "type": "medical",
+    "description": null,
+    "lat": 18.5204,
+    "lng": 73.8567,
+    "status": "acknowledged",
+    "admin_reply": "Help is on the way!",
+    "created_at": "2026-09-01T16:46:35.805Z"
+  }
+},
+{
+  "model": "sos.sosreport",
+  "pk": 6,
+  "fields": {
+    "reporter": [
+      "pilgrim_9175262910_830"
+    ],
+    "admin": null,
+    "type": "medical",
+    "description": "",
+    "lat": 18.5204,
+    "lng": 73.8567,
+    "status": "open",
+    "admin_reply": null,
+    "created_at": "2026-09-04T08:02:25.680Z"
+  }
+},
+{
+  "model": "alerts.alert",
+  "pk": 1,
+  "fields": {
+    "type": "announcement",
+    "title": "Road block near DehuRode",
+    "message": "Stay Safe",
+    "zone_lat": null,
+    "zone_lng": null,
+    "radius_km": null,
+    "created_by": [
+      "admin_sagarpc1006_gmail_com_400"
+    ],
+    "created_at": "2026-08-30T05:05:55.273Z"
+  }
+},
+{
+  "model": "alerts.alert",
+  "pk": 2,
+  "fields": {
+    "type": "announcement",
+    "title": "Rainfall rises",
+    "message": "Umbrellas will be provided soon",
+    "zone_lat": null,
+    "zone_lng": null,
+    "radius_km": null,
+    "created_by": [
+      "admin_sagarpc1006_gmail_com_400"
+    ],
+    "created_at": "2026-08-30T05:07:54.660Z"
+  }
+}
+]

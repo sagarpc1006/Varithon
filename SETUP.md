@@ -57,9 +57,31 @@ Service accounts**, keep it outside this repository, and set
 `GOOGLE_APPLICATION_CREDENTIALS` to its absolute path.
 Use `FIREBASE_PROJECT_ID=varimitra-2e93d`.
 
+### PostgreSQL Database Configuration
+
+Make sure PostgreSQL is running on `localhost:5432` and create the application database:
+```powershell
+# In psql or pgAdmin:
+CREATE DATABASE varimitra;
+```
+Configure your database credentials in `backend/.env`:
+```env
+DB_ENGINE=django.db.backends.postgresql
+POSTGRES_DB=varimitra
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=your_postgres_password
+POSTGRES_HOST=localhost
+POSTGRES_PORT=5432
+```
+
 Run migrations:
 ```powershell
 python manage.py migrate
+```
+
+(Optional) Load seed or migrated data:
+```powershell
+python manage.py loaddata datadump.json
 ```
 
 Start the backend server:
