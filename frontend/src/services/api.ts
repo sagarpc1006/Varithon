@@ -70,8 +70,9 @@ class ApiClient {
 
       return data as T;
     } catch (error: any) {
-      // If relative URL failed (e.g. running outside vite proxy), fallback to absolute backend URL
-      if (!endpoint.startsWith('http') && this.baseUrl === '/api') {
+      // If relative URL failed on localhost (e.g. running outside vite proxy), fallback to local backend port
+      const isLocalHost = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+      if (!endpoint.startsWith('http') && this.baseUrl === '/api' && isLocalHost) {
         try {
           const fallbackUrl = `http://127.0.0.1:8000/api${endpoint.startsWith('/') ? '' : '/'}${endpoint}`;
           const fallbackRes = await fetch(fallbackUrl, {

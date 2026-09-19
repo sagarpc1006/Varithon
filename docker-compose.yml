@@ -1,0 +1,79 @@
+version: '3.8'
+
+services:
+  # -------------------------------------------------------------
+  # PostgreSQL Database Service
+  # -------------------------------------------------------------
+  db:
+    image: postgres:16-alpine
+    container_name: varimitra_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-varimitra}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-varimitra_secret_pass_2026}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "${POSTGRES_EXTERNAL_PORT:-5432}:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d varimitra"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - varimitra_net
+
+  # -------------------------------------------------------------
+  # Django ASGI Daphne Backend Service
+  # -------------------------------------------------------------
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: varimitra_backend
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - DEBUG=${DEBUG:-False}
+      - SECRET_KEY=${SECRET_KEY:-django-insecure-ose^y@3*j5o^5z^jcu&g=054vlvi^q^a5$i10+!xs%u-*pjbdt}
+      - ALLOWED_HOSTS=${ALLOWED_HOSTS:-*}
+      - DB_ENGINE=django.db.backends.postgresql
+      - POSTGRES_DB=${POSTGRES_DB:-varimitra}
+      - POSTGRES_USER=${POSTGRES_USER:-postgres}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-varimitra_secret_pass_2026}
+      - POSTGRES_HOST=db
+      - POSTGRES_PORT=5432
+      - LOAD_SEED_DATA=${LOAD_SEED_DATA:-true}
+      - FIREBASE_PROJECT_ID=${FIREBASE_PROJECT_ID:-varimitra-2e93d}
+      - CORS_ALLOW_ALL_ORIGINS=True
+    ports:
+      - "8000:8000"
+    networks:
+      - varimitra_net
+
+  # -------------------------------------------------------------
+  # React Nginx Frontend & Reverse Proxy Service
+  # -------------------------------------------------------------
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: varimitra_frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "${PORT:-80}:80"
+    networks:
+      - varimitra_net
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  varimitra_net:
+    driver: bridge

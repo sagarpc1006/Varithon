@@ -140,9 +140,17 @@ export const groupsService = {
     close: () => void;
   } {
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    const host = window.location.hostname;
-    // Django backend runs on 8000
-    const wsUrl = `${protocol}//${host}:8000/ws/groups/${groupId}/`;
+    const envWsUrl = import.meta.env.VITE_WS_URL;
+    let wsUrl: string;
+    if (envWsUrl) {
+      wsUrl = `${envWsUrl.replace(/\/$/, '')}/ws/groups/${groupId}/`;
+    } else {
+      // In local dev with Vite dev server (e.g. port 5173/3000), Django runs on 8000.
+      // In production / Docker, traffic routes through Nginx on the standard host.
+      const isLocalDevPort = window.location.port === '5173' || window.location.port === '3000';
+      const host = isLocalDevPort ? `${window.location.hostname}:8000` : window.location.host;
+      wsUrl = `${protocol}//${host}/ws/groups/${groupId}/`;
+    }
 
     let ws: WebSocket | null = null;
     let isClosed = false;

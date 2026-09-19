@@ -1,11 +1,24 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense, lazy } from 'react';
 import { Language, ScreenType, PortalType, UserSession } from './types';
-import { HomeScreen } from './components/HomeScreen';
-import { SignInScreen } from './components/SignInScreen';
-import { UserDashboard } from './components/UserDashboard';
-import { VolunteerDashboard } from './components/VolunteerDashboard';
-import { AdminDashboard } from './components/AdminDashboard';
 import { authService } from './services/auth';
+
+// Lazy-loaded portal components for optimal cross-device performance & minimal initial bundle
+const HomeScreen = lazy(() => import('./components/HomeScreen').then(m => ({ default: m.HomeScreen })));
+const SignInScreen = lazy(() => import('./components/SignInScreen').then(m => ({ default: m.SignInScreen })));
+const UserDashboard = lazy(() => import('./components/UserDashboard').then(m => ({ default: m.UserDashboard })));
+const VolunteerDashboard = lazy(() => import('./components/VolunteerDashboard').then(m => ({ default: m.VolunteerDashboard })));
+const AdminDashboard = lazy(() => import('./components/AdminDashboard').then(m => ({ default: m.AdminDashboard })));
+
+function ScreenFallback() {
+  return (
+    <div className="min-h-screen bg-[#faf7f2] flex items-center justify-center font-sans">
+      <div className="flex flex-col items-center gap-3">
+        <div className="w-10 h-10 border-4 border-orange-500/20 border-t-orange-600 rounded-full animate-spin" />
+        <p className="text-xs font-bold text-slate-600 tracking-wide">Loading VariMitra...</p>
+      </div>
+    </div>
+  );
+}
 
 export default function App() {
   const [currentScreen, setCurrentScreen] = useState<ScreenType>('home');
@@ -62,59 +75,60 @@ export default function App() {
   }
 
   if (session) {
-    if (session.role === 'pilgrim') {
-      return (
-        <UserDashboard
-          session={session}
-          language={language}
-          onLanguageChange={setLanguage}
-          onSignOut={handleSignOut}
-        />
-      );
-    }
-    if (session.role === 'volunteer') {
-      return (
-        <VolunteerDashboard
-          session={session}
-          language={language}
-          onLanguageChange={setLanguage}
-          onSignOut={handleSignOut}
-        />
-      );
-    }
-    // Admin dashboard
     return (
-      <AdminDashboard
-        session={session}
-        language={language}
-        onLanguageChange={setLanguage}
-        onSignOut={handleSignOut}
-      />
+      <Suspense fallback={<ScreenFallback />}>
+        {session.role === 'pilgrim' && (
+          <UserDashboard
+            session={session}
+            language={language}
+            onLanguageChange={setLanguage}
+            onSignOut={handleSignOut}
+          />
+        )}
+        {session.role === 'volunteer' && (
+          <VolunteerDashboard
+            session={session}
+            language={language}
+            onLanguageChange={setLanguage}
+            onSignOut={handleSignOut}
+          />
+        )}
+        {session.role === 'admin' && (
+          <AdminDashboard
+            session={session}
+            language={language}
+            onLanguageChange={setLanguage}
+            onSignOut={handleSignOut}
+          />
+        )}
+      </Suspense>
     );
   }
 
   return (
-    <div className="relative min-h-screen bg-[#faf7f2]">
-      {/* Screen 1: Dashboard / Home */}
-      {currentScreen === 'home' && (
-        <HomeScreen
-          language={language}
-          onLanguageChange={setLanguage}
-          onSelectPortal={handleSelectPortalFromHome}
-        />
-      )}
+    <Suspense fallback={<ScreenFallback />}>
+      <div className="relative min-h-screen bg-[#faf7f2]">
+        {/* Screen 1: Dashboard / Home */}
+        {currentScreen === 'home' && (
+          <HomeScreen
+            language={language}
+            onLanguageChange={setLanguage}
+            onSelectPortal={handleSelectPortalFromHome}
+          />
+        )}
 
-      {/* Screen 2 & 3: Sign In (Pilgrim or Admin) */}
-      {currentScreen === 'signin' && (
-        <SignInScreen
-          language={language}
-          onLanguageChange={setLanguage}
-          activePortal={activePortal}
-          onPortalChange={setActivePortal}
-          onBackToHome={handleBackToHome}
-          onLoginSuccess={handleLoginSuccess}
-        />
-      )}
-    </div>
+        {/* Screen 2 & 3: Sign In (Pilgrim or Admin) */}
+        {currentScreen === 'signin' && (
+          <SignInScreen
+            language={language}
+            onLanguageChange={setLanguage}
+            activePortal={activePortal}
+            onPortalChange={setActivePortal}
+            onBackToHome={handleBackToHome}
+            onLoginSuccess={handleLoginSuccess}
+          />
+        )}
+      </div>
+    </Suspense>
   );
 }
