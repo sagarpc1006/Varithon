@@ -57,9 +57,18 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
         {/* Left empty balance spacer */}
         <div className="w-24 sm:w-48 hidden md:block" />
 
-        {/* Center: VariMitra Logo & Tagline */}
-        <div className="flex-1 flex justify-center cursor-pointer" onClick={() => onSelectPortal('pilgrim')}>
-          <VariMitraLogo variant="dark" tagline={t.tagline} />
+        {/* Center: VariMitra Logo & Tagline — ONLY the logo itself is clickable to navigate to login */}
+        <div className="flex-1 flex justify-center items-center">
+          <button
+            id="btn-header-logo"
+            type="button"
+            onClick={() => onSelectPortal('pilgrim')}
+            className="inline-flex flex-col items-center cursor-pointer bg-transparent border-0 p-1.5 rounded-2xl transition-transform duration-200 hover:scale-105 active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-orange-400/60"
+            title="VariMitra — Enter Pilgrim Portal"
+            aria-label="VariMitra Logo — Go to Login"
+          >
+            <VariMitraLogo variant="dark" tagline={t.tagline} />
+          </button>
         </div>
 
         {/* Right: Login / Sign Up Button & Language Dropdown */}
