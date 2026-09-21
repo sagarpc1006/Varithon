@@ -20,13 +20,10 @@ function ScreenFallback() {
   );
 }
 
-// Screen ordering for determining slide direction
-const SCREEN_ORDER: Record<ScreenType, number> = { home: 0, signin: 1 };
-
 /**
  * Animated page transition wrapper.
- * Manages a crossfade + directional slide between screens with a brief exit animation
- * before mounting the new screen with its entrance animation.
+ * Smoothly animates incoming screens with a clean single-run entrance transition,
+ * preventing double-loading or flickering effects.
  */
 function AnimatedPageTransition({
   currentScreen,
@@ -35,48 +32,8 @@ function AnimatedPageTransition({
   currentScreen: ScreenType;
   children: React.ReactNode;
 }) {
-  const prevScreenRef = useRef<ScreenType>(currentScreen);
-  const [transitionPhase, setTransitionPhase] = useState<'idle' | 'exiting' | 'entering'>('idle');
-  const [displayedScreen, setDisplayedScreen] = useState<ScreenType>(currentScreen);
-  const [slideDirection, setSlideDirection] = useState<'left' | 'right'>('right');
-
-  useEffect(() => {
-    if (currentScreen !== prevScreenRef.current) {
-      // Determine slide direction based on screen order
-      const prevOrder = SCREEN_ORDER[prevScreenRef.current] ?? 0;
-      const nextOrder = SCREEN_ORDER[currentScreen] ?? 0;
-      setSlideDirection(nextOrder > prevOrder ? 'right' : 'left');
-
-      // Start exit phase
-      setTransitionPhase('exiting');
-
-      const exitTimer = setTimeout(() => {
-        setDisplayedScreen(currentScreen);
-        setTransitionPhase('entering');
-        prevScreenRef.current = currentScreen;
-
-        const enterTimer = setTimeout(() => {
-          setTransitionPhase('idle');
-        }, 550); // Match entrance animation duration
-
-        return () => clearTimeout(enterTimer);
-      }, 350); // Match exit animation duration
-
-      return () => clearTimeout(exitTimer);
-    }
-  }, [currentScreen]);
-
-  const animationClass =
-    transitionPhase === 'exiting'
-      ? 'animate-page-exit'
-      : transitionPhase === 'entering'
-      ? slideDirection === 'right'
-        ? 'animate-page-slide-in-right'
-        : 'animate-page-slide-in-left'
-      : '';
-
   return (
-    <div className={`w-full min-h-screen ${animationClass}`}>
+    <div key={currentScreen} className="w-full min-h-screen animate-page-enter">
       {children}
     </div>
   );

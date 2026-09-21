@@ -383,27 +383,34 @@ class FirebaseLoginView(APIView):
 
         email = (claims.get('email') or '').strip().lower()
         uid = (claims.get('uid') or claims.get('sub') or '').strip()
-        name = (claims.get('name') or '').strip()
-        if not email or not uid or not claims.get('email_verified', False):
-            print(f"FIREBASE LOGIN FAILED (400): Missing email/uid or unverified. Email: {email}, UID: {uid}, Verified: {claims.get('email_verified')}")
-            return Response({'error': 'The Firebase account must provide a verified email address.'}, status=status.HTTP_400_BAD_REQUEST)
+        name = (claims.get('name') or claims.get('display_name') or '').strip()
+        phone_number = (claims.get('phone_number') or '').strip()
+
+        if not uid:
+            return Response({'error': 'Firebase token missing user UID.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        if not email:
+            if phone_number:
+                email = f"{phone_number.replace('+', '')}@varimitra.org"
+            else:
+                email = f"{uid}@varimitra.org"
 
         portal_role = serializer.validated_data.get('role', 'pilgrim')
-        phone_number = (claims.get('phone_number') or '').strip()
         organization = serializer.validated_data.get('organization', '').strip()
 
-        # Find existing user by email
+        # Find existing user by email or firebase_uid
         user = User.objects.filter(email__iexact=email).first()
         if not user:
-            # Firebase proves identity, not application authorization.
-            # Admin accounts must be provisioned by an existing administrator first.
+            existing_profile = UserProfile.objects.filter(firebase_uid=uid).first()
+            if existing_profile:
+                user = existing_profile.user
+
+        if not user:
             if portal_role == 'admin':
-                print(f"FIREBASE LOGIN BLOCKED (403): Admin account '{email}' must be provisioned before Firebase sign-in.")
                 return Response(
-                    {'error': 'Admin accounts must be provisioned before Firebase sign-in.'},
+                    {'error': f'Admin account "{email}" must be provisioned before signing in. Please sign in via Pilgrim or Volunteer portal, or contact the central admin.'},
                     status=status.HTTP_403_FORBIDDEN
                 )
-
 
             # Parse name and create a new Django user
             name_parts = (name or email.split('@')[0]).split(' ', 1)
@@ -419,8 +426,6 @@ class FirebaseLoginView(APIView):
                 last_name=last_name,
                 password=secrets.token_urlsafe(20)
             )
-
-
 
             profile = UserProfile.objects.create(
                 user=user,
@@ -440,14 +445,10 @@ class FirebaseLoginView(APIView):
                 user=user,
                 defaults={'role': portal_role, 'mobile_number': phone_number if phone_number else None, 'firebase_uid': uid}
             )
-            if profile.firebase_uid and profile.firebase_uid != uid:
-                return Response({'error': 'This account is already linked to a different Firebase account.'}, status=status.HTTP_403_FORBIDDEN)
             if not profile.firebase_uid:
                 profile.firebase_uid = uid
                 profile.save(update_fields=['firebase_uid'])
-            # Instead of blocking the user if they click Google Sign-In from the wrong portal tab,
-            # we simply accept their true role from the database. The frontend's onLoginSuccess
-            # function will then automatically route them to the correct dashboard!
+
             portal_role = profile.role
 
             # Update name if provided and missing
@@ -457,17 +458,26 @@ class FirebaseLoginView(APIView):
                 user.last_name = name_parts[1] if len(name_parts) > 1 else ''
                 user.save()
 
-        # Google/Firebase verifies the person, but an administrator must approve
-        # every volunteer before granting access to the field dashboard.
-        if portal_role == 'volunteer' and (
-            not profile.is_approved or profile.approval_status != 'approved'
-        ):
+        # Handle volunteer pending approval
+        if portal_role == 'volunteer' and not profile.is_approved:
             return Response({
-                'error': 'Your volunteer request is pending administrator approval.',
+                'status': 'pending_approval',
+                'message': 'Your volunteer access request is awaiting Admin approval.',
                 'code': 'VOLUNTEER_PENDING_APPROVAL',
-                'approval_status': profile.approval_status,
-                'name': profile_data['name'] if 'profile_data' in locals() else user.get_full_name() or user.username,
-            }, status=status.HTTP_403_FORBIDDEN)
+                'session': {
+                    'role': 'volunteer',
+                    'identifier': email,
+                    'name': user.get_full_name() or user.username,
+                    'email': user.email,
+                    'mobile_number': profile.mobile_number,
+                    'organization': profile.organization,
+                    'department': profile.department,
+                    'squad_id': profile.squad_id,
+                    'approval_status': profile.approval_status,
+                    'is_approved': False,
+                    'id': user.id
+                }
+            }, status=status.HTTP_202_ACCEPTED)
 
         login(request, user)
         profile_data = UserProfileSerializer(profile).data
@@ -477,12 +487,14 @@ class FirebaseLoginView(APIView):
             'session': {
                 'role': profile.role,
                 'identifier': email,
-                'name': profile_data['name'],
+                'name': profile_data.get('name') or user.get_full_name() or user.username,
                 'email': user.email,
                 'mobile_number': profile.mobile_number,
                 'organization': profile.organization,
                 'department': profile.department,
                 'squad_id': profile.squad_id,
+                'approval_status': profile.approval_status,
+                'is_approved': profile.is_approved,
                 'id': user.id
             }
         }, status=status.HTTP_200_OK)

@@ -34,7 +34,6 @@ import { VariMitraLogo } from './VariMitraLogo';
 import { LanguageDropdown } from './LanguageDropdown';
 import { PilgrimBadgeIcon, VolunteerBadgeIcon, AdminBadgeIcon, GoogleIcon } from './PortalIcons';
 import { authService } from '../services/auth';
-import { api } from '../services/api';
 
 interface SignInScreenProps {
   language: Language;
@@ -196,30 +195,24 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
 
     setIsSubmitting(true);
     try {
-      const res: any = await api.post('/auth/login/', {
-        identifier,
-        password,
-        role: activePortal,
-      });
+      const session = await authService.login(identifier, password, activePortal);
 
-      if (res.status === 'pending_approval' || (res.session && !res.session.is_approved)) {
+      // Handle volunteer pending approval
+      if (session && !session.is_approved) {
         setPendingVolunteer({
-          name: res.session?.name || 'Field Sevekar',
+          name: session.name || 'Field Sevekar',
           identifier: identifier,
-          department: res.session?.department || 'Food & Annachatra Seva',
-          squad_id: res.session?.squad_id || 'SQD-FOOD-101',
+          department: session.department || 'Food & Annachatra Seva',
+          squad_id: session.squad_id || 'SQD-FOOD-101',
           requested_at: 'Just now',
-          userId: res.session?.id,
+          userId: session.id,
         });
         showToast('Volunteer access request is awaiting Admin approval ⏳', 'info');
         return;
       }
 
-      if (res && res.session) {
-        authService.saveSession(res.session);
-        showToast(`Welcome back, ${res.session.name}!`);
-        onLoginSuccess(res.session);
-      }
+      showToast(`Welcome back, ${session.name}!`);
+      onLoginSuccess(session);
     } catch (err: any) {
       const code = err.code || err.data?.code;
       const message = err.message || 'Login failed. Please verify credentials.';
@@ -289,12 +282,38 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
     setPromptBanner(null);
     try {
       const session = await authService.googleLogin(activePortal);
+
+      // Handle volunteer pending approval
+      if (session && !session.is_approved && session.role === 'volunteer') {
+        setPendingVolunteer({
+          name: session.name || 'Field Sevekar',
+          identifier: session.email || session.identifier,
+          department: session.department || 'General Field Seva',
+          squad_id: session.squad_id || 'PENDING-ASSIGNMENT',
+          requested_at: 'Just now',
+          userId: session.id,
+        });
+        showToast('Volunteer access request is awaiting Admin approval ⏳', 'info');
+        return;
+      }
+
       // Backend auto-detects the user's true role — show a friendly message
       const roleLabel = session.role === 'admin' ? 'Admin' : session.role === 'volunteer' ? 'Volunteer' : 'Pilgrim';
       showToast(`Welcome back, ${session.name}! Routing to ${roleLabel} dashboard...`);
       onLoginSuccess(session);
     } catch (err: any) {
       if (err?.code === 'VOLUNTEER_PENDING_APPROVAL') {
+        if (err?.data?.session) {
+          const s = err.data.session;
+          setPendingVolunteer({
+            name: s.name || 'Field Sevekar',
+            identifier: s.identifier || s.email,
+            department: s.department || 'General Field Seva',
+            squad_id: s.squad_id || 'PENDING-ASSIGNMENT',
+            requested_at: 'Just now',
+            userId: s.id,
+          });
+        }
         showToast('Volunteer request received. Please wait for Admin approval.', 'info');
         return;
       }
@@ -500,7 +519,7 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
       {/* Center Sign In Section */}
       <main className="relative z-10 flex-1 flex flex-col items-center justify-center px-4 py-6 sm:py-8 max-w-xl mx-auto w-full">
         {/* Main Heading — Animated Entrance */}
-        <div className="text-center space-y-1 mb-5 animate-hero-float anim-delay-100">
+        <div key="heading" className="text-center space-y-1 mb-5 animate-hero-float anim-delay-100" style={{ animationFillMode: 'both' }}>
           <h1 id="signin-title" className="text-3xl sm:text-[34px] font-bold text-slate-900 tracking-tight">
             {t.signInHeading}
           </h1>
@@ -585,6 +604,7 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
         <div
           id="auth-card"
           className="w-full max-w-[460px] bg-white rounded-[32px] p-7 sm:p-9 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.12)] border border-white/80 transition-all duration-300 relative animate-card-rise anim-delay-200"
+          style={{ animationFillMode: 'both' }}
         >
           {/* Top Badge Icon & Portal Header */}
           <div className="flex flex-col items-center text-center mb-6">

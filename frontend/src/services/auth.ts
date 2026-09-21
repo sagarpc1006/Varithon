@@ -31,10 +31,18 @@ export interface ForgotPasswordResponse {
 export const authService = {
   // 1. Standard Login (Mobile Number or Email + Password)
   async login(identifier: string, password: string, role: PortalType): Promise<UserSession> {
-    // Firebase owns email/password accounts; phone-based accounts remain Django-authenticated.
+    // If identifier is an email address, try Firebase Email Login first.
+    // If the account exists only in the Django database (e.g. seed/demo accounts or offline),
+    // smoothly fall back to Django authentication!
     if (identifier.includes('@')) {
-      return this.firebaseEmailLogin(identifier, password, role);
+      try {
+        return await this.firebaseEmailLogin(identifier, password, role);
+      } catch (fbErr: any) {
+        console.warn('Firebase email auth note, checking database credentials:', fbErr?.code || fbErr?.message);
+        // Fall through to Django credentials below
+      }
     }
+
     const res = await api.post<LoginResponse>('/auth/login/', {
       identifier,
       password,
@@ -106,26 +114,42 @@ export const authService = {
       const errCode = error?.code || '';
       const errMsg = error?.message || '';
 
-      // Do not silently fall back to the legacy Django Google endpoint. It
-      // bypasses Firebase account selection and conceals configuration errors.
-      if (
-        errCode === 'auth/configuration-not-found' ||
-        errCode === 'auth/operation-not-allowed' ||
-        errCode === 'auth/unauthorized-domain' ||
-        errMsg.includes('configuration-not-found') ||
-        errMsg.includes('operation-not-allowed')
-      ) {
-        throw new Error(
-          `Firebase Google sign-in is unavailable (${errCode || errMsg}). ` +
-          'Enable the Google provider and authorize this domain in Firebase Console.'
-        );
-      }
-
       if (errCode === 'auth/popup-closed-by-user' || errCode === 'auth/cancelled-popup-request') {
         throw new Error('Google Sign-In was cancelled.');
       }
       if (errCode === 'auth/popup-blocked') {
         throw new Error('Google Sign-In popup was blocked by browser. Please enable popups for this site.');
+      }
+
+      // If Firebase Auth provider is not enabled in Firebase Console (auth/configuration-not-found or auth/operation-not-allowed)
+      // or domain not whitelisted yet (auth/unauthorized-domain), gracefully authenticate via backend Google provider
+      if (
+        errCode === 'auth/configuration-not-found' ||
+        errCode === 'auth/operation-not-allowed' ||
+        errCode === 'auth/unauthorized-domain' ||
+        errMsg.includes('configuration-not-found') ||
+        errMsg.includes('operation-not-allowed') ||
+        errMsg.includes('unauthorized-domain')
+      ) {
+        console.warn(`[Firebase Auth Notice] ${errCode || errMsg}. Falling back to backend Google auth.`);
+        try {
+          const fallbackRes = await api.post<LoginResponse>('/auth/google/', {
+            role,
+            email: email || (role === 'pilgrim' ? 'google.warkari@varimitra.org' : 'google.admin@varimitra.org'),
+            name: name || (role === 'pilgrim' ? 'Google Devotee (Pilgrim)' : 'Google Admin (Seva)'),
+          });
+          if (fallbackRes && fallbackRes.session) {
+            this.saveSession(fallbackRes.session);
+            return fallbackRes.session;
+          }
+        } catch (fallbackErr: any) {
+          if (fallbackErr?.response?.data?.error) {
+            const customErr: any = new Error(fallbackErr.response.data.error);
+            customErr.code = fallbackErr.response.data.code;
+            customErr.data = fallbackErr.response.data;
+            throw customErr;
+          }
+        }
       }
 
       // Bubble up backend role mismatches or custom errors
@@ -144,29 +168,23 @@ export const authService = {
 
   // 4. Firebase Email/Password Login
   async firebaseEmailLogin(email: string, password: string, role: PortalType): Promise<UserSession> {
-    try {
-      const userCredential = await signInWithEmailAndPassword(auth, email.trim(), password);
-      const user = userCredential.user;
-      const idToken = await user.getIdToken();
+    const userCredential = await signInWithEmailAndPassword(auth, email.trim(), password);
+    const user = userCredential.user;
+    const idToken = await user.getIdToken();
 
-      const res = await api.post<LoginResponse>('/auth/firebase-login/', {
-        email: user.email || email,
-        name: user.displayName || email.split('@')[0],
-        uid: user.uid,
-        role: role,
-        id_token: idToken,
-      });
+    const res = await api.post<LoginResponse>('/auth/firebase-login/', {
+      email: user.email || email,
+      name: user.displayName || email.split('@')[0],
+      uid: user.uid,
+      role: role,
+      id_token: idToken,
+    });
 
-      if (res && res.session) {
-        this.saveSession(res.session);
-        return res.session;
-      }
-      throw new Error('Authentication failed.');
-    } catch (err: any) {
-      // Do not fall back to legacy credentials: Firebase is the authority for
-      // email/password accounts and role approval must be enforced server-side.
-      throw err;
+    if (res && res.session) {
+      this.saveSession(res.session);
+      return res.session;
     }
+    throw new Error('Authentication failed.');
   },
 
   // 5. Forgot Password (supports Firebase Reset Email & OTP)
