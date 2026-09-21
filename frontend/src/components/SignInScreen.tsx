@@ -451,7 +451,7 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
       {/* Toast Notification */}
       {toast && (
         <div
-          className={`fixed top-5 left-1/2 transform -translate-x-1/2 z-50 px-5 py-3 rounded-2xl shadow-2xl flex items-center gap-3 text-sm font-medium border animate-in fade-in slide-in-from-top-3 ${
+          className={`fixed top-5 left-1/2 z-50 px-5 py-3 rounded-2xl shadow-2xl flex items-center gap-3 text-sm font-medium border animate-toast-bounce ${
             toast.type === 'error'
               ? 'bg-rose-900 text-white border-rose-700'
               : toast.type === 'info'
@@ -474,7 +474,7 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
       )}
 
       {/* Top Header */}
-      <header className="relative z-20 w-full max-w-7xl mx-auto px-4 sm:px-8 pt-5 pb-3 flex items-center justify-between">
+      <header className="relative z-20 w-full max-w-7xl mx-auto px-4 sm:px-8 pt-5 pb-3 flex items-center justify-between animate-header-slide">
         {/* Left: Back to Home button */}
         <button
           id="btn-back-to-home"
@@ -499,8 +499,8 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
 
       {/* Center Sign In Section */}
       <main className="relative z-10 flex-1 flex flex-col items-center justify-center px-4 py-6 sm:py-8 max-w-xl mx-auto w-full">
-        {/* Main Heading */}
-        <div className="text-center space-y-1 mb-5">
+        {/* Main Heading — Animated Entrance */}
+        <div className="text-center space-y-1 mb-5 animate-hero-float anim-delay-100">
           <h1 id="signin-title" className="text-3xl sm:text-[34px] font-bold text-slate-900 tracking-tight">
             {t.signInHeading}
           </h1>
@@ -581,14 +581,14 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
           </button>
         </div>
 
-        {/* Auth Card Container */}
+        {/* Auth Card Container — Spring Entrance */}
         <div
           id="auth-card"
-          className="w-full max-w-[460px] bg-white rounded-[32px] p-7 sm:p-9 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.12)] border border-white/80 transition-all duration-300 relative"
+          className="w-full max-w-[460px] bg-white rounded-[32px] p-7 sm:p-9 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.12)] border border-white/80 transition-all duration-300 relative animate-card-rise anim-delay-200"
         >
           {/* Top Badge Icon & Portal Header */}
           <div className="flex flex-col items-center text-center mb-6">
-            <div className="mb-2">
+            <div className="mb-2 animate-badge-pop" key={`badge-${activePortal}`}>
               {activePortal === 'pilgrim' ? (
                 <PilgrimBadgeIcon size="md" />
               ) : activePortal === 'volunteer' ? (
@@ -793,7 +793,7 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
             /* Sign In Form */
             <form onSubmit={handleSignIn} className="space-y-4">
               {/* Input 1: Mobile Number for Pilgrim OR Identifier for Volunteer OR Email ID for Admin */}
-              <div>
+              <div className="animate-input-slide anim-delay-100">
                 <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2 block">
                   {activePortal === 'pilgrim'
                     ? t.mobileNumberLabel
@@ -858,7 +858,7 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
               </div>
 
               {/* Input 2: Password */}
-              <div>
+              <div className="animate-input-slide anim-delay-200">
                 <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2 block">
                   {t.passwordLabel}
                 </label>
@@ -927,7 +927,7 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
                 }
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full mt-5 py-3.5 px-4 bg-gradient-to-r from-orange-500 to-[#ea580c] hover:from-orange-600 hover:to-orange-700 text-white rounded-2xl font-bold text-sm shadow-md shadow-orange-500/25 active:scale-[0.99] transition-all cursor-pointer flex items-center justify-center gap-2 disabled:opacity-75"
+                className="w-full mt-5 py-3.5 px-4 bg-gradient-to-r from-orange-500 to-[#ea580c] hover:from-orange-600 hover:to-orange-700 text-white rounded-2xl font-bold text-sm shadow-md shadow-orange-500/25 active:scale-[0.99] transition-all cursor-pointer flex items-center justify-center gap-2 disabled:opacity-75 animate-glow-pulse animate-shimmer-sweep relative overflow-hidden animate-input-slide anim-delay-300"
               >
                 {isSubmitting ? (
                   <>
@@ -959,7 +959,7 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
             type="button"
             onClick={handleGoogleSignIn}
             disabled={isSubmitting}
-            className="w-full py-3 px-4 bg-white hover:bg-blue-50 border-2 border-slate-200 hover:border-blue-300 rounded-xl font-semibold text-slate-700 shadow-sm hover:shadow-md flex items-center gap-3 transition-all cursor-pointer group"
+            className="w-full py-3 px-4 bg-white hover:bg-blue-50 border-2 border-slate-200 hover:border-blue-300 rounded-xl font-semibold text-slate-700 shadow-sm hover:shadow-md flex items-center gap-3 transition-all cursor-pointer group google-btn-hover animate-input-slide anim-delay-400"
           >
             <GoogleIcon className="w-5 h-5 shrink-0 group-hover:scale-110 transition-transform" />
             <div className="text-left">
@@ -1013,8 +1013,8 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
 
       {/* Forgot Password / OTP Modal */}
       {showForgotModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs p-4 animate-in fade-in">
-          <div className="bg-white rounded-3xl p-6 sm:p-7 max-w-sm w-full shadow-2xl border border-slate-200 relative">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 animate-modal-backdrop">
+          <div className="bg-white rounded-3xl p-6 sm:p-7 max-w-sm w-full shadow-2xl border border-slate-200 relative animate-modal-card">
             <button
               onClick={() => setShowForgotModal(false)}
               className="absolute top-4 right-4 text-slate-400 hover:text-slate-700 cursor-pointer"
@@ -1105,8 +1105,8 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
 
       {/* Register / Request Access Modal */}
       {showRegisterModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs p-4 animate-in fade-in">
-          <div className="bg-white rounded-3xl p-6 sm:p-7 max-w-md w-full shadow-2xl border border-slate-200 relative max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 animate-modal-backdrop">
+          <div className="bg-white rounded-3xl p-6 sm:p-7 max-w-md w-full shadow-2xl border border-slate-200 relative max-h-[90vh] overflow-y-auto animate-modal-card">
             <button
               onClick={() => setShowRegisterModal(false)}
               className="absolute top-4 right-4 text-slate-400 hover:text-slate-700 cursor-pointer"

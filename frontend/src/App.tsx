@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Suspense, lazy } from 'react';
+import React, { useState, useEffect, useRef, useCallback, Suspense, lazy } from 'react';
 import { Language, ScreenType, PortalType, UserSession } from './types';
 import { authService } from './services/auth';
 
@@ -16,6 +16,68 @@ function ScreenFallback() {
         <div className="w-10 h-10 border-4 border-orange-500/20 border-t-orange-600 rounded-full animate-spin" />
         <p className="text-xs font-bold text-slate-600 tracking-wide">Loading VariMitra...</p>
       </div>
+    </div>
+  );
+}
+
+// Screen ordering for determining slide direction
+const SCREEN_ORDER: Record<ScreenType, number> = { home: 0, signin: 1 };
+
+/**
+ * Animated page transition wrapper.
+ * Manages a crossfade + directional slide between screens with a brief exit animation
+ * before mounting the new screen with its entrance animation.
+ */
+function AnimatedPageTransition({
+  currentScreen,
+  children,
+}: {
+  currentScreen: ScreenType;
+  children: React.ReactNode;
+}) {
+  const prevScreenRef = useRef<ScreenType>(currentScreen);
+  const [transitionPhase, setTransitionPhase] = useState<'idle' | 'exiting' | 'entering'>('idle');
+  const [displayedScreen, setDisplayedScreen] = useState<ScreenType>(currentScreen);
+  const [slideDirection, setSlideDirection] = useState<'left' | 'right'>('right');
+
+  useEffect(() => {
+    if (currentScreen !== prevScreenRef.current) {
+      // Determine slide direction based on screen order
+      const prevOrder = SCREEN_ORDER[prevScreenRef.current] ?? 0;
+      const nextOrder = SCREEN_ORDER[currentScreen] ?? 0;
+      setSlideDirection(nextOrder > prevOrder ? 'right' : 'left');
+
+      // Start exit phase
+      setTransitionPhase('exiting');
+
+      const exitTimer = setTimeout(() => {
+        setDisplayedScreen(currentScreen);
+        setTransitionPhase('entering');
+        prevScreenRef.current = currentScreen;
+
+        const enterTimer = setTimeout(() => {
+          setTransitionPhase('idle');
+        }, 550); // Match entrance animation duration
+
+        return () => clearTimeout(enterTimer);
+      }, 350); // Match exit animation duration
+
+      return () => clearTimeout(exitTimer);
+    }
+  }, [currentScreen]);
+
+  const animationClass =
+    transitionPhase === 'exiting'
+      ? 'animate-page-exit'
+      : transitionPhase === 'entering'
+      ? slideDirection === 'right'
+        ? 'animate-page-slide-in-right'
+        : 'animate-page-slide-in-left'
+      : '';
+
+  return (
+    <div className={`w-full min-h-screen ${animationClass}`}>
+      {children}
     </div>
   );
 }
@@ -45,23 +107,23 @@ export default function App() {
   }, []);
 
   // Quick navigation handlers
-  const handleSelectPortalFromHome = (portal: PortalType) => {
+  const handleSelectPortalFromHome = useCallback((portal: PortalType) => {
     setActivePortal(portal);
     setCurrentScreen('signin');
-  };
+  }, []);
 
-  const handleBackToHome = () => {
+  const handleBackToHome = useCallback(() => {
     setCurrentScreen('home');
-  };
+  }, []);
 
-  const handleLoginSuccess = (userSession: UserSession) => {
+  const handleLoginSuccess = useCallback((userSession: UserSession) => {
     setSession(userSession);
-  };
+  }, []);
 
-  const handleSignOut = () => {
+  const handleSignOut = useCallback(() => {
     setSession(null);
     setCurrentScreen('home');
-  };
+  }, []);
 
   if (isInitializing) {
     return (
@@ -107,27 +169,29 @@ export default function App() {
 
   return (
     <Suspense fallback={<ScreenFallback />}>
-      <div className="relative min-h-screen bg-[#faf7f2]">
-        {/* Screen 1: Dashboard / Home */}
-        {currentScreen === 'home' && (
-          <HomeScreen
-            language={language}
-            onLanguageChange={setLanguage}
-            onSelectPortal={handleSelectPortalFromHome}
-          />
-        )}
+      <div className="relative min-h-screen bg-[#faf7f2] overflow-hidden">
+        <AnimatedPageTransition currentScreen={currentScreen}>
+          {/* Screen 1: Dashboard / Home */}
+          {currentScreen === 'home' && (
+            <HomeScreen
+              language={language}
+              onLanguageChange={setLanguage}
+              onSelectPortal={handleSelectPortalFromHome}
+            />
+          )}
 
-        {/* Screen 2 & 3: Sign In (Pilgrim or Admin) */}
-        {currentScreen === 'signin' && (
-          <SignInScreen
-            language={language}
-            onLanguageChange={setLanguage}
-            activePortal={activePortal}
-            onPortalChange={setActivePortal}
-            onBackToHome={handleBackToHome}
-            onLoginSuccess={handleLoginSuccess}
-          />
-        )}
+          {/* Screen 2 & 3: Sign In (Pilgrim or Admin) */}
+          {currentScreen === 'signin' && (
+            <SignInScreen
+              language={language}
+              onLanguageChange={setLanguage}
+              activePortal={activePortal}
+              onPortalChange={setActivePortal}
+              onBackToHome={handleBackToHome}
+              onLoginSuccess={handleLoginSuccess}
+            />
+          )}
+        </AnimatedPageTransition>
       </div>
     </Suspense>
   );

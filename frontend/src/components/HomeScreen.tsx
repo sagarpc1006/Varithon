@@ -39,21 +39,32 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
 
   return (
     <div className="relative min-h-screen w-full flex flex-col overflow-hidden font-sans select-none bg-black">
-      {/* Full Screen Cinematic Panoramic Background */}
+      {/* Full Screen Cinematic Panoramic Background with Ken Burns Effect */}
       <div className="absolute inset-0 z-0">
         <img
           src="/src/assets/images/pandharpur_wari_full_bg_1787548239851.jpg"
           alt="Lord Vitthal Temple and Pandharpur Wari Pilgrimage"
           referrerPolicy="no-referrer"
-          className="w-full h-full object-cover object-center transform scale-100 filter brightness-95 contrast-105"
+          className="w-full h-full object-cover object-center filter brightness-95 contrast-105 animate-slow-zoom"
         />
         {/* Soft Vignette and Gradient Overlay for perfect typography contrast */}
         <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/25 to-black/75 pointer-events-none" />
         <div className="absolute inset-0 bg-radial from-transparent via-black/20 to-black/60 pointer-events-none" />
       </div>
 
-      {/* Top Header / Navigation Bar */}
-      <header className="relative z-30 w-full max-w-7xl mx-auto px-4 sm:px-8 pt-5 pb-2 flex items-center justify-between">
+      {/* Floating Ambient Particles */}
+      <div className="absolute inset-0 z-[1] pointer-events-none overflow-hidden" aria-hidden="true">
+        <div className="particle particle-gold w-2 h-2 animate-float-particle anim-delay-200" style={{ left: '15%', top: '60%' }} />
+        <div className="particle particle-white w-1.5 h-1.5 animate-float-particle anim-delay-800" style={{ left: '25%', top: '70%' }} />
+        <div className="particle particle-gold w-2.5 h-2.5 animate-float-particle anim-delay-1500" style={{ left: '50%', top: '65%' }} />
+        <div className="particle particle-white w-1.5 h-1.5 animate-float-particle anim-delay-2000" style={{ left: '70%', top: '55%' }} />
+        <div className="particle particle-gold w-2 h-2 animate-float-particle anim-delay-3000" style={{ left: '80%', top: '72%' }} />
+        <div className="particle particle-white w-1 h-1 animate-float-particle anim-delay-1000" style={{ left: '40%', top: '50%' }} />
+        <div className="particle particle-gold w-1.5 h-1.5 animate-float-particle anim-delay-500" style={{ left: '60%', top: '78%' }} />
+      </div>
+
+      {/* Top Header / Navigation Bar — Animated Slide Down */}
+      <header className="relative z-30 w-full max-w-7xl mx-auto px-4 sm:px-8 pt-5 pb-2 flex items-center justify-between animate-header-slide anim-delay-200">
         {/* Left empty balance spacer */}
         <div className="w-24 sm:w-48 hidden md:block" />
 
@@ -73,8 +84,8 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
 
         {/* Right: Login / Sign Up Button & Language Dropdown */}
         <div className="flex items-center gap-2.5 sm:gap-3 justify-end">
-          {/* Login / Sign Up Dropdown Trigger */}
-          <div className="relative" ref={loginMenuRef}>
+          {/* Login / Sign Up Dropdown Trigger — Animated Bounce Entrance */}
+          <div className="relative animate-button-bounce anim-delay-300" ref={loginMenuRef}>
             <button
               id="btn-top-login-signup"
               type="button"
@@ -90,7 +101,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
             {showLoginMenu && (
               <div
                 id="login-selection-popover"
-                className="absolute right-0 mt-2.5 w-64 sm:w-72 rounded-2xl bg-slate-900/95 backdrop-blur-xl border border-white/15 p-2 shadow-2xl z-50 animate-in fade-in slide-in-from-top-2 duration-150 text-white"
+                className="absolute right-0 mt-2.5 w-64 sm:w-72 rounded-2xl bg-slate-900/95 backdrop-blur-xl border border-white/15 p-2 shadow-2xl z-50 animate-modal-card text-white"
               >
                 <div className="px-3 py-2 border-b border-white/10 mb-1">
                   <p className="text-[11px] font-semibold text-orange-400 uppercase tracking-wider">
@@ -199,19 +210,19 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
         <div className="space-y-3 sm:space-y-4 -translate-y-5">
           <h1
             id="sacred-devanagari-hero-chant"
-            className="font-devanagari text-3xl sm:text-5xl md:text-[60px] font-black text-white tracking-wide drop-shadow-[0_4px_16px_rgba(0,0,0,0.85)] flex items-center justify-center gap-2 sm:gap-4 flex-wrap"
+            className="font-devanagari text-3xl sm:text-5xl md:text-[60px] font-black text-white tracking-wide drop-shadow-[0_4px_16px_rgba(0,0,0,0.85)] flex items-center justify-center gap-2 sm:gap-4 flex-wrap animate-hero-float anim-delay-300"
           >
-            <span className="text-[#f97316] font-bold">॥</span>
+            <span className="text-[#f97316] font-bold animate-shimmer-glow">॥</span>
             <span className="text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.9)]">
               {t.chant.replace(/॥/g, '').trim()}
             </span>
-            <span className="text-[#f97316] font-bold">॥</span>
+            <span className="text-[#f97316] font-bold animate-shimmer-glow">॥</span>
           </h1>
 
           {/* Subtitle: Smart. Safe. Spiritual. */}
           <p
             id="hero-tagline-smart"
-            className="text-lg sm:text-2xl md:text-[28px] font-extrabold text-white tracking-tight drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]"
+            className="text-lg sm:text-2xl md:text-[28px] font-extrabold text-white tracking-tight drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)] animate-hero-float anim-delay-500"
           >
             {t.smartSafeSpiritual}
           </p>
@@ -219,7 +230,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
           {/* Subtext: Your AI-powered companion for a safe and blessed Wari. */}
           <p
             id="hero-companion-desc"
-            className="text-xs sm:text-base md:text-lg text-slate-200/95 font-medium max-w-2xl mx-auto leading-relaxed drop-shadow-[0_2px_6px_rgba(0,0,0,0.8)] px-2"
+            className="text-xs sm:text-base md:text-lg text-slate-200/95 font-medium max-w-2xl mx-auto leading-relaxed drop-shadow-[0_2px_6px_rgba(0,0,0,0.8)] px-2 animate-hero-float anim-delay-700"
           >
             {t.heroSubtext}
           </p>
