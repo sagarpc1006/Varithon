@@ -1,7 +1,6 @@
 // Centralized API client for communicating with Django REST backend
 
-const BASE_URL = import.meta.env.VITE_API_URL || '/api';
-
+const BASE_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api';
 interface RequestOptions extends RequestInit {
   data?: any;
 }
@@ -15,7 +14,7 @@ class ApiClient {
 
   private async request<T>(endpoint: string, options: RequestOptions = {}): Promise<T> {
     const url = endpoint.startsWith('http') ? endpoint : `${this.baseUrl}${endpoint.startsWith('/') ? '' : '/'}${endpoint}`;
-    
+
     // Retrieve stored session if available to support robust session persistence across tabs & restarts
     let sessionHeaders: Record<string, string> = {};
     try {

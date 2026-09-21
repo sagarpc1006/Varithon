@@ -366,6 +366,7 @@ class FirebaseLoginView(APIView):
     def post(self, request):
         serializer = FirebaseLoginSerializer(data=request.data)
         if not serializer.is_valid():
+            print(f"FIREBASE LOGIN FAILED (400): Serializer Invalid - {serializer.errors}")
             return Response({'error': 'Invalid Firebase auth data', 'details': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
@@ -384,6 +385,7 @@ class FirebaseLoginView(APIView):
         uid = (claims.get('uid') or claims.get('sub') or '').strip()
         name = (claims.get('name') or '').strip()
         if not email or not uid or not claims.get('email_verified', False):
+            print(f"FIREBASE LOGIN FAILED (400): Missing email/uid or unverified. Email: {email}, UID: {uid}, Verified: {claims.get('email_verified')}")
             return Response({'error': 'The Firebase account must provide a verified email address.'}, status=status.HTTP_400_BAD_REQUEST)
 
         portal_role = serializer.validated_data.get('role', 'pilgrim')
@@ -393,13 +395,17 @@ class FirebaseLoginView(APIView):
         # Find existing user by email
         user = User.objects.filter(email__iexact=email).first()
         if not user:
-            # Firebase proves identity, not application authorization. Admin
-            # accounts must be provisioned by an existing administrator first.
+            # Firebase proves identity, not application authorization.
+            # Admin accounts must be provisioned by an existing administrator first.
             if portal_role == 'admin':
-                return Response({
-                    'error': 'Admin accounts must be provisioned before Firebase sign-in.',
-                    'code': 'ADMIN_PROVISIONING_REQUIRED',
-                }, status=status.HTTP_403_FORBIDDEN)
+                print(f"FIREBASE LOGIN BLOCKED (403): Admin account '{email}' must be provisioned before Firebase sign-in.")
+                return Response(
+                    {'error': 'Admin accounts must be provisioned before Firebase sign-in.'},
+                    status=status.HTTP_403_FORBIDDEN
+                )
+
+
+            # Parse name and create a new Django user
             name_parts = (name or email.split('@')[0]).split(' ', 1)
             first_name = name_parts[0]
             last_name = name_parts[1] if len(name_parts) > 1 else ''
@@ -413,6 +419,9 @@ class FirebaseLoginView(APIView):
                 last_name=last_name,
                 password=secrets.token_urlsafe(20)
             )
+
+
+
             profile = UserProfile.objects.create(
                 user=user,
                 firebase_uid=uid,
@@ -436,25 +445,10 @@ class FirebaseLoginView(APIView):
             if not profile.firebase_uid:
                 profile.firebase_uid = uid
                 profile.save(update_fields=['firebase_uid'])
-            # Enforce strict role match
-            if profile.role != portal_role:
-                role_titles = {
-                    'admin': 'Admin / Seva Team',
-                    'volunteer': 'Volunteer / Sevekar',
-                    'pilgrim': 'Pilgrim / Warkari',
-                }
-                curr_title = role_titles.get(profile.role, profile.role.title())
-                code_map = {
-                    'admin': 'ROLE_MISMATCH_ADMIN',
-                    'volunteer': 'ROLE_MISMATCH_VOLUNTEER',
-                    'pilgrim': 'ROLE_MISMATCH_PILGRIM',
-                }
-                return Response({
-                    'error': f'This account is registered as a {curr_title} account. Please switch to the {curr_title} Portal to sign in.',
-                    'code': code_map.get(profile.role, 'ROLE_MISMATCH'),
-                    'correct_role': profile.role,
-                    'name': user.get_full_name() or user.username
-                }, status=status.HTTP_403_FORBIDDEN)
+            # Instead of blocking the user if they click Google Sign-In from the wrong portal tab,
+            # we simply accept their true role from the database. The frontend's onLoginSuccess
+            # function will then automatically route them to the correct dashboard!
+            portal_role = profile.role
 
             # Update name if provided and missing
             if not user.first_name and name:

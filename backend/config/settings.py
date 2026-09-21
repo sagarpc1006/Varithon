@@ -19,8 +19,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(BASE_DIR / '.env')
 
 # Firebase Admin verifies client-issued Firebase ID tokens. Keep credentials
-# outside the repository via GOOGLE_APPLICATION_CREDENTIALS.
+# outside the repository via GOOGLE_APPLICATION_CREDENTIALS or
+# FIREBASE_CREDENTIALS_PATH (the service-account JSON file).
 FIREBASE_PROJECT_ID = os.environ.get('FIREBASE_PROJECT_ID', '')
+FIREBASE_CREDENTIALS_PATH = os.environ.get('GOOGLE_APPLICATION_CREDENTIALS', '')
 
 
 # Quick-start development settings - unsuitable for production
@@ -205,3 +207,7 @@ REST_FRAMEWORK = {
     ],
 }
 
+
+
+from corsheaders.defaults import default_headers
+CORS_ALLOW_HEADERS = list(default_headers) + ['x-user-id', 'x-user-identifier', 'x-user-role']

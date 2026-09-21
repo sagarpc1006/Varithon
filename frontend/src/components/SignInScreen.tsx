@@ -289,12 +289,23 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
     setPromptBanner(null);
     try {
       const session = await authService.googleLogin(activePortal);
-      showToast(`Google authenticated for ${session.name}`);
+      // Backend auto-detects the user's true role — show a friendly message
+      const roleLabel = session.role === 'admin' ? 'Admin' : session.role === 'volunteer' ? 'Volunteer' : 'Pilgrim';
+      showToast(`Welcome back, ${session.name}! Routing to ${roleLabel} dashboard...`);
       onLoginSuccess(session);
     } catch (err: any) {
       if (err?.code === 'VOLUNTEER_PENDING_APPROVAL') {
         showToast('Volunteer request received. Please wait for Admin approval.', 'info');
         return;
+      }
+      // Handle any remaining role mismatch codes gracefully
+      if (err?.data?.correct_role) {
+        showToast(`Switching to ${err.data.correct_role} portal and retrying...`, 'info');
+        try {
+          const session = await authService.googleLogin(err.data.correct_role as any);
+          onLoginSuccess(session);
+          return;
+        } catch {}
       }
       showToast(err.message || 'Google authentication failed', 'error');
     } finally {
@@ -948,10 +959,13 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
             type="button"
             onClick={handleGoogleSignIn}
             disabled={isSubmitting}
-            className="w-full py-3 px-4 bg-white hover:bg-slate-50 border border-slate-200/90 rounded-2xl text-xs sm:text-sm font-semibold text-slate-700 shadow-xs hover:border-slate-300 flex items-center justify-center gap-3 transition-all cursor-pointer"
+            className="w-full py-3 px-4 bg-white hover:bg-blue-50 border-2 border-slate-200 hover:border-blue-300 rounded-xl font-semibold text-slate-700 shadow-sm hover:shadow-md flex items-center gap-3 transition-all cursor-pointer group"
           >
-            <GoogleIcon className="w-4 h-4 shrink-0" />
-            <span>{t.continueWithGoogle}</span>
+            <GoogleIcon className="w-5 h-5 shrink-0 group-hover:scale-110 transition-transform" />
+            <div className="text-left">
+              <div className="text-sm font-semibold text-slate-800">{t.continueWithGoogle}</div>
+              <div className="text-xs text-slate-400 font-normal">Existing account? Auto-detected &amp; signed in</div>
+            </div>
           </button>
 
           {/* Card Footer Register/Access Link */}

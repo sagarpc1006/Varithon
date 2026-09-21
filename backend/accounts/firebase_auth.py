@@ -1,5 +1,6 @@
 """Firebase Admin token verification, initialized lazily for Django."""
 
+import os
 from django.conf import settings
 import firebase_admin
 from firebase_admin import auth, credentials
@@ -15,8 +16,22 @@ def _get_app():
     try:
         return firebase_admin.get_app()
     except ValueError:
+        # Build credentials: prefer an explicit service-account JSON file so
+        # that the setup works locally without setting any OS-level env vars.
+        cred_path = getattr(settings, 'FIREBASE_CREDENTIALS_PATH', '') or ''
+        # Normalise Windows paths that may have been written with backslashes.
+        if cred_path:
+            cred_path = os.path.normpath(cred_path)
+
+        if cred_path and os.path.isfile(cred_path):
+            cred = credentials.Certificate(cred_path)
+        else:
+            # Fallback: rely on Application Default Credentials (works on GCP,
+            # or when GOOGLE_APPLICATION_CREDENTIALS is set at the OS level).
+            cred = credentials.ApplicationDefault()
+
         return firebase_admin.initialize_app(
-            credentials.ApplicationDefault(),
+            cred,
             {'projectId': settings.FIREBASE_PROJECT_ID},
         )
 
