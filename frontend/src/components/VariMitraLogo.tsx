@@ -74,7 +74,7 @@ export const VariMitraLogo: React.FC<VariMitraLogoProps> = ({
                 className={`text-[10px] sm:text-[12px] font-bold tracking-[0.18em] uppercase mt-0.5 whitespace-nowrap ${
                   isDark
                     ? 'text-amber-200/90 drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]'
-                    : 'text-[#5c6b7d]'
+                    : 'text-[#6b2819]'
                 }`}
               >
                 {tagline}

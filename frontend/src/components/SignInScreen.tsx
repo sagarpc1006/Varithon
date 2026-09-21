@@ -25,7 +25,9 @@ import {
   Info,
   Radio,
   UserCheck,
+  Users,
 } from 'lucide-react';
+import templeBgImg from '../assets/images/pandharpur_wari_full_bg_1787548239851.jpg';
 import { Language, PortalType, UserSession } from '../types';
 import { translations } from '../translations';
 import { VariMitraLogo } from './VariMitraLogo';
@@ -406,8 +408,35 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
     }
   };
 
+  // Helper to split portal title like "Pilgrim / Warkari" into two stacked lines matching the UI design
+  const renderPortalLabel = (title: string) => {
+    const parts = title.split(' / ');
+    if (parts.length === 2) {
+      return (
+        <span className="text-left leading-[1.15] inline-block">
+          <span className="block text-[11px] sm:text-xs font-semibold">{parts[0]} /</span>
+          <span className="block text-[11px] sm:text-xs font-semibold">{parts[1]}</span>
+        </span>
+      );
+    }
+    return <span className="text-xs sm:text-sm font-semibold">{title}</span>;
+  };
+
   return (
-    <div className="relative min-h-screen bg-[#faf7f2] flex flex-col justify-between overflow-x-hidden font-sans text-slate-800">
+    <div className="relative min-h-screen w-full flex flex-col justify-between overflow-x-hidden font-sans text-slate-800">
+      {/* Panoramic Soft-Blurred Sacred Pandharpur Temple Photographic Background with Warm Sunset Glow */}
+      <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none select-none">
+        <img
+          src={templeBgImg}
+          alt="Lord Vitthal Temple Background"
+          className="w-full h-full object-cover object-center filter blur-[5px] scale-105"
+          referrerPolicy="no-referrer"
+        />
+        {/* Soft daylight / warm amber translucent veil matching mockup */}
+        <div className="absolute inset-0 bg-white/50 backdrop-blur-[1px]" />
+        <div className="absolute inset-0 bg-gradient-to-b from-white/40 via-amber-50/25 to-[#faf6ef]/60" />
+      </div>
+
       {/* Toast Notification */}
       {toast && (
         <div
@@ -434,21 +463,21 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
       )}
 
       {/* Top Header */}
-      <header className="relative z-20 w-full max-w-6xl mx-auto px-4 sm:px-6 pt-5 pb-3 flex items-center justify-between">
+      <header className="relative z-20 w-full max-w-7xl mx-auto px-4 sm:px-8 pt-5 pb-3 flex items-center justify-between">
         {/* Left: Back to Home button */}
         <button
           id="btn-back-to-home"
           type="button"
           onClick={onBackToHome}
-          className="inline-flex items-center gap-1 text-xs sm:text-sm font-medium text-amber-700 hover:text-amber-800 transition-colors py-1.5 px-2.5 rounded-lg hover:bg-amber-100/50 cursor-pointer"
+          className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-[#ea580c] hover:text-[#c2410c] transition-colors py-1.5 px-2 rounded-lg cursor-pointer active:scale-95"
         >
-          <ChevronLeft className="w-4 h-4 text-amber-600" />
+          <ChevronLeft className="w-4 h-4 stroke-[2.5]" />
           <span>{t.backToHome}</span>
         </button>
 
         {/* Center: Logo */}
         <div className="flex-1 flex justify-center cursor-pointer" onClick={onBackToHome}>
-          <VariMitraLogo tagline={t.tagline} />
+          <VariMitraLogo tagline={t.tagline} size={48} fontSize={28} />
         </div>
 
         {/* Right: Language Dropdown */}
@@ -458,18 +487,18 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
       </header>
 
       {/* Center Sign In Section */}
-      <main className="relative z-10 flex-1 flex flex-col items-center justify-center px-4 py-6 max-w-lg mx-auto w-full">
+      <main className="relative z-10 flex-1 flex flex-col items-center justify-center px-4 py-6 sm:py-8 max-w-xl mx-auto w-full">
         {/* Main Heading */}
-        <div className="text-center space-y-1.5 mb-5">
-          <h1 id="signin-title" className="text-2xl sm:text-3xl font-extrabold text-[#111827] tracking-tight">
+        <div className="text-center space-y-1 mb-5">
+          <h1 id="signin-title" className="text-3xl sm:text-[34px] font-bold text-slate-900 tracking-tight">
             {t.signInHeading}
           </h1>
 
-          {/* Decorative Sparkle */}
-          <div className="flex items-center justify-center gap-2 text-amber-500">
-            <div className="h-[1px] w-6 bg-amber-400/60" />
-            <Sparkles className="w-3.5 h-3.5 fill-amber-500 text-amber-500" />
-            <div className="h-[1px] w-6 bg-amber-400/60" />
+          {/* Saffron & Gold Decorative Sparkle Motif */}
+          <div className="flex items-center justify-center gap-2 py-0.5 my-1 text-amber-500">
+            <div className="h-[1.5px] w-6 bg-gradient-to-r from-transparent to-amber-500/80" />
+            <Sparkles className="w-3.5 h-3.5 fill-amber-400 text-amber-500" />
+            <div className="h-[1.5px] w-6 bg-gradient-to-l from-transparent to-amber-500/80" />
           </div>
 
           <p className="text-xs sm:text-sm text-slate-500 font-medium">{t.choosePortal}</p>
@@ -478,7 +507,7 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
         {/* Segmented Switcher (Pilgrim vs Volunteer vs Admin) */}
         <div
           id="portal-tab-selector"
-          className="w-full max-w-md bg-white p-1 rounded-full border border-slate-200/90 shadow-sm flex items-center justify-between gap-1 mb-5"
+          className="w-full max-w-[460px] bg-white/95 backdrop-blur-md p-1.5 rounded-full border border-slate-200/90 shadow-[0_4px_20px_rgba(0,0,0,0.06)] flex items-center justify-between gap-1 mb-6"
         >
           {/* Pilgrim Tab */}
           <button
@@ -488,14 +517,16 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
               onPortalChange('pilgrim');
               setPromptBanner(null);
             }}
-            className={`flex-1 flex items-center justify-center gap-1.5 py-2 sm:py-2.5 px-2.5 rounded-full text-xs sm:text-sm font-semibold transition-all duration-200 cursor-pointer ${
+            className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 sm:px-4 rounded-full text-xs sm:text-sm font-semibold transition-all duration-200 cursor-pointer ${
               activePortal === 'pilgrim'
-                ? 'bg-[#ea580c] text-white shadow-sm'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                ? 'bg-gradient-to-r from-orange-500 to-[#ea580c] text-white shadow-sm'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/50'
             }`}
           >
-            <Footprints className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${activePortal === 'pilgrim' ? 'text-white' : 'text-orange-500'}`} />
-            <span>{t.pilgrimTitle}</span>
+            <div className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 ${activePortal === 'pilgrim' ? 'bg-white/20 text-white' : 'text-orange-500'}`}>
+              <Footprints className="w-3.5 h-3.5" />
+            </div>
+            {renderPortalLabel(t.pilgrimTitle)}
           </button>
 
           {/* Volunteer Tab */}
@@ -506,19 +537,16 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
               onPortalChange('volunteer');
               setPromptBanner(null);
             }}
-            className={`flex-1 flex items-center justify-center gap-1.5 py-2 sm:py-2.5 px-2.5 rounded-full text-xs sm:text-sm font-semibold transition-all duration-200 cursor-pointer ${
+            className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 sm:px-4 rounded-full text-xs sm:text-sm font-semibold transition-all duration-200 cursor-pointer ${
               activePortal === 'volunteer'
-                ? 'bg-[#16a34a] text-white shadow-sm'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                ? 'bg-gradient-to-r from-emerald-600 to-emerald-700 text-white shadow-sm'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/50'
             }`}
           >
-            <svg viewBox="0 0 24 24" className={`w-3.5 h-3.5 sm:w-4 sm:h-4 fill-none stroke-current ${activePortal === 'volunteer' ? 'text-white' : 'text-emerald-600'}`} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-              <circle cx="9" cy="7" r="4" />
-              <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
-              <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-            </svg>
-            <span>{t.volunteerTitle}</span>
+            <div className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 ${activePortal === 'volunteer' ? 'bg-white/20 text-white' : 'text-teal-600'}`}>
+              <Users className="w-3.5 h-3.5" />
+            </div>
+            {renderPortalLabel(t.volunteerTitle)}
           </button>
 
           {/* Admin Tab */}
@@ -529,40 +557,44 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
               onPortalChange('admin');
               setPromptBanner(null);
             }}
-            className={`flex-1 flex items-center justify-center gap-1.5 py-2 sm:py-2.5 px-2.5 rounded-full text-xs sm:text-sm font-semibold transition-all duration-200 cursor-pointer ${
+            className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 sm:px-4 rounded-full text-xs sm:text-sm font-semibold transition-all duration-200 cursor-pointer ${
               activePortal === 'admin'
-                ? 'bg-[#1e293b] text-white shadow-sm'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                ? 'bg-gradient-to-r from-slate-800 to-slate-900 text-white shadow-sm'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/50'
             }`}
           >
-            <Shield className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${activePortal === 'admin' ? 'text-white' : 'text-slate-700'}`} />
-            <span>{t.adminTitle}</span>
+            <div className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 ${activePortal === 'admin' ? 'bg-white/20 text-white' : 'text-slate-600'}`}>
+              <Shield className="w-3.5 h-3.5" />
+            </div>
+            {renderPortalLabel(t.adminTitle)}
           </button>
         </div>
 
         {/* Auth Card Container */}
         <div
           id="auth-card"
-          className="w-full bg-white rounded-3xl p-6 sm:p-8 shadow-xl border border-slate-200/80 transition-all duration-300 relative"
+          className="w-full max-w-[460px] bg-white rounded-[32px] p-7 sm:p-9 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.12)] border border-white/80 transition-all duration-300 relative"
         >
           {/* Top Badge Icon & Portal Header */}
-          <div className="flex flex-col items-center text-center space-y-1.5 mb-5">
-            {activePortal === 'pilgrim' ? (
-              <PilgrimBadgeIcon size="md" className="mb-1" />
-            ) : activePortal === 'volunteer' ? (
-              <VolunteerBadgeIcon size="md" className="mb-1" />
-            ) : (
-              <AdminBadgeIcon size="md" className="mb-1" />
-            )}
+          <div className="flex flex-col items-center text-center mb-6">
+            <div className="mb-2">
+              {activePortal === 'pilgrim' ? (
+                <PilgrimBadgeIcon size="md" />
+              ) : activePortal === 'volunteer' ? (
+                <VolunteerBadgeIcon size="md" />
+              ) : (
+                <AdminBadgeIcon size="md" />
+              )}
+            </div>
 
-            <h2 className="text-lg sm:text-xl font-bold text-slate-800">
+            <h2 className="text-xl sm:text-2xl font-bold text-slate-900">
               {activePortal === 'pilgrim'
                 ? t.pilgrimSignInTitle
                 : activePortal === 'volunteer'
                 ? t.volunteerSignInTitle
                 : t.adminSignInTitle}
             </h2>
-            <p className="text-xs sm:text-sm text-slate-500">
+            <p className="text-xs sm:text-sm text-slate-500 mt-1">
               {activePortal === 'pilgrim'
                 ? t.pilgrimWelcome
                 : activePortal === 'volunteer'
@@ -751,175 +783,161 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
             <form onSubmit={handleSignIn} className="space-y-4">
               {/* Input 1: Mobile Number for Pilgrim OR Identifier for Volunteer OR Email ID for Admin */}
               <div>
-                <label className="text-[11px] font-bold text-slate-600 uppercase tracking-wide mb-1.5 block">
+                <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2 block">
                   {activePortal === 'pilgrim'
                     ? t.mobileNumberLabel
                     : activePortal === 'volunteer'
                     ? t.volunteerIdLabel
                     : t.emailLabel}
                 </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                <div className="relative flex items-center bg-[#f8f9fb] border border-slate-200/90 rounded-2xl px-4 py-3.5 transition-all focus-within:bg-white focus-within:border-orange-500 focus-within:ring-2 focus-within:ring-orange-500/20">
                   {activePortal === 'pilgrim' ? (
-                    <span className="text-xs font-bold text-slate-500 flex items-center gap-1">
-                      <Phone className="w-3.5 h-3.5 text-slate-500" />
-                      +91
-                    </span>
+                    <div className="flex items-center gap-1.5 text-slate-500 mr-2.5 shrink-0">
+                      <Phone className="w-4 h-4 text-slate-400" />
+                      <span className="text-xs sm:text-sm font-semibold">+91</span>
+                    </div>
                   ) : activePortal === 'volunteer' ? (
-                    <Phone className="w-4 h-4 text-emerald-600" />
+                    <Phone className="w-4 h-4 text-emerald-600 mr-3 shrink-0" />
                   ) : (
-                    <Mail className="w-4 h-4 text-slate-500" />
+                    <Mail className="w-4 h-4 text-slate-400 mr-3 shrink-0" />
+                  )}
+
+                  {activePortal === 'pilgrim' ? (
+                    <input
+                      id="input-mobile-number"
+                      type="tel"
+                      value={mobileNumber}
+                      onChange={(e) => {
+                        setMobileNumber(e.target.value);
+                        if (promptBanner) setPromptBanner(null);
+                      }}
+                      placeholder="9876543210"
+                      maxLength={14}
+                      required
+                      className="w-full bg-transparent text-sm font-medium text-slate-800 placeholder-slate-400 focus:outline-none"
+                    />
+                  ) : activePortal === 'volunteer' ? (
+                    <input
+                      id="input-volunteer-identifier"
+                      type="text"
+                      value={volunteerIdentifier}
+                      onChange={(e) => {
+                        setVolunteerIdentifier(e.target.value);
+                        if (promptBanner) setPromptBanner(null);
+                      }}
+                      placeholder="9823114455 or volunteer@varimitra.org"
+                      required
+                      className="w-full bg-transparent text-sm font-medium text-slate-800 placeholder-slate-400 focus:outline-none"
+                    />
+                  ) : (
+                    <input
+                      id="input-email-id"
+                      type="email"
+                      value={emailId}
+                      onChange={(e) => {
+                        setEmailId(e.target.value);
+                        if (promptBanner) setPromptBanner(null);
+                      }}
+                      placeholder="officer@varimitra.org"
+                      required
+                      className="w-full bg-transparent text-sm font-medium text-slate-800 placeholder-slate-400 focus:outline-none"
+                    />
                   )}
                 </div>
-                {activePortal === 'pilgrim' ? (
-                  <input
-                    id="input-mobile-number"
-                    type="tel"
-                    value={mobileNumber}
-                    onChange={(e) => {
-                      setMobileNumber(e.target.value);
-                      if (promptBanner) setPromptBanner(null);
-                    }}
-                    placeholder="9876543210 (10 digits)"
-                    maxLength={14}
-                    required
-                    className="w-full pl-16 pr-4 py-3 bg-[#f8f9fa] border border-slate-200 rounded-xl text-sm font-medium text-slate-800 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all"
-                  />
-                ) : activePortal === 'volunteer' ? (
-                  <input
-                    id="input-volunteer-identifier"
-                    type="text"
-                    value={volunteerIdentifier}
-                    onChange={(e) => {
-                      setVolunteerIdentifier(e.target.value);
-                      if (promptBanner) setPromptBanner(null);
-                    }}
-                    placeholder="9823114455 or volunteer@varimitra.org"
-                    required
-                    className="w-full pl-10 pr-4 py-3 bg-[#f8f9fa] border border-slate-200 rounded-xl text-sm font-medium text-slate-800 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all"
-                  />
-                ) : (
-                  <input
-                    id="input-email-id"
-                    type="email"
-                    value={emailId}
-                    onChange={(e) => {
-                      setEmailId(e.target.value);
-                      if (promptBanner) setPromptBanner(null);
-                    }}
-                    placeholder="officer@varimitra.org"
-                    required
-                    className="w-full pl-10 pr-4 py-3 bg-[#f8f9fa] border border-slate-200 rounded-xl text-sm font-medium text-slate-800 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-slate-700/20 focus:border-slate-700 transition-all"
-                  />
-                )}
               </div>
-            </div>
 
-            {/* Input 2: Password */}
-            <div>
-              <label className="text-[11px] font-bold text-slate-600 uppercase tracking-wide mb-1.5 block">
-                {t.passwordLabel}
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                  <Lock className="w-4 h-4 text-slate-500" />
+              {/* Input 2: Password */}
+              <div>
+                <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2 block">
+                  {t.passwordLabel}
+                </label>
+                <div className="relative flex items-center bg-[#f8f9fb] border border-slate-200/90 rounded-2xl px-4 py-3.5 transition-all focus-within:bg-white focus-within:border-orange-500 focus-within:ring-2 focus-within:ring-orange-500/20">
+                  <Lock className="w-4 h-4 text-slate-400 mr-3 shrink-0" />
+                  <input
+                    id="input-password"
+                    type={showPassword ? 'text' : 'password'}
+                    value={password}
+                    onChange={(e) => {
+                      setPassword(e.target.value);
+                      if (promptBanner) setPromptBanner(null);
+                    }}
+                    placeholder={t.passwordPlaceholder}
+                    required
+                    className="w-full bg-transparent text-sm font-medium text-slate-800 placeholder-slate-400 focus:outline-none"
+                  />
+                  <button
+                    type="button"
+                    id="btn-toggle-password"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="text-slate-400 hover:text-slate-600 transition-colors cursor-pointer ml-2 shrink-0"
+                    aria-label={showPassword ? 'Hide password' : 'Show password'}
+                  >
+                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
                 </div>
-                <input
-                  id="input-password"
-                  type={showPassword ? 'text' : 'password'}
-                  value={password}
-                  onChange={(e) => {
-                    setPassword(e.target.value);
-                    if (promptBanner) setPromptBanner(null);
-                  }}
-                  placeholder={t.passwordPlaceholder}
-                  required
-                  className={`w-full pl-10 pr-11 py-3 bg-[#f8f9fa] border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:bg-white focus:outline-none transition-all ${
-                    activePortal === 'pilgrim'
-                      ? 'focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500'
-                      : activePortal === 'volunteer'
-                      ? 'focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500'
-                      : 'focus:ring-2 focus:ring-slate-700/20 focus:border-slate-700'
-                  }`}
-                />
-                <button
-                  type="button"
-                  id="btn-toggle-password"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 cursor-pointer"
-                >
-                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                </button>
-              </div>
 
-              {/* Forgot Password Link */}
-              <div className="flex justify-end mt-2">
-                <button
-                  type="button"
-                  id="btn-forgot-password"
-                  onClick={() => {
-                    setForgotIdentifier(
+                {/* Forgot Password Link */}
+                <div className="flex justify-end mt-2">
+                  <button
+                    type="button"
+                    id="btn-forgot-password"
+                    onClick={() => {
+                      setForgotIdentifier(
+                        activePortal === 'pilgrim'
+                          ? mobileNumber
+                          : activePortal === 'volunteer'
+                          ? volunteerIdentifier
+                          : emailId
+                      );
+                      setForgotStep('request');
+                      setShowForgotModal(true);
+                    }}
+                    className={`text-xs font-semibold hover:underline cursor-pointer transition-colors ${
                       activePortal === 'pilgrim'
-                        ? mobileNumber
+                        ? 'text-[#ea580c] hover:text-[#c2410c]'
                         : activePortal === 'volunteer'
-                        ? volunteerIdentifier
-                        : emailId
-                    );
-                    setForgotStep('request');
-                    setShowForgotModal(true);
-                  }}
-                  className={`text-xs font-semibold hover:underline cursor-pointer transition-colors ${
-                    activePortal === 'pilgrim'
-                      ? 'text-[#ea580c] hover:text-[#c2410c]'
-                      : activePortal === 'volunteer'
-                      ? 'text-[#16a34a] hover:text-[#15803d]'
-                      : 'text-[#1e293b] hover:text-slate-900'
-                  }`}
-                >
-                  {t.forgotPassword}
-                </button>
+                        ? 'text-[#16a34a] hover:text-[#15803d]'
+                        : 'text-[#1e293b] hover:text-slate-900'
+                    }`}
+                  >
+                    {t.forgotPassword}
+                  </button>
+                </div>
               </div>
-            </div>
 
-            {/* Primary Submit Button */}
-            <button
-              id={
-                activePortal === 'pilgrim'
-                  ? 'btn-submit-pilgrim'
-                  : activePortal === 'volunteer'
-                  ? 'btn-submit-volunteer'
-                  : 'btn-submit-admin'
-              }
-              type="submit"
-              disabled={isSubmitting}
-              className={`w-full py-3 px-4 rounded-xl text-sm font-bold text-white shadow-sm hover:shadow transition-all duration-200 cursor-pointer active:scale-[0.99] disabled:opacity-75 flex items-center justify-center gap-2 ${
-                activePortal === 'pilgrim'
-                  ? 'bg-[#ea580c] hover:bg-[#d94806]'
-                  : activePortal === 'volunteer'
-                  ? 'bg-[#16a34a] hover:bg-[#15803d]'
-                  : 'bg-[#1e293b] hover:bg-[#0f172a]'
-              }`}
-            >
-              {isSubmitting ? (
-                <>
-                  <span className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
-                  <span>Connecting to Backend...</span>
-                </>
-              ) : activePortal === 'pilgrim' ? (
-                t.signInPilgrimBtn
-              ) : activePortal === 'volunteer' ? (
-                t.signInVolunteerBtn
-              ) : (
-                t.signInAdminBtn
-              )}
-            </button>
-          </form>
+              {/* Primary Submit Button */}
+              <button
+                id={
+                  activePortal === 'pilgrim'
+                    ? 'btn-submit-pilgrim'
+                    : activePortal === 'volunteer'
+                    ? 'btn-submit-volunteer'
+                    : 'btn-submit-admin'
+                }
+                type="submit"
+                disabled={isSubmitting}
+                className="w-full mt-5 py-3.5 px-4 bg-gradient-to-r from-orange-500 to-[#ea580c] hover:from-orange-600 hover:to-orange-700 text-white rounded-2xl font-bold text-sm shadow-md shadow-orange-500/25 active:scale-[0.99] transition-all cursor-pointer flex items-center justify-center gap-2 disabled:opacity-75"
+              >
+                {isSubmitting ? (
+                  <>
+                    <span className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
+                    <span>Connecting to Backend...</span>
+                  </>
+                ) : activePortal === 'pilgrim' ? (
+                  t.signInPilgrimBtn
+                ) : activePortal === 'volunteer' ? (
+                  t.signInVolunteerBtn
+                ) : (
+                  t.signInAdminBtn
+                )}
+              </button>
+            </form>
           )}
 
           {/* Divider */}
-          <div className="relative my-4 flex items-center justify-center">
-            <div className="border-t border-slate-200 w-full" />
-            <span className="bg-white px-3 text-xs text-slate-400 uppercase font-medium">
+          <div className="relative my-5 flex items-center justify-center">
+            <div className="border-t border-slate-200/80 w-full" />
+            <span className="bg-white px-3 text-[11px] font-bold text-slate-400 uppercase tracking-wider">
               {t.or}
             </span>
           </div>
@@ -930,14 +948,14 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
             type="button"
             onClick={handleGoogleSignIn}
             disabled={isSubmitting}
-            className="w-full py-2.5 px-4 bg-white hover:bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm font-semibold text-slate-700 shadow-xs hover:border-slate-300 flex items-center justify-center gap-3 transition-all cursor-pointer"
+            className="w-full py-3 px-4 bg-white hover:bg-slate-50 border border-slate-200/90 rounded-2xl text-xs sm:text-sm font-semibold text-slate-700 shadow-xs hover:border-slate-300 flex items-center justify-center gap-3 transition-all cursor-pointer"
           >
-            <GoogleIcon className="w-4 h-4" />
+            <GoogleIcon className="w-4 h-4 shrink-0" />
             <span>{t.continueWithGoogle}</span>
           </button>
 
           {/* Card Footer Register/Access Link */}
-          <div className="mt-5 text-center text-xs text-slate-500">
+          <div className="mt-6 text-center text-xs text-slate-500">
             {activePortal === 'pilgrim' ? (
               <span>
                 {t.newHere}{' '}
@@ -957,7 +975,7 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
                   type="button"
                   id="btn-create-volunteer-account"
                   onClick={() => openRegisterModalWithIdentifier(volunteerIdentifier)}
-                  className="font-bold text-[#16a34a] hover:underline cursor-pointer"
+                  className="font-bold text-emerald-600 hover:underline cursor-pointer"
                 >
                   {t.createVolunteerAccount}
                 </button>
@@ -969,7 +987,7 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
                   type="button"
                   id="btn-request-admin-access"
                   onClick={() => openRegisterModalWithIdentifier(emailId)}
-                  className="font-bold text-[#1e293b] hover:underline cursor-pointer"
+                  className="font-bold text-slate-900 hover:underline cursor-pointer"
                 >
                   {t.requestAccess}
                 </button>
@@ -978,71 +996,6 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
           </div>
         </div>
       </main>
-
-      {/* Bottom Feature Highlights Bar */}
-      <footer className="relative z-10 w-full bg-[#edeae1]/80 backdrop-blur-sm border-t border-[#ded9cb] py-5 px-4 sm:px-6 mt-4">
-        <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-          {/* Feature 1: AI Assistant */}
-          <div id="feature-ai-assistant" className="flex items-start gap-3.5">
-            <div className="w-10 h-10 rounded-full bg-slate-200/90 text-slate-700 flex items-center justify-center flex-shrink-0 shadow-xs">
-              <Bot className="w-5 h-5 text-slate-700" />
-            </div>
-            <div>
-              <h4 className="text-xs sm:text-sm font-bold text-slate-800">
-                {t.aiAssistantTitle}
-              </h4>
-              <p className="text-[11px] sm:text-xs text-slate-600 leading-snug">
-                {t.aiAssistantDesc}
-              </p>
-            </div>
-          </div>
-
-          {/* Feature 2: Live Location */}
-          <div id="feature-live-location" className="flex items-start gap-3.5">
-            <div className="w-10 h-10 rounded-full bg-slate-200/90 text-slate-700 flex items-center justify-center flex-shrink-0 shadow-xs">
-              <MapPin className="w-5 h-5 text-slate-700" />
-            </div>
-            <div>
-              <h4 className="text-xs sm:text-sm font-bold text-slate-800">
-                {t.liveLocationTitle}
-              </h4>
-              <p className="text-[11px] sm:text-xs text-slate-600 leading-snug">
-                {t.liveLocationDesc}
-              </p>
-            </div>
-          </div>
-
-          {/* Feature 3: Emergency SOS */}
-          <div id="feature-emergency-sos" className="flex items-start gap-3.5">
-            <div className="w-10 h-10 rounded-full bg-slate-200/90 text-slate-700 flex items-center justify-center flex-shrink-0 shadow-xs">
-              <AlertTriangle className="w-5 h-5 text-slate-700" />
-            </div>
-            <div>
-              <h4 className="text-xs sm:text-sm font-bold text-slate-800">
-                {t.emergencySosTitle}
-              </h4>
-              <p className="text-[11px] sm:text-xs text-slate-600 leading-snug">
-                {t.emergencySosDesc}
-              </p>
-            </div>
-          </div>
-
-          {/* Feature 4: Smart Alerts */}
-          <div id="feature-smart-alerts" className="flex items-start gap-3.5">
-            <div className="w-10 h-10 rounded-full bg-slate-200/90 text-slate-700 flex items-center justify-center flex-shrink-0 shadow-xs">
-              <Bell className="w-5 h-5 text-slate-700" />
-            </div>
-            <div>
-              <h4 className="text-xs sm:text-sm font-bold text-slate-800">
-                {t.smartAlertsTitle}
-              </h4>
-              <p className="text-[11px] sm:text-xs text-slate-600 leading-snug">
-                {t.smartAlertsDesc}
-              </p>
-            </div>
-          </div>
-        </div>
-      </footer>
 
       {/* Forgot Password / OTP Modal */}
       {showForgotModal && (
