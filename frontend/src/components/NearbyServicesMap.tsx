@@ -19,6 +19,7 @@ import {
   Shield,
   HeartHandshake,
 } from 'lucide-react';
+import { api } from '../services/api';
 
 // Fix Leaflet default icon paths
 import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png';
@@ -247,8 +248,7 @@ export const NearbyServicesMap: React.FC<NearbyServicesMapProps> = ({ onBack, va
 
   // ── 2. Fetch Palkhi routes ──
   useEffect(() => {
-    fetch('/api/wari-2025/')
-      .then((r) => r.json())
+    api.get<{ routes: Route[] }>('/wari-2025/')
       .then((data) => {
         if (data && Array.isArray(data.routes)) {
           setRoutes(data.routes);
@@ -260,12 +260,9 @@ export const NearbyServicesMap: React.FC<NearbyServicesMapProps> = ({ onBack, va
   // ── 3. Fetch resources ──
   const fetchResources = useCallback(async () => {
     try {
-      const res = await fetch('/api/nearby-resources/');
-      if (res.ok) {
-        const data = await res.json();
-        if (data && Array.isArray(data.resources)) {
-          setResources(data.resources);
-        }
+      const data = await api.get<{ resources: NearbyResourceData[] }>('/nearby-resources/');
+      if (data && Array.isArray(data.resources)) {
+        setResources(data.resources);
       }
     } catch (err) {
       console.error('[NearbyServicesMap] Resource fetch error:', err);
@@ -305,14 +302,13 @@ export const NearbyServicesMap: React.FC<NearbyServicesMapProps> = ({ onBack, va
   // ── 5. Add / Remove Resource Handlers (smooth, no zoom resets) ──
   const handleAddResource = useCallback(async (type: string, locationName: string, lat: number, lon: number) => {
     try {
-      const res = await fetch('/api/nearby-resources/', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ resource_type: type, location_name: locationName, latitude: lat, longitude: lon }),
+      await api.post('/nearby-resources/', {
+        resource_type: type,
+        location_name: locationName,
+        latitude: lat,
+        longitude: lon,
       });
-      if (res.ok) {
-        await fetchResources();
-      }
+      await fetchResources();
     } catch (e) {
       console.error('Add resource error:', e);
     }
@@ -320,10 +316,8 @@ export const NearbyServicesMap: React.FC<NearbyServicesMapProps> = ({ onBack, va
 
   const handleRemoveResource = useCallback(async (id: number) => {
     try {
-      const res = await fetch(`/api/nearby-resources/${id}/`, { method: 'DELETE' });
-      if (res.ok) {
-        await fetchResources();
-      }
+      await api.delete(`/nearby-resources/${id}/`);
+      await fetchResources();
     } catch (e) {
       console.error('Remove resource error:', e);
     }

@@ -9,6 +9,7 @@ import {
   sendPasswordResetEmail,
   signOut as firebaseSignOut,
   onAuthStateChanged,
+  updateProfile,
   type User as FirebaseUser,
 } from "firebase/auth";
 
@@ -56,5 +57,8 @@ export {
   sendPasswordResetEmail,
   firebaseSignOut,
   onAuthStateChanged,
+  updateProfile,
   type FirebaseUser,
 };
+
+export default app;

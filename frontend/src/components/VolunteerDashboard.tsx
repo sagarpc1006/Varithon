@@ -79,6 +79,15 @@ export const VolunteerDashboard: React.FC<VolunteerDashboardProps> = ({
 }) => {
   const t = translations[language];
 
+  const handleSignOut = async () => {
+    try {
+      await authService.logout();
+    } catch (e) {
+      console.warn('Volunteer logout error:', e);
+    }
+    onSignOut();
+  };
+
   // Active Tab: 'sos' | 'squad' | 'map' | 'broadcasts' | 'garbage' | 'idcard'
   const [activeTab, setActiveTab] = useState<'sos' | 'squad' | 'map' | 'broadcasts' | 'garbage' | 'idcard'>('sos');
 
@@ -340,7 +349,7 @@ export const VolunteerDashboard: React.FC<VolunteerDashboardProps> = ({
 
             <button
               id="btn-volunteer-signout"
-              onClick={onSignOut}
+              onClick={handleSignOut}
               title="Sign Out"
               className="p-2 rounded-xl bg-slate-100 hover:bg-rose-50 text-slate-600 hover:text-rose-600 border border-slate-200 transition-colors cursor-pointer"
             >

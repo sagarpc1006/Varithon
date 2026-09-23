@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useRef, useCallback, Suspense, lazy } from 'react';
+import React, { useState, useCallback, Suspense, lazy } from 'react';
 import { Language, ScreenType, PortalType, UserSession } from './types';
-import { authService } from './services/auth';
+import { AuthProvider, useAuth } from './context/AuthContext';
 
 // Lazy-loaded portal components for optimal cross-device performance & minimal initial bundle
 const HomeScreen = lazy(() => import('./components/HomeScreen').then(m => ({ default: m.HomeScreen })));
@@ -14,7 +14,7 @@ function ScreenFallback() {
     <div className="min-h-screen bg-[#faf7f2] flex items-center justify-center font-sans">
       <div className="flex flex-col items-center gap-3">
         <div className="w-10 h-10 border-4 border-orange-500/20 border-t-orange-600 rounded-full animate-spin" />
-        <p className="text-xs font-bold text-slate-600 tracking-wide">Loading VariMitra...</p>
+        <p className="text-xs font-bold text-slate-600 tracking-wide">Connecting to VariMitra Services...</p>
       </div>
     </div>
   );
@@ -39,29 +39,12 @@ function AnimatedPageTransition({
   );
 }
 
-export default function App() {
+function MainApp() {
   const [currentScreen, setCurrentScreen] = useState<ScreenType>('home');
   const [activePortal, setActivePortal] = useState<PortalType>('pilgrim');
   const [language, setLanguage] = useState<Language>('en');
-  const [session, setSession] = useState<UserSession | null>(null);
-  const [isInitializing, setIsInitializing] = useState<boolean>(true);
 
-  // Load existing session on initial mount
-  useEffect(() => {
-    async function initSession() {
-      try {
-        const existingSession = await authService.getProfile();
-        if (existingSession) {
-          setSession(existingSession);
-        }
-      } catch (err) {
-        console.warn('Session init:', err);
-      } finally {
-        setIsInitializing(false);
-      }
-    }
-    initSession();
-  }, []);
+  const { session, loading, logout, updateSession } = useAuth();
 
   // Quick navigation handlers
   const handleSelectPortalFromHome = useCallback((portal: PortalType) => {
@@ -74,23 +57,16 @@ export default function App() {
   }, []);
 
   const handleLoginSuccess = useCallback((userSession: UserSession) => {
-    setSession(userSession);
-  }, []);
+    updateSession(userSession);
+  }, [updateSession]);
 
-  const handleSignOut = useCallback(() => {
-    setSession(null);
+  const handleSignOut = useCallback(async () => {
+    await logout();
     setCurrentScreen('home');
-  }, []);
+  }, [logout]);
 
-  if (isInitializing) {
-    return (
-      <div className="min-h-screen bg-[#faf7f2] flex items-center justify-center font-sans">
-        <div className="flex flex-col items-center gap-3">
-          <div className="w-10 h-10 border-4 border-orange-500/20 border-t-orange-600 rounded-full animate-spin" />
-          <p className="text-xs font-bold text-slate-600">Connecting to VariMitra Services...</p>
-        </div>
-      </div>
-    );
+  if (loading) {
+    return <ScreenFallback />;
   }
 
   if (session) {
@@ -151,5 +127,13 @@ export default function App() {
         </AnimatedPageTransition>
       </div>
     </Suspense>
+  );
+}
+
+export default function App() {
+  return (
+    <AuthProvider>
+      <MainApp />
+    </AuthProvider>
   );
 }

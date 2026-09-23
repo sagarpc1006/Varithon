@@ -24,6 +24,7 @@ urlpatterns = [
     path('admin/volunteer-requests/', AdminVolunteerRequestsListView.as_view(), name='admin-volunteer-requests-list'),
     path('admin/volunteer-requests/<int:user_id>/<str:action>/', AdminVolunteerApprovalActionView.as_view(), name='admin-volunteer-approval-action'),
     path('google/', GoogleAuthView.as_view(), name='auth-google'),
+    path('firebase/', FirebaseLoginView.as_view(), name='auth-firebase'),
     path('firebase-login/', FirebaseLoginView.as_view(), name='auth-firebase-login'),
     path('forgot-password/', ForgotPasswordView.as_view(), name='auth-forgot-password'),
     path('reset-password/', ResetPasswordView.as_view(), name='auth-reset-password'),

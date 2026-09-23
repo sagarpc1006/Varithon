@@ -23,3 +23,5 @@ backup_untracked/
 .env.*
 !.env.example
 *.firebase-adminsdk-*.json
+*serviceAccountKey*.json
+*firebase-credentials*.json

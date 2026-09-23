@@ -89,6 +89,7 @@ class CheckIdentifierSerializer(serializers.Serializer):
 class FirebaseLoginSerializer(serializers.Serializer):
     # Identity fields are derived from the verified Firebase token.
     role = serializers.ChoiceField(choices=['pilgrim', 'volunteer', 'admin'], default='pilgrim')
+    name = serializers.CharField(required=False, allow_blank=True, default='')
     organization = serializers.CharField(required=False, allow_blank=True, default='')
     department = serializers.CharField(required=False, allow_blank=True, default='')
     squad_id = serializers.CharField(required=False, allow_blank=True, default='')

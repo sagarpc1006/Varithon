@@ -1,6 +1,8 @@
 // Centralized API client for communicating with Django REST backend
+import { auth } from './firebase';
 
 const BASE_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api';
+
 interface RequestOptions extends RequestInit {
   data?: any;
 }
@@ -12,29 +14,31 @@ class ApiClient {
     this.baseUrl = baseUrl.replace(/\/$/, '');
   }
 
+  private async getAuthHeaders(): Promise<Record<string, string>> {
+    const headers: Record<string, string> = {};
+    const currentUser = auth.currentUser;
+    if (currentUser) {
+      try {
+        const token = await currentUser.getIdToken();
+        if (token) {
+          headers['Authorization'] = `Bearer ${token}`;
+        }
+      } catch (err) {
+        console.warn('Failed to dynamically obtain Firebase ID token for API request:', err);
+      }
+    }
+    return headers;
+  }
+
   private async request<T>(endpoint: string, options: RequestOptions = {}): Promise<T> {
     const url = endpoint.startsWith('http') ? endpoint : `${this.baseUrl}${endpoint.startsWith('/') ? '' : '/'}${endpoint}`;
 
-    // Retrieve stored session if available to support robust session persistence across tabs & restarts
-    let sessionHeaders: Record<string, string> = {};
-    try {
-      const stored = localStorage.getItem('varimitra_user_session');
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        if (parsed.id) sessionHeaders['X-User-Id'] = String(parsed.id);
-        if (parsed.identifier || parsed.name || parsed.mobile_number) {
-          sessionHeaders['X-User-Identifier'] = parsed.identifier || parsed.mobile_number || parsed.name;
-        }
-        if (parsed.role) sessionHeaders['X-User-Role'] = parsed.role;
-      }
-    } catch {
-      // Ignore localStorage errors
-    }
+    const authHeaders = await this.getAuthHeaders();
 
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
-      ...sessionHeaders,
+      ...authHeaders,
       ...(options.headers as Record<string, string> || {}),
     };
 
@@ -80,7 +84,7 @@ class ApiClient {
             headers: {
               'Content-Type': 'application/json',
               'Accept': 'application/json',
-              ...sessionHeaders,
+              ...authHeaders,
               ...(options.headers as Record<string, string> || {}),
             },
             body: options.data ? JSON.stringify(options.data) : undefined,
@@ -134,4 +138,3 @@ class ApiClient {
 
 export const api = new ApiClient(BASE_URL);
 export const apiService = api;
-

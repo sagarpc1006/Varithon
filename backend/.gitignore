@@ -8,3 +8,6 @@ db.sqlite3
 .DS_Store
 staticfiles/
 media/
+*.firebase-adminsdk-*.json
+*serviceAccountKey*.json
+*firebase-credentials*.json

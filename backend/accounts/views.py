@@ -240,6 +240,13 @@ class RegisterView(APIView):
         department = serializer.validated_data.get('department', '').strip()
         squad_id = serializer.validated_data.get('squad_id', '').strip()
 
+        # ROLE SECURITY: Never allow self-registration as admin
+        if role == 'admin':
+            return Response({
+                'error': 'Admin accounts cannot be self-registered. Please contact the central admin.',
+                'code': 'ADMIN_REGISTRATION_FORBIDDEN'
+            }, status=status.HTTP_403_FORBIDDEN)
+
         is_email = '@' in raw_identifier
         clean_phone = normalize_mobile(raw_identifier) if not is_email else None
 
@@ -314,6 +321,13 @@ class GoogleAuthView(APIView):
             return Response({'error': 'Invalid Google auth data'}, status=status.HTTP_400_BAD_REQUEST)
 
         role = serializer.validated_data.get('role', 'pilgrim')
+        # ROLE SECURITY: Never allow self-registration as admin
+        if role == 'admin':
+            return Response({
+                'error': 'Admin accounts cannot be self-registered via Google Auth. Please contact the central admin.',
+                'code': 'ADMIN_REGISTRATION_FORBIDDEN'
+            }, status=status.HTTP_403_FORBIDDEN)
+
         email = serializer.validated_data.get('email', 'google.user@varimitra.org')
         name = serializer.validated_data.get('name', 'Google Devotee')
 
@@ -360,30 +374,36 @@ class GoogleAuthView(APIView):
 
 
 class FirebaseLoginView(APIView):
-    """Handles Firebase Authenticated users (Google, Email/Password, Phone)."""
+    """
+    Handles Firebase Authenticated users (Google, Email/Password, Phone).
+    The central endpoint for synchronizing Firebase authentication with Django.
+    """
     permission_classes = [AllowAny]
 
     def post(self, request):
         serializer = FirebaseLoginSerializer(data=request.data)
         if not serializer.is_valid():
-            print(f"FIREBASE LOGIN FAILED (400): Serializer Invalid - {serializer.errors}")
+            logger.warning('Firebase login serializer invalid: %s', serializer.errors)
             return Response({'error': 'Invalid Firebase auth data', 'details': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
+        # Step 1 & 2: Verify the Firebase ID token
+        id_token_str = serializer.validated_data['id_token']
         try:
-            claims = verify_id_token(serializer.validated_data['id_token'])
+            claims = verify_id_token(id_token_str)
         except FirebaseConfigurationError:
             return Response({'error': 'Firebase authentication is not configured on the server.'}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
         except ValueError as exc:
             return Response({'error': str(exc)}, status=status.HTTP_401_UNAUTHORIZED)
         except Exception as exc:
-            # Keep Firebase verification details out of the API response, but
-            # log the reason locally so configuration problems are diagnosable.
             logger.warning('Firebase ID token verification failed: %s', exc)
             return Response({'error': 'Firebase ID token is invalid or expired.'}, status=status.HTTP_401_UNAUTHORIZED)
 
+        # Step 3: Extract verified claims from the verified token
         email = (claims.get('email') or '').strip().lower()
         uid = (claims.get('uid') or claims.get('sub') or '').strip()
-        name = (claims.get('name') or claims.get('display_name') or '').strip()
+        token_name = (claims.get('name') or claims.get('display_name') or '').strip()
+        fallback_name = serializer.validated_data.get('name', '').strip()
+        name = token_name or fallback_name
         phone_number = (claims.get('phone_number') or '').strip()
 
         if not uid:
@@ -395,90 +415,144 @@ class FirebaseLoginView(APIView):
             else:
                 email = f"{uid}@varimitra.org"
 
-        portal_role = serializer.validated_data.get('role', 'pilgrim')
+        # Safely extract 10-digit phone if user authenticated via normalized phone email
+        if not phone_number and email.endswith('@varimitra.org'):
+            possible_phone = email.split('@')[0]
+            if possible_phone.isdigit() and len(possible_phone) >= 10:
+                phone_number = possible_phone
+
+        requested_role = serializer.validated_data.get('role', 'pilgrim')
         organization = serializer.validated_data.get('organization', '').strip()
+        department = serializer.validated_data.get('department', '').strip()
+        squad_id = serializer.validated_data.get('squad_id', '').strip()
 
-        # Find existing user by email or firebase_uid
-        user = User.objects.filter(email__iexact=email).first()
-        if not user:
-            existing_profile = UserProfile.objects.filter(firebase_uid=uid).first()
-            if existing_profile:
-                user = existing_profile.user
+        # Step 4: Find Django user using Firebase UID first where possible
+        profile = UserProfile.objects.filter(firebase_uid=uid).select_related('user').first()
+        user = profile.user if profile else None
 
+        # If no Firebase UID match exists, safely match the verified email
+        if not user and email:
+            user = User.objects.filter(email__iexact=email).first()
+            if user:
+                profile = getattr(user, 'profile', None)
+                if not profile:
+                    profile, _ = UserProfile.objects.get_or_create(
+                        user=user,
+                        defaults={
+                            'role': requested_role,
+                            'firebase_uid': uid,
+                            'mobile_number': phone_number if phone_number else None
+                        }
+                    )
+                if not profile.firebase_uid:
+                    profile.firebase_uid = uid
+                    profile.save(update_fields=['firebase_uid'])
+
+        # Step 5 & 6: Create the Django user if required
         if not user:
-            if portal_role == 'admin':
+            # ROLE SECURITY: Never allow a new user to grant themselves admin privileges
+            if requested_role == 'admin':
                 return Response(
-                    {'error': f'Admin account "{email}" must be provisioned before signing in. Please sign in via Pilgrim or Volunteer portal, or contact the central admin.'},
+                    {'error': f'Admin account "{email}" must be provisioned before signing in. Please sign in via Pilgrim or Volunteer portal, or contact the central admin.',
+                     'code': 'ADMIN_NOT_PROVISIONED'},
                     status=status.HTTP_403_FORBIDDEN
                 )
 
-            # Parse name and create a new Django user
             name_parts = (name or email.split('@')[0]).split(' ', 1)
             first_name = name_parts[0]
             last_name = name_parts[1] if len(name_parts) > 1 else ''
             clean_email = email.split('@')[0].replace('.', '_').replace('+', '')
-            username = f"fb_{portal_role}_{clean_email}_{random.randint(100, 999)}"
+            username = f"fb_{requested_role}_{clean_email}_{random.randint(100, 999)}"
 
             user = User.objects.create_user(
                 username=username,
                 email=email,
                 first_name=first_name,
                 last_name=last_name,
-                password=secrets.token_urlsafe(20)
+                password=secrets.token_urlsafe(24)
             )
 
+            is_volunteer = (requested_role == 'volunteer')
             profile = UserProfile.objects.create(
                 user=user,
                 firebase_uid=uid,
-                role=portal_role,
+                role=requested_role,
                 mobile_number=phone_number if phone_number else None,
                 organization=organization or (
-                    'Pandharpur Wari Seva Mandal' if portal_role == 'volunteer' else 'Warkari Devotee'
+                    'Pandharpur Wari Seva Mandal' if is_volunteer else 'Warkari Devotee'
                 ),
-                department='General Field Seva' if portal_role == 'volunteer' else None,
-                squad_id='PENDING-ASSIGNMENT' if portal_role == 'volunteer' else None,
-                approval_status='pending' if portal_role == 'volunteer' else 'approved',
-                is_approved=portal_role != 'volunteer',
+                department=department or ('Food & Annachatra Seva' if is_volunteer else None),
+                squad_id=squad_id or ('SQD-FOOD-101' if is_volunteer else None),
+                approval_status='pending' if is_volunteer else 'approved',
+                is_approved=not is_volunteer,
             )
         else:
-            profile, _ = UserProfile.objects.get_or_create(
-                user=user,
-                defaults={'role': portal_role, 'mobile_number': phone_number if phone_number else None, 'firebase_uid': uid}
-            )
+            # Step 7: Preserve the existing role system
+            if not profile:
+                profile, _ = UserProfile.objects.get_or_create(
+                    user=user,
+                    defaults={'role': requested_role, 'mobile_number': phone_number if phone_number else None, 'firebase_uid': uid}
+                )
             if not profile.firebase_uid:
                 profile.firebase_uid = uid
                 profile.save(update_fields=['firebase_uid'])
 
-            portal_role = profile.role
+            # ROLE SECURITY: If non-admin attempts to access admin portal, reject
+            if requested_role == 'admin' and profile.role != 'admin':
+                return Response({
+                    'error': f'Access denied: Account "{email}" does not have Admin privileges.',
+                    'code': 'ROLE_MISMATCH_ADMIN',
+                    'actual_role': profile.role
+                }, status=status.HTTP_403_FORBIDDEN)
 
-            # Update name if provided and missing
-            if not user.first_name and name:
+            # Update name if missing or improved from token/request
+            if name and (not user.first_name or user.first_name.startswith('fb_') or user.first_name.isdigit()):
                 name_parts = name.split(' ', 1)
                 user.first_name = name_parts[0]
                 user.last_name = name_parts[1] if len(name_parts) > 1 else ''
-                user.save()
+                user.save(update_fields=['first_name', 'last_name'])
 
-        # Handle volunteer pending approval
-        if portal_role == 'volunteer' and not profile.is_approved:
-            return Response({
-                'status': 'pending_approval',
-                'message': 'Your volunteer access request is awaiting Admin approval.',
-                'code': 'VOLUNTEER_PENDING_APPROVAL',
-                'session': {
-                    'role': 'volunteer',
-                    'identifier': email,
-                    'name': user.get_full_name() or user.username,
-                    'email': user.email,
-                    'mobile_number': profile.mobile_number,
-                    'organization': profile.organization,
-                    'department': profile.department,
-                    'squad_id': profile.squad_id,
-                    'approval_status': profile.approval_status,
-                    'is_approved': False,
-                    'id': user.id
-                }
-            }, status=status.HTTP_202_ACCEPTED)
+            if phone_number and not profile.mobile_number:
+                profile.mobile_number = phone_number
+                profile.save(update_fields=['mobile_number'])
 
+        # Ensure Django staff status aligns for confirmed admin users
+        if profile.role == 'admin' and not user.is_staff:
+            user.is_staff = True
+            user.save(update_fields=['is_staff'])
+
+        active_role = profile.role
+
+        # Handle volunteer approval status
+        if active_role == 'volunteer':
+            if profile.approval_status == 'rejected':
+                return Response({
+                    'status': 'rejected',
+                    'error': 'Your volunteer access request was declined by the Admin team. Please contact the control room.',
+                    'code': 'VOLUNTEER_REQUEST_REJECTED'
+                }, status=status.HTTP_403_FORBIDDEN)
+
+            if not profile.is_approved or profile.approval_status == 'pending':
+                return Response({
+                    'status': 'pending_approval',
+                    'message': 'Your volunteer access request is awaiting Admin approval.',
+                    'code': 'VOLUNTEER_PENDING_APPROVAL',
+                    'session': {
+                        'role': 'volunteer',
+                        'identifier': profile.mobile_number or email,
+                        'name': user.get_full_name() or user.username,
+                        'email': user.email,
+                        'mobile_number': profile.mobile_number,
+                        'organization': profile.organization,
+                        'department': profile.department,
+                        'squad_id': profile.squad_id,
+                        'approval_status': profile.approval_status,
+                        'is_approved': False,
+                        'id': user.id
+                    }
+                }, status=status.HTTP_202_ACCEPTED)
+
+        # Step 8: Return the existing session structure expected by frontend
         login(request, user)
         profile_data = UserProfileSerializer(profile).data
 
@@ -486,7 +560,7 @@ class FirebaseLoginView(APIView):
             'message': 'Firebase authentication successful',
             'session': {
                 'role': profile.role,
-                'identifier': email,
+                'identifier': profile.mobile_number or email,
                 'name': profile_data.get('name') or user.get_full_name() or user.username,
                 'email': user.email,
                 'mobile_number': profile.mobile_number,
@@ -495,6 +569,7 @@ class FirebaseLoginView(APIView):
                 'squad_id': profile.squad_id,
                 'approval_status': profile.approval_status,
                 'is_approved': profile.is_approved,
+                'has_admin_access': profile.role in ['admin', 'volunteer'],
                 'id': user.id
             }
         }, status=status.HTTP_200_OK)

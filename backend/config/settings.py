@@ -183,7 +183,7 @@ MAILERS = {
 }
 
 # CORS Configuration for React Frontend
-CORS_ALLOW_ALL_ORIGINS = os.environ.get('CORS_ALLOW_ALL_ORIGINS', 'True').lower() in ('true', '1')
+CORS_ALLOW_ALL_ORIGINS = os.environ.get('CORS_ALLOW_ALL_ORIGINS', 'False').lower() in ('true', '1')
 CORS_ALLOW_CREDENTIALS = True
 env_cors_origins = os.environ.get('CORS_ALLOWED_ORIGINS')
 if env_cors_origins:
@@ -192,14 +192,26 @@ else:
     CORS_ALLOWED_ORIGINS = [
         'http://localhost:5173',
         'http://127.0.0.1:5173',
+        'http://localhost:8000',
+        'http://127.0.0.1:8000',
         'http://localhost:3000',
         'http://127.0.0.1:3000',
         'http://localhost:80',
         'http://localhost',
     ]
 
+CSRF_TRUSTED_ORIGINS = [
+    'http://localhost:5173',
+    'http://127.0.0.1:5173',
+    'http://localhost:8000',
+    'http://127.0.0.1:8000',
+    'http://localhost:3000',
+    'http://127.0.0.1:3000',
+]
+
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
+        'accounts.authentication.FirebaseAuthentication',
         'config.authentication.CsrfExemptSessionAuthentication',
     ],
     'DEFAULT_PERMISSION_CLASSES': [
@@ -207,7 +219,5 @@ REST_FRAMEWORK = {
     ],
 }
 
-
-
 from corsheaders.defaults import default_headers
-CORS_ALLOW_HEADERS = list(default_headers) + ['x-user-id', 'x-user-identifier', 'x-user-role']
+CORS_ALLOW_HEADERS = list(default_headers)
