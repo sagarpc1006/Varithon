@@ -38,6 +38,7 @@ import { VolunteerBadgeIcon } from './PortalIcons';
 import { AdminGarbageManagement } from './admin/AdminGarbageManagement';
 import { QRCodeSVG } from './QRCodeSVG';
 import { api } from '../services/api';
+import { authService } from '../services/auth';
 
 interface VolunteerDashboardProps {
   session: UserSession;
