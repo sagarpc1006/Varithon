@@ -94,6 +94,7 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
   const [regSquadId, setRegSquadId] = useState('SQD-FOOD-101');
   const [regPassword, setRegPassword] = useState('');
   const [isRegistering, setIsRegistering] = useState(false);
+  const [isGoogleRegistering, setIsGoogleRegistering] = useState(false);
 
   // Forgot password modal states
   const [showForgotModal, setShowForgotModal] = useState(false);
@@ -387,6 +388,64 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
       showToast(err.message || 'Registration failed. Try again.', 'error');
     } finally {
       setIsRegistering(false);
+    }
+  };
+
+  // 3b. Handle Google Sign-Up (Create new account via Google)
+  const handleGoogleSignUp = async () => {
+    setIsGoogleRegistering(true);
+    setPromptBanner(null);
+    try {
+      const session = await authService.googleLogin(activePortal);
+
+      // Handle volunteer pending approval
+      if (session && !session.is_approved && session.role === 'volunteer') {
+        setShowRegisterModal(false);
+        setPendingVolunteer({
+          name: session.name || 'Field Sevekar',
+          identifier: session.email || session.identifier,
+          department: session.department || 'General Field Seva',
+          squad_id: session.squad_id || 'PENDING-ASSIGNMENT',
+          requested_at: 'Just now',
+          userId: session.id,
+        });
+        showToast('Volunteer access request submitted via Google! Awaiting Admin approval ⏳', 'info');
+        return;
+      }
+
+      setShowRegisterModal(false);
+      const roleLabel = session.role === 'admin' ? 'Admin' : session.role === 'volunteer' ? 'Volunteer' : 'Pilgrim';
+      showToast(`Account created with Google! Welcome, ${session.name}! Routing to ${roleLabel} dashboard...`);
+      onLoginSuccess(session);
+    } catch (err: any) {
+      if (err?.code === 'VOLUNTEER_PENDING_APPROVAL') {
+        if (err?.data?.session) {
+          const s = err.data.session;
+          setShowRegisterModal(false);
+          setPendingVolunteer({
+            name: s.name || 'Field Sevekar',
+            identifier: s.identifier || s.email,
+            department: s.department || 'General Field Seva',
+            squad_id: s.squad_id || 'PENDING-ASSIGNMENT',
+            requested_at: 'Just now',
+            userId: s.id,
+          });
+        }
+        showToast('Volunteer request received via Google. Please wait for Admin approval.', 'info');
+        return;
+      }
+      if (err?.data?.correct_role) {
+        showToast(`This Google account is already registered as ${err.data.correct_role}. Signing in...`, 'info');
+        try {
+          const session = await authService.googleLogin(err.data.correct_role as any);
+          setShowRegisterModal(false);
+          onLoginSuccess(session);
+          return;
+        } catch {}
+      }
+      showToast(err.message || 'Google sign-up failed. Please try again.', 'error');
+    } finally {
+      setIsGoogleRegistering(false);
     }
   };
 
@@ -989,7 +1048,7 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
           </button>
 
           {/* Card Footer Register/Access Link */}
-          <div className="mt-6 text-center text-xs text-slate-500">
+          <div className="mt-6 text-center text-xs text-slate-500 space-y-2">
             {activePortal === 'pilgrim' ? (
               <span>
                 {t.newHere}{' '}
@@ -1027,6 +1086,21 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
                 </button>
               </span>
             )}
+
+            {/* Quick Google Sign-Up Link */}
+            <div className="flex items-center justify-center gap-1.5 pt-1">
+              <span className="text-slate-400">or</span>
+              <button
+                type="button"
+                id="btn-google-signup-quick"
+                onClick={handleGoogleSignUp}
+                disabled={isGoogleRegistering}
+                className="inline-flex items-center gap-1.5 font-bold text-blue-600 hover:text-blue-700 hover:underline cursor-pointer transition-colors disabled:opacity-50"
+              >
+                <GoogleIcon className="w-3.5 h-3.5" />
+                <span>{isGoogleRegistering ? 'Creating account...' : 'Sign up with Google'}</span>
+              </button>
+            </div>
           </div>
         </div>
       </main>
@@ -1158,6 +1232,42 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
                 ? 'Join emergency response, medical aid, food distribution, or crowd assistance seva squads along the Wari route.'
                 : 'Submit your volunteer or seva team organization credentials for admin access.'}
             </p>
+            {/* Google Sign-Up Button — Quick Registration */}
+            <button
+              id="btn-google-signup-modal"
+              type="button"
+              onClick={handleGoogleSignUp}
+              disabled={isGoogleRegistering || isRegistering}
+              className="w-full py-3 px-4 bg-white hover:bg-blue-50 border-2 border-slate-200 hover:border-blue-300 rounded-xl font-semibold text-slate-700 shadow-sm hover:shadow-md flex items-center gap-3 transition-all cursor-pointer group mb-4 disabled:opacity-60"
+            >
+              {isGoogleRegistering ? (
+                <>
+                  <span className="w-5 h-5 border-2 border-blue-400/40 border-t-blue-500 rounded-full animate-spin shrink-0" />
+                  <div className="text-left">
+                    <div className="text-sm font-semibold text-slate-800">Creating account with Google...</div>
+                    <div className="text-xs text-slate-400 font-normal">Please wait while we set up your profile</div>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <GoogleIcon className="w-5 h-5 shrink-0 group-hover:scale-110 transition-transform" />
+                  <div className="text-left">
+                    <div className="text-sm font-semibold text-slate-800">Sign up with Google</div>
+                    <div className="text-xs text-slate-400 font-normal">Create account instantly — no password needed</div>
+                  </div>
+                </>
+              )}
+            </button>
+
+            {/* OR Divider */}
+            <div className="relative my-4 flex items-center justify-center">
+              <div className="border-t border-slate-200/80 w-full" />
+              <span className="bg-white px-3 text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+                or register with credentials
+              </span>
+              <div className="border-t border-slate-200/80 w-full" />
+            </div>
+
             <form onSubmit={handleRegisterSubmit} className="space-y-3 mb-4">
               <div>
                 <label className="text-[11px] font-bold text-slate-600 uppercase mb-1 block">Full Name *</label>
@@ -1262,7 +1372,7 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
 
               <button
                 type="submit"
-                disabled={isRegistering}
+                disabled={isRegistering || isGoogleRegistering}
                 className={`w-full mt-2 py-3 rounded-xl text-sm font-bold text-white shadow-sm cursor-pointer flex items-center justify-center gap-2 ${
                   activePortal === 'pilgrim'
                     ? 'bg-[#ea580c] hover:bg-[#d94806]'

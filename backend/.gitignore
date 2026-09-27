@@ -11,3 +11,4 @@ media/
 *.firebase-adminsdk-*.json
 *serviceAccountKey*.json
 *firebase-credentials*.json
+firebase-service-account.json

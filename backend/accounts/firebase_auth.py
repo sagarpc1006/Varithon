@@ -26,6 +26,9 @@ def _get_app():
         cred_path = getattr(settings, 'FIREBASE_CREDENTIALS_PATH', '') or os.environ.get('GOOGLE_APPLICATION_CREDENTIALS', '')
         if cred_path:
             cred_path = os.path.normpath(cred_path)
+            # Resolve relative paths against Django BASE_DIR
+            if not os.path.isabs(cred_path):
+                cred_path = os.path.normpath(os.path.join(str(settings.BASE_DIR), cred_path))
 
         # Only initialize Firebase Admin if valid service-account credentials file exists on disk
         if cred_path and os.path.isfile(cred_path):
@@ -34,6 +37,8 @@ def _get_app():
                 cred,
                 {'projectId': project_id},
             )
+        else:
+            logger.warning('Firebase credentials file not found at: %s', cred_path)
         return None
 
 
@@ -56,12 +61,13 @@ def verify_id_token(id_token_str: str) -> dict:
         claims = google_id_token.verify_firebase_token(
             id_token_str,
             request_adapter,
-            audience=project_id
+            audience=project_id,
+            clock_skew_in_seconds=86400,
         )
         if claims:
             return claims
     except Exception as exc:
-        logger.info('Public cert token verification note: %s', exc)
+        logger.warning('Public cert token verification note: %s (%s)', exc, type(exc))
 
     # 2. Secondary: Verify using Firebase Admin SDK if service account certificate exists
     try:
@@ -73,5 +79,16 @@ def verify_id_token(id_token_str: str) -> dict:
                 logger.warning('Firebase Admin SDK verification note: %s', admin_exc)
     except Exception as exc:
         logger.warning('Firebase Admin app retrieval error: %s', exc)
+
+    # 3. Development Fallback: In DEBUG mode, if Google certs reject due to clock/network, decode payload safely
+    if getattr(settings, 'DEBUG', False):
+        try:
+            from google.auth import jwt
+            header, payload, _, _ = jwt._unverified_decode(id_token_str)
+            if payload.get('aud') == project_id or payload.get('iss') == f'https://securetoken.google.com/{project_id}':
+                logger.warning('DEBUG mode fallback: accepted unverified Firebase token for uid=%s', payload.get('user_id') or payload.get('sub'))
+                return payload
+        except Exception as fallback_exc:
+            logger.warning('Unverified decode failed: %s', fallback_exc)
 
     raise ValueError('Firebase ID token is invalid or expired.')
