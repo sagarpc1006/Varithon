@@ -1300,23 +1300,23 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
           </div>
         </div>
 
-        {/* Portal Switcher — Subtle and clean below the card */}
-        <div className="mt-3.5 text-center text-xs text-slate-500 font-medium">
+        {/* Portal Switcher — Prominent and clear below the card */}
+        <div className="mt-5 text-center text-sm sm:text-base text-slate-700 font-medium">
           {activePortal === 'pilgrim' ? (
             <span>
               Not a Pilgrim?{' '}
               <button
                 type="button"
                 onClick={() => onPortalChange('volunteer')}
-                className="font-bold text-emerald-600 hover:underline cursor-pointer"
+                className="font-bold text-emerald-700 hover:text-emerald-900 hover:underline cursor-pointer"
               >
                 Volunteer Login
               </button>
-              {' · '}
+              <span className="mx-2 text-slate-400">·</span>
               <button
                 type="button"
                 onClick={() => onPortalChange('admin')}
-                className="font-bold text-slate-700 hover:underline cursor-pointer"
+                className="font-bold text-slate-800 hover:text-black hover:underline cursor-pointer"
               >
                 Admin Login
               </button>
@@ -1327,15 +1327,15 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
               <button
                 type="button"
                 onClick={() => onPortalChange('pilgrim')}
-                className="font-bold text-[#ea580c] hover:underline cursor-pointer"
+                className="font-bold text-[#ea580c] hover:text-[#c2410c] hover:underline cursor-pointer"
               >
                 Pilgrim Login
               </button>
-              {' · '}
+              <span className="mx-2 text-slate-400">·</span>
               <button
                 type="button"
                 onClick={() => onPortalChange('admin')}
-                className="font-bold text-slate-700 hover:underline cursor-pointer"
+                className="font-bold text-slate-800 hover:text-black hover:underline cursor-pointer"
               >
                 Admin Login
               </button>
@@ -1346,15 +1346,15 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
               <button
                 type="button"
                 onClick={() => onPortalChange('pilgrim')}
-                className="font-bold text-[#ea580c] hover:underline cursor-pointer"
+                className="font-bold text-[#ea580c] hover:text-[#c2410c] hover:underline cursor-pointer"
               >
                 Pilgrim Login
               </button>
-              {' · '}
+              <span className="mx-2 text-slate-400">·</span>
               <button
                 type="button"
                 onClick={() => onPortalChange('volunteer')}
-                className="font-bold text-emerald-600 hover:underline cursor-pointer"
+                className="font-bold text-emerald-700 hover:text-emerald-900 hover:underline cursor-pointer"
               >
                 Volunteer Login
               </button>
