@@ -203,6 +203,17 @@ export const authService = {
       });
 
       if (res && res.session) {
+        // SECURITY: Verify the returned session role matches what we requested
+        // This prevents an admin session being auto-restored when visiting pilgrim portal
+        if (res.session.role !== preferredRole) {
+          console.warn(
+            `syncFirebaseUser: Role mismatch - requested '${preferredRole}' but server returned '${res.session.role}'. Clearing session.`
+          );
+          this.clearSession();
+          // Sign out Firebase to prevent infinite re-sync attempts
+          try { await firebaseSignOut(auth); } catch {}
+          return null;
+        }
         this.saveSession(res.session);
         return res.session;
       }
@@ -211,6 +222,8 @@ export const authService = {
       // If server explicitly rejected token as 401 or 403 (e.g. role mismatch), clear invalid session
       if (err?.status === 401 || err?.status === 403) {
         this.clearSession();
+        // Sign out Firebase entirely to prevent infinite re-sync loops
+        try { await firebaseSignOut(auth); } catch {}
         return null;
       }
       // If volunteer pending approval, still load session

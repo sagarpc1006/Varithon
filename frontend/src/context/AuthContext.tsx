@@ -43,10 +43,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           // Synchronize with Django backend and fetch verified profile
           const appSession = await authService.syncFirebaseUser(firebaseUser);
           if (isMounted) {
-            setSession(appSession);
+            if (appSession) {
+              setSession(appSession);
+            } else {
+              // Sync returned null (role mismatch, auth failure, or server rejected)
+              // Clear session entirely - do NOT fall back to stale localStorage data
+              setSession(null);
+              setUser(null);
+              authService.clearSession();
+            }
           }
         } catch (err) {
           console.warn('AuthContext: Error synchronizing session with Django:', err);
+          if (isMounted) {
+            // On sync error, clear session to prevent stale/unauthorized access
+            setSession(null);
+            setUser(null);
+            authService.clearSession();
+          }
         }
       } else {
         setUser(null);

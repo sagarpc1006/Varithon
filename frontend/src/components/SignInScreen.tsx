@@ -427,6 +427,7 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
         showToast('Access Denied: This account belongs to Pilgrim Portal. Switch to Pilgrim Portal.', 'error');
         return;
       }
+      try { await authService.logout(); } catch {}
       showToast(err.message || 'Google sign-in failed', 'error');
     } finally {
       setIsSubmitting(false);
@@ -577,6 +578,7 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
         showToast('Access Denied: This account belongs to Pilgrim Portal. Switch to Pilgrim Portal.', 'error');
         return;
       }
+      try { await authService.logout(); } catch {}
       showToast(err.message || 'Google sign-up failed. Please try again.', 'error');
     } finally {
       setIsGoogleRegistering(false);
