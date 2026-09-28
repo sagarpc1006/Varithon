@@ -31,7 +31,6 @@ import { UserSession, Language } from "../types";
 import { VariMitraLogo } from "./VariMitraLogo";
 import { LanguageDropdown } from "./LanguageDropdown";
 import { authService } from "../services/auth";
-import { WariMap } from "./WariMap";
 import { SOSInbox } from "../pages/admin/SOSInbox";
 import { AdminVolunteers } from "./AdminVolunteers";
 import { AlertBroadcast } from "../pages/admin/AlertBroadcast";
@@ -739,35 +738,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                     </div>
                   </div>
 
-                  {/* Live Coverage Map Card */}
-                  <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden flex flex-col">
-                    <div className="p-4 border-b border-slate-100 flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <span className="flex h-2 w-2 relative">
-                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                          <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-                        </span>
-                        <h3 className="text-sm font-bold text-slate-900">
-                          Live Route Coverage Map
-                        </h3>
-                      </div>
 
-                      <button
-                        onClick={() => setCurrentView("nearby-services")}
-                        className="text-xs font-bold text-orange-600 hover:text-orange-700 flex items-center gap-1 cursor-pointer"
-                      >
-                        <span>Manage Services</span>
-                        <ChevronRight size={14} />
-                      </button>
-                    </div>
-
-                    <div
-                      className="relative w-full"
-                      style={{ height: "320px", minHeight: "300px" }}
-                    >
-                      <WariMap className="absolute inset-0" />
-                    </div>
-                  </div>
                 </div>
 
                 {/* ── RIGHT COLUMN (4 COLS): Quick Broadcast + Activity Log ── */}

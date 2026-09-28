@@ -28,7 +28,6 @@ import { UserSession, Language } from "../types";
 import { VariMitraLogo } from "./VariMitraLogo";
 import { LanguageDropdown } from "./LanguageDropdown";
 import { authService } from "../services/auth";
-import { WariMap } from "./WariMap";
 import { SOSPage } from "../pages/user/SOSPage";
 import { NearbyServicesMap } from "./NearbyServicesMap";
 import { AlertsFeed } from "../pages/user/AlertsFeed";
@@ -47,7 +46,6 @@ interface UserDashboardProps {
 
 type UserView =
   | "dashboard"
-  | "live-map"
   | "nearby-services"
   | "alerts"
   | "groups"
@@ -134,22 +132,6 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({
               <span>Pilgrim Hub</span>
             </button>
 
-            {/* 2. Live Palkhi Map */}
-            <button
-              id="nav-palkhi-map"
-              onClick={() => {
-                setCurrentView("live-map");
-                setMobileMenuOpen(false);
-              }}
-              className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all text-left cursor-pointer ${
-                currentView === "live-map"
-                  ? "bg-gradient-to-r from-orange-500 to-amber-600 text-white shadow-md shadow-orange-500/25"
-                  : "text-slate-600 hover:text-slate-900 hover:bg-slate-100/80"
-              }`}
-            >
-              <Compass size={16} />
-              <span>Live Palkhi Route</span>
-            </button>
 
             {/* 3. Nearby Services */}
             <button
@@ -314,8 +296,6 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({
               <h2 className="text-lg sm:text-xl font-bold text-slate-900 leading-tight capitalize">
                 {currentView === "dashboard"
                   ? "Pilgrim Dashboard"
-                  : currentView === "live-map"
-                  ? "Live Palkhi Route Map"
                   : currentView === "nearby-services"
                   ? "Nearby Seva & Resources"
                   : currentView === "alerts"
@@ -407,26 +387,7 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({
                 setCurrentView("group-chat");
               }}
             />
-          ) : currentView === "live-map" ? (
-            <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden flex flex-col">
-              <div className="p-4 border-b border-slate-100 flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
-                  <h3 className="text-sm font-bold text-slate-900">
-                    Live Palkhi Telemetry & Route Progress
-                  </h3>
-                </div>
-                <button
-                  onClick={() => setCurrentView("dashboard")}
-                  className="text-xs font-bold text-slate-500 hover:text-slate-800"
-                >
-                  Back to Hub
-                </button>
-              </div>
-              <div className="relative w-full" style={{ height: "65vh" }}>
-                <WariMap className="absolute inset-0" />
-              </div>
-            </div>
+
           ) : currentView === "profile" ? (
             <ProfileView
               session={session}
@@ -523,35 +484,6 @@ export const UserDashboard: React.FC<UserDashboardProps> = ({
               <section className="grid grid-cols-1 lg:grid-cols-12 gap-6">
                 {/* ── LEFT COLUMN (8 COLS): Live Map & Seva Overview ── */}
                 <div className="lg:col-span-8 flex flex-col gap-6">
-                  {/* Live Map Card */}
-                  <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden flex flex-col">
-                    <div className="p-4 border-b border-slate-100 flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <span className="flex h-2 w-2 relative">
-                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
-                          <span className="relative inline-flex rounded-full h-2 w-2 bg-orange-500"></span>
-                        </span>
-                        <h3 className="text-sm font-bold text-slate-900">
-                          Live Palkhi Route Map
-                        </h3>
-                      </div>
-
-                      <button
-                        onClick={() => setCurrentView("nearby-services")}
-                        className="text-xs font-bold text-orange-600 hover:text-orange-700 flex items-center gap-1 cursor-pointer"
-                      >
-                        <span>View Nearby Facilities</span>
-                        <ChevronRight size={14} />
-                      </button>
-                    </div>
-
-                    <div
-                      className="relative w-full"
-                      style={{ height: "320px", minHeight: "300px" }}
-                    >
-                      <WariMap className="absolute inset-0" />
-                    </div>
-                  </div>
 
                   {/* 5 Feature Quick-Pills for Pilgrims */}
                   <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
