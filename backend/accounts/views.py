@@ -497,12 +497,31 @@ class FirebaseLoginView(APIView):
                 profile.firebase_uid = uid
                 profile.save(update_fields=['firebase_uid'])
 
-            # ROLE SECURITY: If non-admin attempts to access admin portal, reject
-            if requested_role == 'admin' and profile.role != 'admin':
+            # STRICT ROLE ENFORCEMENT: Portal role MUST match profile role
+            if profile.role != requested_role:
+                role_titles = {
+                    'admin': 'Admin / Seva Team',
+                    'volunteer': 'Volunteer / Sevekar',
+                    'pilgrim': 'Pilgrim / Warkari',
+                }
+                curr_title = role_titles.get(profile.role, profile.role.title())
+                target_title = role_titles.get(requested_role, requested_role.title())
+                code_map = {
+                    'admin': 'ROLE_MISMATCH_ADMIN',
+                    'volunteer': 'ROLE_MISMATCH_VOLUNTEER',
+                    'pilgrim': 'ROLE_MISMATCH_PILGRIM',
+                }
+
+                logger.warning(
+                    'Role mismatch security rejection: user "%s" with role "%s" attempted login via "%s" portal',
+                    email, profile.role, requested_role
+                )
                 return Response({
-                    'error': f'Access denied: Account "{email}" does not have Admin privileges.',
-                    'code': 'ROLE_MISMATCH_ADMIN',
-                    'actual_role': profile.role
+                    'error': f'This account is registered as a {curr_title} account. Please switch to the {curr_title} Portal to sign in.',
+                    'code': code_map.get(profile.role, 'ROLE_MISMATCH'),
+                    'correct_role': profile.role,
+                    'requested_role': requested_role,
+                    'name': user.get_full_name() or user.username
                 }, status=status.HTTP_403_FORBIDDEN)
 
             # Update name if missing or improved from token/request

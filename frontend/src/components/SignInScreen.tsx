@@ -261,6 +261,13 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
     try {
       const session = await authService.login(identifier, password, activePortal);
 
+      // SECURITY GUARD: Strictly verify session role matches active portal
+      if (session && session.role !== activePortal) {
+        await authService.logout();
+        showToast(`Security Violation: Mismatched role (${session.role}) for ${activePortal} portal. Access denied.`, 'error');
+        return;
+      }
+
       // Handle volunteer pending approval
       if (session && !session.is_approved) {
         setPendingVolunteer({
@@ -305,7 +312,7 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
       } else if (code === 'ROLE_MISMATCH_ADMIN') {
         setPromptBanner({
           type: 'role_mismatch_admin',
-          message: `This account (${err.data?.name || identifier}) is registered as an Admin / Seva Team account.`,
+          message: `This account (${err.data?.name || identifier}) has Admin / Seva Team privileges. For security reasons, Admin accounts must sign in via the Admin Command Center.`,
           identifier,
           name: err.data?.name,
         });
@@ -313,7 +320,7 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
       } else if (code === 'ROLE_MISMATCH_VOLUNTEER') {
         setPromptBanner({
           type: 'role_mismatch_volunteer',
-          message: `This account (${err.data?.name || identifier}) is registered as a Volunteer / Sevekar account.`,
+          message: `This account (${err.data?.name || identifier}) is registered as a Volunteer / Sevekar account. Please use the Volunteer Portal.`,
           identifier,
           name: err.data?.name,
         });
@@ -321,7 +328,7 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
       } else if (code === 'ROLE_MISMATCH_PILGRIM') {
         setPromptBanner({
           type: 'role_mismatch_pilgrim',
-          message: `Access denied: This account is registered as a Pilgrim / Warkari account.`,
+          message: `Access denied: This account is registered as a Pilgrim / Warkari account. Please use the Pilgrim Portal.`,
           identifier,
           name: err.data?.name,
         });
@@ -347,6 +354,13 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
     try {
       const session = await authService.googleLogin(activePortal);
 
+      // SECURITY GUARD: Strictly verify session role matches active portal
+      if (session && session.role !== activePortal) {
+        await authService.logout();
+        showToast(`Security Violation: Mismatched role (${session.role}) for ${activePortal} portal. Access denied.`, 'error');
+        return;
+      }
+
       // Handle volunteer pending approval
       if (session && !session.is_approved && session.role === 'volunteer') {
         setPendingVolunteer({
@@ -364,7 +378,8 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
       showToast(`Welcome back, ${session.name}!`);
       onLoginSuccess(session);
     } catch (err: any) {
-      if (err?.code === 'VOLUNTEER_PENDING_APPROVAL') {
+      const code = err.code || err.data?.code;
+      if (code === 'VOLUNTEER_PENDING_APPROVAL') {
         if (err?.data?.session) {
           const s = err.data.session;
           setPendingVolunteer({
@@ -379,13 +394,38 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
         showToast('Volunteer request received. Awaiting Admin confirmation.', 'info');
         return;
       }
-      if (err?.data?.correct_role) {
-        showToast(`Account detected as ${err.data.correct_role}. Redirecting...`, 'info');
-        try {
-          const session = await authService.googleLogin(err.data.correct_role as any);
-          onLoginSuccess(session);
-          return;
-        } catch {}
+      if (code === 'ROLE_MISMATCH_ADMIN') {
+        try { await authService.logout(); } catch {}
+        setPromptBanner({
+          type: 'role_mismatch_admin',
+          message: `This Google account is registered as an Admin / Seva Team account. For security reasons, Admin accounts must sign in via the Admin Command Center.`,
+          identifier: err.data?.name || 'Admin',
+          name: err.data?.name,
+        });
+        showToast('Access Denied: This account has Admin privileges. Switch to Admin Portal.', 'error');
+        return;
+      }
+      if (code === 'ROLE_MISMATCH_VOLUNTEER') {
+        try { await authService.logout(); } catch {}
+        setPromptBanner({
+          type: 'role_mismatch_volunteer',
+          message: `This Google account is registered as a Volunteer / Sevekar account. Please use the Volunteer Portal.`,
+          identifier: err.data?.name || 'Volunteer',
+          name: err.data?.name,
+        });
+        showToast('Access Denied: This account belongs to Volunteer Portal. Switch to Volunteer Portal.', 'error');
+        return;
+      }
+      if (code === 'ROLE_MISMATCH_PILGRIM') {
+        try { await authService.logout(); } catch {}
+        setPromptBanner({
+          type: 'role_mismatch_pilgrim',
+          message: `Access denied: This account is registered as a Pilgrim / Warkari account. Please use the Pilgrim Portal.`,
+          identifier: err.data?.name || 'Pilgrim',
+          name: err.data?.name,
+        });
+        showToast('Access Denied: This account belongs to Pilgrim Portal. Switch to Pilgrim Portal.', 'error');
+        return;
       }
       showToast(err.message || 'Google sign-in failed', 'error');
     } finally {
@@ -426,6 +466,13 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
         activePortal === 'volunteer' ? regSquadId : undefined
       );
 
+      // SECURITY GUARD: Strictly verify session role matches active portal
+      if (session && session.role !== activePortal) {
+        await authService.logout();
+        showToast(`Security Violation: Mismatched role (${session.role}) for ${activePortal} portal. Access denied.`, 'error');
+        return;
+      }
+
       // Handle volunteer pending approval
       if (session && !session.is_approved && activePortal === 'volunteer') {
         setPendingVolunteer({
@@ -456,6 +503,13 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
     try {
       const session = await authService.googleLogin(activePortal);
 
+      // SECURITY GUARD: Strictly verify session role matches active portal
+      if (session && session.role !== activePortal) {
+        await authService.logout();
+        showToast(`Security Violation: Mismatched role (${session.role}) for ${activePortal} portal. Access denied.`, 'error');
+        return;
+      }
+
       // Handle volunteer pending approval
       if (session && !session.is_approved && session.role === 'volunteer') {
         setPendingVolunteer({
@@ -474,7 +528,8 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
       showToast(`Account created with Google! Welcome, ${session.name}! Routing to ${roleLabel} dashboard...`);
       onLoginSuccess(session);
     } catch (err: any) {
-      if (err?.code === 'VOLUNTEER_PENDING_APPROVAL') {
+      const code = err.code || err.data?.code;
+      if (code === 'VOLUNTEER_PENDING_APPROVAL') {
         if (err?.data?.session) {
           const s = err.data.session;
           setPendingVolunteer({
@@ -489,13 +544,38 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({
         showToast('Volunteer request received via Google. Please wait for Admin approval.', 'info');
         return;
       }
-      if (err?.data?.correct_role) {
-        showToast(`This Google account is already registered as ${err.data.correct_role}. Signing in...`, 'info');
-        try {
-          const session = await authService.googleLogin(err.data.correct_role as any);
-          onLoginSuccess(session);
-          return;
-        } catch {}
+      if (code === 'ROLE_MISMATCH_ADMIN') {
+        try { await authService.logout(); } catch {}
+        setPromptBanner({
+          type: 'role_mismatch_admin',
+          message: `This Google account is already registered as an Admin / Seva Team account. Please use the Admin Command Center to sign in.`,
+          identifier: err.data?.name || 'Admin',
+          name: err.data?.name,
+        });
+        showToast('Access Denied: This account has Admin privileges. Switch to Admin Portal.', 'error');
+        return;
+      }
+      if (code === 'ROLE_MISMATCH_VOLUNTEER') {
+        try { await authService.logout(); } catch {}
+        setPromptBanner({
+          type: 'role_mismatch_volunteer',
+          message: `This Google account is registered as a Volunteer / Sevekar account. Please use the Volunteer Portal.`,
+          identifier: err.data?.name || 'Volunteer',
+          name: err.data?.name,
+        });
+        showToast('Access Denied: This account belongs to Volunteer Portal. Switch to Volunteer Portal.', 'error');
+        return;
+      }
+      if (code === 'ROLE_MISMATCH_PILGRIM') {
+        try { await authService.logout(); } catch {}
+        setPromptBanner({
+          type: 'role_mismatch_pilgrim',
+          message: `Access denied: This account is registered as a Pilgrim / Warkari account. Please use the Pilgrim Portal.`,
+          identifier: err.data?.name || 'Pilgrim',
+          name: err.data?.name,
+        });
+        showToast('Access Denied: This account belongs to Pilgrim Portal. Switch to Pilgrim Portal.', 'error');
+        return;
       }
       showToast(err.message || 'Google sign-up failed. Please try again.', 'error');
     } finally {

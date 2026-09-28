@@ -231,7 +231,27 @@ def test_firebase_backend_flow():
         assert admin_prof.firebase_uid == admin_uid, "firebase_uid was not linked to pre-provisioned admin"
         print(" [PASS] Test 13: Pre-provisioned Admin authenticated, firebase_uid linked, and is_staff synced")
 
-    print("\n>>> ALL 13 FIREBASE AUTHENTICATION & SECURITY TESTS PASSED 100%! <<<\n")
+    # 14. Test: Admin account attempting to login via Pilgrim portal -> strictly rejected HTTP 403 ROLE_MISMATCH_ADMIN
+    with patch('accounts.views.verify_id_token', return_value=mock_claims_admin):
+        res_mismatch = client.post('/api/auth/firebase/', json.dumps({
+            'id_token': 'mock_valid_token_admin',
+            'role': 'pilgrim'
+        }), content_type='application/json')
+        assert res_mismatch.status_code == 403, f"Expected 403 for admin login via pilgrim portal, got {res_mismatch.status_code}"
+        assert res_mismatch.json().get('code') == 'ROLE_MISMATCH_ADMIN'
+        print(" [PASS] Test 14: Admin attempting login via Pilgrim portal strictly rejected with HTTP 403 ROLE_MISMATCH_ADMIN")
+
+    # 15. Test: Volunteer account attempting to login via Pilgrim portal -> strictly rejected HTTP 403 ROLE_MISMATCH_VOLUNTEER
+    with patch('accounts.views.verify_id_token', return_value=mock_claims_vol):
+        res_vol_mismatch = client.post('/api/auth/firebase/', json.dumps({
+            'id_token': 'mock_valid_token_vol',
+            'role': 'pilgrim'
+        }), content_type='application/json')
+        assert res_vol_mismatch.status_code == 403, f"Expected 403 for volunteer login via pilgrim portal, got {res_vol_mismatch.status_code}"
+        assert res_vol_mismatch.json().get('code') == 'ROLE_MISMATCH_VOLUNTEER'
+        print(" [PASS] Test 15: Volunteer attempting login via Pilgrim portal strictly rejected with HTTP 403 ROLE_MISMATCH_VOLUNTEER")
+
+    print("\n>>> ALL 15 FIREBASE AUTHENTICATION & SECURITY TESTS PASSED 100%! <<<\n")
 
 
 if __name__ == '__main__':

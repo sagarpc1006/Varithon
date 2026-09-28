@@ -208,8 +208,8 @@ export const authService = {
       }
     } catch (err: any) {
       console.warn('Backend sync for Firebase user:', err?.message || err);
-      // If server explicitly rejected token as 401, clear invalid session
-      if (err?.status === 401) {
+      // If server explicitly rejected token as 401 or 403 (e.g. role mismatch), clear invalid session
+      if (err?.status === 401 || err?.status === 403) {
         this.clearSession();
         return null;
       }
@@ -218,8 +218,10 @@ export const authService = {
         this.saveSession(err.data.session);
         return err.data.session;
       }
+      this.clearSession();
+      return null;
     }
-    return this.getStoredSession();
+    return null;
   },
 
   // 5. Password Reset via Firebase / Backend
